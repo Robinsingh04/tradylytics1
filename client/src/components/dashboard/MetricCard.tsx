@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowUpIcon, ArrowDownIcon } from "lucide-react";
+import { 
+  Card as MuiCard, 
+  CardContent as MuiCardContent,
+  Box,
+  Typography,
+  useTheme
+} from '@mui/material';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { styled } from '@mui/material/styles';
 
 interface MetricCardProps {
   title: string;
@@ -11,6 +19,21 @@ interface MetricCardProps {
   chartData?: number[];
 }
 
+const StyledCard = styled(MuiCard)(({ theme }) => ({
+  height: '100%',
+  backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#ffffff',
+  boxShadow: theme.shadows[1],
+  border: `1px solid ${theme.palette.mode === 'dark' ? '#333333' : '#e0e0e0'}`,
+  overflow: 'hidden',
+}));
+
+const StyledCardContent = styled(MuiCardContent)({
+  padding: 12,
+  '&:last-child': {
+    paddingBottom: 12,
+  },
+});
+
 export function MetricCard({ 
   title, 
   value, 
@@ -19,6 +42,7 @@ export function MetricCard({
   isMonetary = false,
   chartData = [30, 45, 65, 40, 70, 90]
 }: MetricCardProps) {
+  const theme = useTheme();
   const [mounted, setMounted] = useState(false);
 
   // Handle hydration mismatch
@@ -38,50 +62,73 @@ export function MetricCard({
       ? `${isPositive ? '+' : ''}${change}%` 
       : `${isPositive ? '+' : ''}${change}`;
 
-  const changeColor = isPositive ? 'text-[#4caf50] dark:text-[#66bb6a]' : 'text-[#f44336] dark:text-[#e57373]';
-  const valueColor = isMonetary 
-    ? (isPositive ? 'text-[#4caf50] dark:text-[#66bb6a]' : 'text-[#f44336] dark:text-[#e57373]')
-    : '';
+  const positiveColor = theme.palette.mode === 'dark' ? '#66bb6a' : '#4caf50';
+  const negativeColor = theme.palette.mode === 'dark' ? '#e57373' : '#f44336';
+  const changeColor = isPositive ? positiveColor : negativeColor;
+  const valueColor = isMonetary ? changeColor : undefined;
 
   // Determine which bars should be colored
   const barCount = chartData.length;
   const coloredBarsCount = Math.ceil(barCount / 2);
   
   return (
-    <Card className="metric-card h-full bg-neutral-800 border-neutral-700">
-      <CardContent className="p-2">
-        <div className="flex justify-between items-start">
-          <div>
-            <p className="text-[10px] text-muted-foreground font-medium">{title}</p>
-            <p className={`text-base font-bold ${valueColor}`}>{formattedValue}</p>
-          </div>
-          <div className={`flex items-center ${changeColor}`}>
+    <StyledCard>
+      <StyledCardContent>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Box>
+            <Typography 
+              fontSize="10px" 
+              fontWeight={500}
+              color={theme.palette.mode === 'dark' ? 'text.secondary' : 'text.disabled'}
+            >
+              {title}
+            </Typography>
+            <Typography 
+              variant="subtitle1" 
+              fontWeight={700}
+              fontSize="1rem"
+              sx={{ color: valueColor }}
+            >
+              {formattedValue}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', color: changeColor }}>
             {isPositive ? (
-              <ArrowUpIcon className="w-3 h-3" />
+              <ArrowUpwardIcon sx={{ fontSize: 14 }} />
             ) : (
-              <ArrowDownIcon className="w-3 h-3" />
+              <ArrowDownwardIcon sx={{ fontSize: 14 }} />
             )}
-            <span className="text-[10px] font-medium ml-1">{formattedChange}</span>
-          </div>
-        </div>
-        <div className="mt-1 h-4 flex items-end overflow-hidden">
-          <div className="flex-1 flex space-x-px">
+            <Typography 
+              fontSize="10px" 
+              fontWeight={500} 
+              sx={{ ml: 0.5 }}
+            >
+              {formattedChange}
+            </Typography>
+          </Box>
+        </Box>
+        <Box sx={{ mt: 1, height: 16, display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
+          <Box sx={{ flex: 1, display: 'flex', gap: '1px' }}>
             {chartData.map((height, index) => (
-              <div 
+              <Box 
                 key={index}
-                className={`h-1 ${
-                  index >= barCount - coloredBarsCount 
+                sx={{
+                  height: `${height}%`,
+                  flex: 1,
+                  alignSelf: 'flex-end',
+                  borderRadius: '1px',
+                  bgcolor: index >= barCount - coloredBarsCount 
                     ? isPositive 
-                      ? 'bg-[#4caf50] dark:bg-[#66bb6a]' 
-                      : 'bg-[#f44336] dark:bg-[#e57373]'
-                    : 'bg-neutral-100 dark:bg-neutral-700'
-                } flex-1 self-end rounded-sm`}
-                style={{ height: `${height}%` }}
+                      ? positiveColor
+                      : negativeColor
+                    : theme.palette.mode === 'dark' ? '#333333' : '#f0f0f0',
+                  minHeight: 2,
+                }}
               />
             ))}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          </Box>
+        </Box>
+      </StyledCardContent>
+    </StyledCard>
   );
 }

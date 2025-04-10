@@ -87,205 +87,182 @@ export default function Dashboard() {
 
       <MainContent>
         {/* Metric Cards */}
-        <Grid container spacing={2} sx={{ mb: 2 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: {xs: '1fr', sm: '1fr 1fr', md: 'repeat(5, 1fr)'}, gap: 2, mb: 2 }}>
           {isLoadingMetrics ? (
             // Loading skeleton
             Array(5).fill(0).map((_, i) => (
-              <Grid item xs={12/5} key={i}>
-                <Paper 
-                  sx={{ 
-                    p: 1, 
-                    bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-                    height: '100%'
-                  }}
-                >
-                  <LoadingSkeleton variant="text" width="40%" height={10} />
-                  <LoadingSkeleton variant="text" width="60%" height={24} />
-                  <LoadingSkeleton variant="text" width="100%" height={14} />
-                </Paper>
-              </Grid>
-            ))
-          ) : metricsData ? (
-            <>
-              <Grid item xs={12/5}>
-                <MetricCard
-                  title="Total PnL"
-                  value={parseFloat(metricsData.totalPnl.toString())}
-                  change={parseFloat(metricsData.pnlChange?.toString() || '0')}
-                  isPositive={parseFloat(metricsData.totalPnl.toString()) > 0}
-                  isMonetary={true}
-                  chartData={[20, 25, 30, 40, 35, 45, 50, 40, 50, 60, 70, 65]}
-                />
-              </Grid>
-              <Grid item xs={12/5}>
-                <MetricCard
-                  title="Win Rate"
-                  value={`${parseFloat(metricsData.winRate.toString()).toFixed(1)}%`}
-                  change={parseFloat(metricsData.winRateChange?.toString() || '0')}
-                  isPositive={parseFloat(metricsData.winRateChange?.toString() || '0') > 0}
-                  chartData={[30, 35, 40, 45, 50, 55, 50, 45, 50, 55, 60, 65]}
-                />
-              </Grid>
-              <Grid item xs={12/5}>
-                <MetricCard
-                  title="Total Trades"
-                  value={metricsData.totalTrades}
-                  change={metricsData.tradesChange || 0}
-                  isPositive={(metricsData.tradesChange || 0) > 0}
-                  chartData={[10, 15, 20, 25, 30, 25, 20, 25, 30, 35, 40, 45]}
-                />
-              </Grid>
-              <Grid item xs={12/5}>
-                <MetricCard
-                  title="Avg. Win"
-                  value={parseFloat(metricsData.avgWin.toString())}
-                  change={parseFloat(metricsData.avgWinChange?.toString() || '0')}
-                  isPositive={parseFloat(metricsData.avgWinChange?.toString() || '0') > 0}
-                  isMonetary={true}
-                  chartData={[40, 45, 50, 55, 50, 45, 50, 55, 60, 65, 70, 75]}
-                />
-              </Grid>
-              <Grid item xs={12/5}>
-                <MetricCard
-                  title="Avg. Loss"
-                  value={parseFloat(metricsData.avgLoss.toString())}
-                  change={parseFloat(metricsData.avgLossChange?.toString() || '0')}
-                  isPositive={parseFloat(metricsData.avgLossChange?.toString() || '0') > 0}
-                  isMonetary={true}
-                  chartData={[60, 55, 50, 45, 40, 45, 40, 35, 30, 25, 20, 15]}
-                />
-              </Grid>
-            </>
-          ) : (
-            <Grid item xs={12}>
-              <Box sx={{ textAlign: 'center', py: 1.5, fontSize: '0.75rem' }}>
-                Failed to load metrics data
-              </Box>
-            </Grid>
-          )}
-        </Grid>
-
-        {/* Charts */}
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={12} md={6}>
-            {isLoadingEquity ? (
               <Paper 
-                sx={{ 
-                  p: 1, 
-                  bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-                }}
-              >
-                <LoadingSkeleton variant="text" width="30%" height={10} />
-                <LoadingSkeleton variant="rectangular" height={180} />
-              </Paper>
-            ) : equityData ? (
-              <EquityCurveChart data={equityData} />
-            ) : (
-              <Paper 
-                sx={{ 
-                  p: 1, 
-                  bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-                  textAlign: 'center',
-                  fontSize: '0.75rem',
-                }}
-              >
-                Failed to load equity data
-              </Paper>
-            )}
-          </Grid>
-          
-          <Grid item xs={12} md={6}>
-            {isLoadingDrawdown ? (
-              <Paper 
-                sx={{ 
-                  p: 1, 
-                  bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-                }}
-              >
-                <LoadingSkeleton variant="text" width="30%" height={10} />
-                <LoadingSkeleton variant="rectangular" height={180} />
-              </Paper>
-            ) : drawdownData ? (
-              <DrawdownChart data={drawdownData} />
-            ) : (
-              <Paper 
-                sx={{ 
-                  p: 1, 
-                  bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-                  textAlign: 'center',
-                  fontSize: '0.75rem',
-                }}
-              >
-                Failed to load drawdown data
-              </Paper>
-            )}
-          </Grid>
-        </Grid>
-
-        {/* Calendar and Open Trades */}
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={8}>
-            {isLoadingCalendar ? (
-              <Paper 
-                sx={{ 
-                  p: 1, 
-                  bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-                }}
-              >
-                <LoadingSkeleton variant="text" width="30%" height={10} />
-                <Grid container spacing={1}>
-                  {Array(35).fill(0).map((_, i) => (
-                    <Grid item xs={12/7} key={i}>
-                      <LoadingSkeleton variant="rectangular" height={50} />
-                    </Grid>
-                  ))}
-                </Grid>
-              </Paper>
-            ) : (
-              <CalendarView monthlyData={formattedCalendarData} />
-            )}
-          </Grid>
-          
-          <Grid item xs={12} md={4}>
-            {isLoadingTrades ? (
-              <Paper 
+                key={i}
                 sx={{ 
                   p: 1, 
                   bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
                   height: '100%'
                 }}
               >
-                <LoadingSkeleton variant="text" width="30%" height={10} />
-                <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  {Array(3).fill(0).map((_, i) => (
-                    <LoadingSkeleton key={i} variant="rectangular" height={80} />
-                  ))}
-                </Box>
+                <LoadingSkeleton variant="text" width="40%" height={10} />
+                <LoadingSkeleton variant="text" width="60%" height={24} />
+                <LoadingSkeleton variant="text" width="100%" height={14} />
               </Paper>
-            ) : openTrades ? (
-              <OpenTrades 
-                trades={openTrades} 
-                onEditTrade={handleEditTrade} 
-                onCloseTrade={handleCloseTrade} 
+            ))
+          ) : metricsData ? (
+            <>
+              <MetricCard
+                title="Total PnL"
+                value={parseFloat(metricsData.totalPnl.toString())}
+                change={parseFloat(metricsData.pnlChange?.toString() || '0')}
+                isPositive={parseFloat(metricsData.totalPnl.toString()) > 0}
+                isMonetary={true}
+                chartData={[20, 25, 30, 40, 35, 45, 50, 40, 50, 60, 70, 65]}
               />
-            ) : (
-              <Paper 
-                sx={{ 
-                  p: 1, 
-                  bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-                  textAlign: 'center',
-                  fontSize: '0.75rem',
-                  height: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                Failed to load open trades
-              </Paper>
-            )}
-          </Grid>
-        </Grid>
+              <MetricCard
+                title="Win Rate"
+                value={`${parseFloat(metricsData.winRate.toString()).toFixed(1)}%`}
+                change={parseFloat(metricsData.winRateChange?.toString() || '0')}
+                isPositive={parseFloat(metricsData.winRateChange?.toString() || '0') > 0}
+                chartData={[30, 35, 40, 45, 50, 55, 50, 45, 50, 55, 60, 65]}
+              />
+              <MetricCard
+                title="Total Trades"
+                value={metricsData.totalTrades}
+                change={metricsData.tradesChange || 0}
+                isPositive={(metricsData.tradesChange || 0) > 0}
+                chartData={[10, 15, 20, 25, 30, 25, 20, 25, 30, 35, 40, 45]}
+              />
+              <MetricCard
+                title="Avg. Win"
+                value={parseFloat(metricsData.avgWin.toString())}
+                change={parseFloat(metricsData.avgWinChange?.toString() || '0')}
+                isPositive={parseFloat(metricsData.avgWinChange?.toString() || '0') > 0}
+                isMonetary={true}
+                chartData={[40, 45, 50, 55, 50, 45, 50, 55, 60, 65, 70, 75]}
+              />
+              <MetricCard
+                title="Avg. Loss"
+                value={parseFloat(metricsData.avgLoss.toString())}
+                change={parseFloat(metricsData.avgLossChange?.toString() || '0')}
+                isPositive={parseFloat(metricsData.avgLossChange?.toString() || '0') > 0}
+                isMonetary={true}
+                chartData={[60, 55, 50, 45, 40, 45, 40, 35, 30, 25, 20, 15]}
+              />
+            </>
+          ) : (
+            <Box sx={{ gridColumn: 'span 5', textAlign: 'center', py: 1.5, fontSize: '0.75rem' }}>
+              Failed to load metrics data
+            </Box>
+          )}
+        </Box>
+
+        {/* Charts */}
+        <Box sx={{ display: 'grid', gridTemplateColumns: {xs: '1fr', md: '1fr 1fr'}, gap: 2, mb: 2 }}>
+          {isLoadingEquity ? (
+            <Paper 
+              sx={{ 
+                p: 1, 
+                bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+              }}
+            >
+              <LoadingSkeleton variant="text" width="30%" height={10} />
+              <LoadingSkeleton variant="rectangular" height={180} />
+            </Paper>
+          ) : equityData ? (
+            <EquityCurveChart data={equityData} />
+          ) : (
+            <Paper 
+              sx={{ 
+                p: 1, 
+                bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+                textAlign: 'center',
+                fontSize: '0.75rem',
+              }}
+            >
+              Failed to load equity data
+            </Paper>
+          )}
+          
+          {isLoadingDrawdown ? (
+            <Paper 
+              sx={{ 
+                p: 1, 
+                bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+              }}
+            >
+              <LoadingSkeleton variant="text" width="30%" height={10} />
+              <LoadingSkeleton variant="rectangular" height={180} />
+            </Paper>
+          ) : drawdownData ? (
+            <DrawdownChart data={drawdownData} />
+          ) : (
+            <Paper 
+              sx={{ 
+                p: 1, 
+                bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+                textAlign: 'center',
+                fontSize: '0.75rem',
+              }}
+            >
+              Failed to load drawdown data
+            </Paper>
+          )}
+        </Box>
+
+        {/* Calendar and Open Trades */}
+        <Box sx={{ display: 'grid', gridTemplateColumns: {xs: '1fr', md: '8fr 4fr'}, gap: 2 }}>
+          {isLoadingCalendar ? (
+            <Paper 
+              sx={{ 
+                p: 1, 
+                bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+              }}
+            >
+              <LoadingSkeleton variant="text" width="30%" height={10} />
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1 }}>
+                {Array(35).fill(0).map((_, i) => (
+                  <LoadingSkeleton key={i} variant="rectangular" height={50} />
+                ))}
+              </Box>
+            </Paper>
+          ) : (
+            <CalendarView monthlyData={formattedCalendarData} />
+          )}
+          
+          {isLoadingTrades ? (
+            <Paper 
+              sx={{ 
+                p: 1, 
+                bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+                height: '100%'
+              }}
+            >
+              <LoadingSkeleton variant="text" width="30%" height={10} />
+              <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {Array(3).fill(0).map((_, i) => (
+                  <LoadingSkeleton key={i} variant="rectangular" height={80} />
+                ))}
+              </Box>
+            </Paper>
+          ) : openTrades ? (
+            <OpenTrades 
+              trades={openTrades} 
+              onEditTrade={handleEditTrade} 
+              onCloseTrade={handleCloseTrade} 
+            />
+          ) : (
+            <Paper 
+              sx={{ 
+                p: 1, 
+                bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+                textAlign: 'center',
+                fontSize: '0.75rem',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              Failed to load open trades
+            </Paper>
+          )}
+        </Box>
       </MainContent>
     </DashboardContainer>
   );
