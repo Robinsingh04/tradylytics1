@@ -53,12 +53,58 @@ export default function Dashboard() {
   })) || [];
 
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-50 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-100">
+    <div className="min-h-screen flex flex-col bg-neutral-900 text-neutral-100">
       {/* Header */}
-      <header className="bg-white dark:bg-neutral-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-lg font-medium">Trading Dashboard</h1>
-          <ThemeToggle />
+      <header className="bg-black h-[60px] shadow-sm">
+        <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 h-full flex justify-between items-center">
+          <div className="flex items-center space-x-1">
+            <h1 className="text-white text-sm font-medium">Hi, User</h1>
+          </div>
+          <div className="relative flex-1 max-w-md mx-8">
+            <div className="relative">
+              <input 
+                type="text" 
+                placeholder="Search..." 
+                className="w-full bg-neutral-900 rounded text-white pl-8 pr-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-neutral-700"
+              />
+              <div className="absolute inset-y-0 left-2 flex items-center pointer-events-none">
+                <svg className="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <button className="flex items-center text-white text-sm font-medium bg-transparent hover:bg-neutral-800 rounded p-1.5">
+                <span>Market</span>
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+            
+            <button className="relative text-white">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            
+            <div className="relative">
+              <button className="relative text-white">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
+              </button>
+            </div>
+            
+            <div className="h-8 w-8 rounded-full bg-neutral-700 flex items-center justify-center text-white text-sm overflow-hidden">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+          </div>
         </div>
       </header>
 

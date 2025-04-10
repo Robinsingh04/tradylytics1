@@ -15,7 +15,7 @@ export function OpenTrades({
   onCloseTrade 
 }: OpenTradesProps) {
   return (
-    <Card className="h-full">
+    <Card className="h-full bg-neutral-800 border-neutral-700">
       <CardContent className="p-2">
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-xs font-medium">Open Trades</h2>

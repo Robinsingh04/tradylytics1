@@ -48,7 +48,7 @@ export function MetricCard({
   const coloredBarsCount = Math.ceil(barCount / 2);
   
   return (
-    <Card className="metric-card h-full">
+    <Card className="metric-card h-full bg-neutral-800 border-neutral-700">
       <CardContent className="p-2">
         <div className="flex justify-between items-start">
           <div>
