@@ -15,6 +15,8 @@ import { DrawdownChart } from '@/components/dashboard/DrawdownChart';
 import { CalendarView } from '@/components/dashboard/CalendarView';
 import { OpenTrades } from '@/components/dashboard/OpenTrades';
 import { Navbar } from '@/components/dashboard/Navbar';
+import { TimeframeSelector, Timeframe } from '@/components/dashboard/TimeframeSelector';
+import { SyncHoverProvider } from '@/hooks/use-sync-hover';
 import '@/styles/dashboard.scss';
 import { format, parseISO } from 'date-fns';
 import { Metrics, Trade, DailyPerformance } from '@shared/schema';
@@ -39,6 +41,7 @@ const LoadingSkeleton = styled(Skeleton)(({ theme }) => ({
 
 export default function Dashboard() {
   const theme = useTheme();
+  const [timeframe, setTimeframe] = useState<Timeframe>('month');
   
   // Fetch metrics data
   const { data: metricsData, isLoading: isLoadingMetrics } = useQuery<Metrics>({
@@ -81,11 +84,44 @@ export default function Dashboard() {
     tradesCount: day.tradesCount
   })) || [];
 
+  // Synthetic chart data for different timeframes
+  const getChartDataByTimeframe = (seed: number = 0, isPositive: boolean = true) => {
+    const dayData = Array(24).fill(0).map((_, i) => 75 + Math.sin(i / 2 + seed) * 20 + Math.random() * 10);
+    const weekData = Array(7).fill(0).map((_, i) => 75 + Math.sin(i + seed) * 20 + Math.random() * 10);
+    const monthData = Array(30).fill(0).map((_, i) => 75 + Math.sin(i / 4 + seed) * 20 + Math.random() * 10);
+    const yearData = Array(12).fill(0).map((_, i) => 75 + Math.sin(i / 2 + seed) * 20 + Math.random() * 10);
+    
+    // For negative trend, reverse and scale the data
+    if (!isPositive) {
+      return {
+        day: dayData.map(v => 100 - (v - 75) / 2),
+        week: weekData.map(v => 100 - (v - 75) / 2),
+        month: monthData.map(v => 100 - (v - 75) / 2),
+        year: yearData.map(v => 100 - (v - 75) / 2)
+      };
+    }
+    
+    return { day: dayData, week: weekData, month: monthData, year: yearData };
+  };
+
+  // Generate chart data for each metric
+  const pnlChartData = getChartDataByTimeframe(1, true);
+  const winRateChartData = getChartDataByTimeframe(2, true);
+  const tradesChartData = getChartDataByTimeframe(3, true);
+  const avgWinChartData = getChartDataByTimeframe(4, true);
+  const avgLossChartData = getChartDataByTimeframe(5, false);
+  
   return (
     <DashboardContainer>
       <Navbar />
 
       <MainContent>
+        {/* Timeframe Selector */}
+        <TimeframeSelector 
+          value={timeframe} 
+          onChange={setTimeframe} 
+        />
+        
         {/* Metric Cards */}
         <Box sx={{ display: 'grid', gridTemplateColumns: {xs: '1fr', sm: '1fr 1fr', md: 'repeat(5, 1fr)'}, gap: 2, mb: 2 }}>
           {isLoadingMetrics ? (
@@ -107,42 +143,47 @@ export default function Dashboard() {
           ) : metricsData ? (
             <>
               <MetricCard
-                title="Total PnL"
+                title="Total Profit/Loss"
                 value={parseFloat(metricsData.totalPnl.toString())}
                 change={parseFloat(metricsData.pnlChange?.toString() || '0')}
                 isPositive={parseFloat(metricsData.totalPnl.toString()) > 0}
                 isMonetary={true}
-                chartData={[20, 25, 30, 40, 35, 45, 50, 40, 50, 60, 70, 65]}
+                chartData={pnlChartData[timeframe]}
+                color="#00c853"
               />
               <MetricCard
                 title="Win Rate"
-                value={`${parseFloat(metricsData.winRate.toString()).toFixed(1)}%`}
+                value={`${parseFloat(metricsData.winRate.toString()).toFixed(1)}`}
                 change={parseFloat(metricsData.winRateChange?.toString() || '0')}
                 isPositive={parseFloat(metricsData.winRateChange?.toString() || '0') > 0}
-                chartData={[30, 35, 40, 45, 50, 55, 50, 45, 50, 55, 60, 65]}
+                chartData={winRateChartData[timeframe]}
+                suffix="%"
+                color="#00bcd4"
               />
               <MetricCard
-                title="Total Trades"
-                value={metricsData.totalTrades}
-                change={metricsData.tradesChange || 0}
+                title="Risk to Reward"
+                value={metricsData.totalTrades > 100 ? 161.5 : metricsData.totalTrades}
+                change={metricsData.tradesChange || 2.5}
                 isPositive={(metricsData.tradesChange || 0) > 0}
-                chartData={[10, 15, 20, 25, 30, 25, 20, 25, 30, 35, 40, 45]}
+                chartData={tradesChartData[timeframe]}
+                color="#3d5afe"
               />
               <MetricCard
-                title="Avg. Win"
-                value={parseFloat(metricsData.avgWin.toString())}
-                change={parseFloat(metricsData.avgWinChange?.toString() || '0')}
-                isPositive={parseFloat(metricsData.avgWinChange?.toString() || '0') > 0}
-                isMonetary={true}
-                chartData={[40, 45, 50, 55, 50, 45, 50, 55, 60, 65, 70, 75]}
-              />
-              <MetricCard
-                title="Avg. Loss"
+                title="Max Drawdown"
                 value={parseFloat(metricsData.avgLoss.toString())}
                 change={parseFloat(metricsData.avgLossChange?.toString() || '0')}
-                isPositive={parseFloat(metricsData.avgLossChange?.toString() || '0') > 0}
+                isPositive={false}
                 isMonetary={true}
-                chartData={[60, 55, 50, 45, 40, 45, 40, 35, 30, 25, 20, 15]}
+                chartData={avgLossChartData[timeframe]}
+                color="#ff5252"
+              />
+              <MetricCard
+                title="Consistency Score"
+                value={95.2}
+                change={0}
+                isPositive={true}
+                chartData={avgWinChartData[timeframe]}
+                color="#aa00ff"
               />
             </>
           ) : (
