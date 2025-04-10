@@ -77,8 +77,8 @@ const StyledCardContent = styled(MuiCardContent)({
 });
 
 const IconWrapper = styled(Box)(({ theme }) => ({
-  width: 28,
-  height: 28,
+  width: 24,
+  height: 24,
   borderRadius: '50%',
   backgroundColor: theme.palette.mode === 'dark' ? '#1d1d1d' : '#f0f0f0',
   display: 'flex',
@@ -184,21 +184,33 @@ export function MetricCard({
       },
       y: {
         display: false,
-        min: Math.min(...chartData) * 0.95,
+        min: Math.min(...chartData) * 0.9,
         max: Math.max(...chartData) * 1.05,
+        beginAtZero: false,
       },
     },
     elements: {
       point: {
         radius: 0,
-        hoverRadius: 0,
+        hoverRadius: 2,
       },
       line: {
-        tension: 0.3,
-        borderWidth: 2,
+        tension: 0.4,
+        borderWidth: 1.5,
+        fill: false,
       },
     },
     onHover: handleHover,
+  };
+
+  // Create gradient
+  const createGradientFill = (ctx: any, color: string) => {
+    if (!ctx) return 'transparent';
+    
+    const gradient = ctx.createLinearGradient(0, 0, 0, 100);
+    gradient.addColorStop(0, `${color}33`); // 20% opacity
+    gradient.addColorStop(1, `${color}00`); // 0% opacity
+    return gradient;
   };
 
   // Prepare chart data
@@ -208,11 +220,19 @@ export function MetricCard({
       {
         data: chartData,
         borderColor: chartColor,
-        backgroundColor: 'transparent',
-        borderWidth: 2,
-        fill: false,
+        backgroundColor: (context: any) => {
+          const chart = context.chart;
+          const { ctx } = chart;
+          return createGradientFill(ctx, chartColor);
+        },
+        borderWidth: 1.5,
+        fill: true,
         pointBackgroundColor: chartColor,
         pointBorderColor: chartColor,
+        pointHoverRadius: 2,
+        pointHoverBackgroundColor: chartColor,
+        pointHoverBorderColor: '#fff',
+        tension: 0.4,
       },
     ],
   };
@@ -221,8 +241,8 @@ export function MetricCard({
     <StyledCard>
       <StyledCardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-          <IconWrapper>
-            <Typography fontSize="1rem" fontWeight={500}>
+          <IconWrapper sx={{ bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}>
+            <Typography fontSize="0.9rem" fontWeight={500} sx={{ color: chartColor }}>
               {title.charAt(0)}
             </Typography>
           </IconWrapper>
