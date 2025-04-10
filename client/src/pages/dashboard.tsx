@@ -141,7 +141,7 @@ export default function Dashboard() {
               </Paper>
             ))
           ) : metricsData ? (
-            <>
+            <SyncHoverProvider>
               <MetricCard
                 title="Total Profit/Loss"
                 value={parseFloat(metricsData.totalPnl.toString())}
@@ -185,7 +185,7 @@ export default function Dashboard() {
                 chartData={avgWinChartData[timeframe]}
                 color="#aa00ff"
               />
-            </>
+            </SyncHoverProvider>
           ) : (
             <Box sx={{ gridColumn: 'span 5', textAlign: 'center', py: 1.5, fontSize: '0.75rem' }}>
               Failed to load metrics data

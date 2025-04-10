@@ -113,23 +113,36 @@ export function MetricCard({
     const chart = chartRef.current;
     
     if (chart && activeIndex !== null) {
+      // Get current active elements
       const activeElements = chart.getActiveElements();
       
       // Only update if we don't already have the right point active
       if (activeElements.length === 0 || activeElements[0].index !== activeIndex) {
-        chart.setActiveElements([{
-          datasetIndex: 0,
-          index: activeIndex
-        }]);
-        
-        // Force the tooltip to update
-        chart.tooltip?.setActiveElements([{
-          datasetIndex: 0,
-          index: activeIndex
-        }], { x: 0, y: 0 });
-        
-        chart.update();
+        try {
+          // Set active elements (the visible point)
+          chart.setActiveElements([{
+            datasetIndex: 0,
+            index: activeIndex
+          }]);
+          
+          // Force the tooltip to update
+          if (chart.tooltip) {
+            chart.tooltip.setActiveElements([{
+              datasetIndex: 0,
+              index: activeIndex
+            }], { x: 0, y: 0 });
+          }
+          
+          // Update the chart
+          chart.update('none'); // Use 'none' to prevent animation
+        } catch (error) {
+          console.log('Chart hover sync error:', error);
+        }
       }
+    } else if (chart && activeIndex === null) {
+      // Clear active elements when no hover
+      chart.setActiveElements([]);
+      chart.update('none');
     }
   }, [activeIndex]);
 
@@ -177,6 +190,10 @@ export function MetricCard({
       tooltip: {
         enabled: false,
       },
+      hover: {
+        mode: 'index' as const,
+        intersect: false,
+      },
     },
     scales: {
       x: {
@@ -192,7 +209,8 @@ export function MetricCard({
     elements: {
       point: {
         radius: 0,
-        hoverRadius: 2,
+        hoverRadius: 4,
+        hoverBorderWidth: 1,
       },
       line: {
         tension: 0.4,

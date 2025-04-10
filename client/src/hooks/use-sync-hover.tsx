@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface SyncHoverContextProps {
   activeIndex: number | null;
@@ -21,9 +21,33 @@ interface SyncHoverProviderProps {
 export function SyncHoverProvider({ children }: SyncHoverProviderProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   
+  // Reset active index when mouse leaves the container
+  useEffect(() => {
+    const handleMouseLeave = () => {
+      // Small delay to prevent flickering when moving between cards
+      setTimeout(() => {
+        setActiveIndex(null);
+      }, 100);
+    };
+    
+    // Find all card elements and add mouse leave handlers
+    const cards = document.querySelectorAll('[class*="MetricCard"]');
+    cards.forEach(card => {
+      card.addEventListener('mouseleave', handleMouseLeave);
+    });
+    
+    return () => {
+      cards.forEach(card => {
+        card.removeEventListener('mouseleave', handleMouseLeave);
+      });
+    };
+  }, []);
+  
   return (
     <SyncHoverContext.Provider value={{ activeIndex, setActiveIndex }}>
-      {children}
+      <div style={{ display: 'contents' }}>
+        {children}
+      </div>
     </SyncHoverContext.Provider>
   );
 }
