@@ -148,14 +148,18 @@ export function MetricCard({
 
   const handleHover = useCallback(
     (event: ChartEvent, elements: ActiveElement[]) => {
-      if (elements.length > 0) {
+      // Only set active index if we have elements and the mouse is actually over the chart
+      if (elements && elements.length > 0 && event.native) {
         setActiveIndex(elements[0].index);
-      } else {
-        setActiveIndex(null);
       }
     },
     [setActiveIndex]
   );
+  
+  // Handle mouse leave for the entire card
+  const handleMouseLeave = useCallback(() => {
+    setActiveIndex(null);
+  }, [setActiveIndex]);
 
   if (!mounted) return null;
 
@@ -188,7 +192,28 @@ export function MetricCard({
         display: false,
       },
       tooltip: {
-        enabled: false,
+        enabled: true,
+        backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)',
+        titleColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
+        bodyColor: theme.palette.mode === 'dark' ? '#ccc' : '#333',
+        borderColor: chartColor,
+        borderWidth: 1,
+        padding: 6,
+        displayColors: false,
+        titleFont: {
+          size: 10,
+        },
+        bodyFont: {
+          size: 9,
+        },
+        callbacks: {
+          title: (context: any) => {
+            return context[0].label;
+          },
+          label: (context: any) => {
+            return `Value: ${context.raw.toFixed(1)}`;
+          },
+        },
       },
       hover: {
         mode: 'index' as const,
@@ -209,8 +234,9 @@ export function MetricCard({
     elements: {
       point: {
         radius: 0,
-        hoverRadius: 4,
-        hoverBorderWidth: 1,
+        hoverRadius: 5,
+        hoverBorderWidth: 2,
+        borderWidth: 2,
       },
       line: {
         tension: 0.4,
@@ -247,16 +273,16 @@ export function MetricCard({
         fill: true,
         pointBackgroundColor: chartColor,
         pointBorderColor: chartColor,
-        pointHoverRadius: 2,
-        pointHoverBackgroundColor: chartColor,
-        pointHoverBorderColor: '#fff',
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: theme.palette.mode === 'dark' ? '#fff' : chartColor,
+        pointHoverBorderColor: theme.palette.mode === 'dark' ? chartColor : '#fff',
         tension: 0.4,
       },
     ],
   };
 
   return (
-    <StyledCard>
+    <StyledCard onMouseLeave={handleMouseLeave}>
       <StyledCardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
           <IconWrapper sx={{ bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}>
