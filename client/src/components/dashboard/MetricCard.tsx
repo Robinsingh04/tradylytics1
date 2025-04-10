@@ -49,22 +49,22 @@ export function MetricCard({
   
   return (
     <Card className="metric-card h-full">
-      <CardContent className="p-4">
+      <CardContent className="p-2">
         <div className="flex justify-between items-start">
           <div>
-            <p className="text-xs text-muted-foreground font-medium">{title}</p>
-            <p className={`text-2xl font-bold ${valueColor}`}>{formattedValue}</p>
+            <p className="text-[10px] text-muted-foreground font-medium">{title}</p>
+            <p className={`text-base font-bold ${valueColor}`}>{formattedValue}</p>
           </div>
           <div className={`flex items-center ${changeColor}`}>
             {isPositive ? (
-              <ArrowUpIcon className="w-4 h-4" />
+              <ArrowUpIcon className="w-3 h-3" />
             ) : (
-              <ArrowDownIcon className="w-4 h-4" />
+              <ArrowDownIcon className="w-3 h-3" />
             )}
-            <span className="text-xs font-medium ml-1">{formattedChange}</span>
+            <span className="text-[10px] font-medium ml-1">{formattedChange}</span>
           </div>
         </div>
-        <div className="mt-2 h-6 flex items-end overflow-hidden">
+        <div className="mt-1 h-4 flex items-end overflow-hidden">
           <div className="flex-1 flex space-x-px">
             {chartData.map((height, index) => (
               <div 

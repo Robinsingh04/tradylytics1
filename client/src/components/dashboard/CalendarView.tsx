@@ -78,43 +78,43 @@ export function CalendarView({
   
   return (
     <Card className="h-full">
-      <CardContent className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-sm font-medium">Monthly Performance</h2>
+      <CardContent className="p-2">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-xs font-medium">Monthly Performance</h2>
           <div className="flex items-center space-x-1">
             <button 
-              className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded"
+              className="p-0.5 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded"
               onClick={prevMonth}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-3 w-3" />
             </button>
-            <span className="text-sm">{format(viewDate, 'MMMM yyyy')}</span>
+            <span className="text-xs">{format(viewDate, 'MMMM yyyy')}</span>
             <button 
-              className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded"
+              className="p-0.5 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded"
               onClick={nextMonth}
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-3 w-3" />
             </button>
           </div>
         </div>
         
         {/* Days of week */}
-        <div className="grid grid-cols-7 mb-2">
-          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-            <div key={day} className="text-xs text-neutral-500 dark:text-neutral-400 text-center">
-              {day}
+        <div className="grid grid-cols-7 mb-1">
+          {['M', 'T1', 'W', 'T2', 'F', 'S1', 'S2'].map((day, index) => (
+            <div key={index} className="text-[9px] text-neutral-500 dark:text-neutral-400 text-center">
+              {day.charAt(0)}
             </div>
           ))}
         </div>
         
         {/* Calendar grid */}
-        <div className="calendar-grid">
+        <div className="grid grid-cols-7 gap-1">
           {weeks.map((week, weekIndex) => 
             week.map((day, dayIndex) => {
               const isToday = isSameDay(day.date, new Date());
               const isWeekendDay = isWeekend(day.date);
               
-              let dayClass = 'h-full rounded p-1';
+              let dayClass = 'h-full rounded p-0.5 aspect-square';
               
               if (!day.isCurrentMonth) {
                 dayClass += ' opacity-50 bg-neutral-100 dark:bg-neutral-700';
@@ -137,23 +137,23 @@ export function CalendarView({
               }
               
               return (
-                <div key={`${weekIndex}-${dayIndex}`} className="calendar-day p-1">
+                <div key={`${weekIndex}-${dayIndex}`} className="w-full">
                   <div className={dayClass}>
-                    <div className="text-xs">{format(day.date, 'd')}</div>
+                    <div className="text-[9px] leading-tight">{format(day.date, 'd')}</div>
                     {day.isCurrentMonth && day.pnl !== null && (
-                      <div className="mt-1 text-center">
-                        <div className={`text-xs font-medium ${day.pnl > 0 ? 'text-positive-light dark:text-positive-dark' : 'text-negative-light dark:text-negative-dark'}`}>
-                          {day.pnl > 0 ? '+' : ''}{day.pnl.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                      <div className="mt-0.5 text-center">
+                        <div className={`text-[9px] leading-tight font-medium ${day.pnl > 0 ? 'text-positive-light dark:text-positive-dark' : 'text-negative-light dark:text-negative-dark'}`}>
+                          {day.pnl > 0 ? '+' : ''}${Math.abs(day.pnl).toFixed(0)}
                         </div>
-                        <div className="text-[10px] text-neutral-500 dark:text-neutral-400">
-                          {day.tradesCount} {day.tradesCount === 1 ? 'trade' : 'trades'}
+                        <div className="text-[7px] leading-tight text-neutral-500 dark:text-neutral-400">
+                          {day.tradesCount}t
                         </div>
                       </div>
                     )}
                     {day.isCurrentMonth && isWeekendDay && (
-                      <div className="mt-1 text-center">
-                        <div className="text-[10px] text-neutral-500 dark:text-neutral-400">
-                          Weekend
+                      <div className="mt-0.5 text-center">
+                        <div className="text-[7px] leading-tight text-neutral-500 dark:text-neutral-400">
+                          wknd
                         </div>
                       </div>
                     )}
@@ -165,17 +165,17 @@ export function CalendarView({
         </div>
         
         {/* Legend */}
-        <div className="flex justify-end mt-3 text-xs space-x-4">
+        <div className="flex justify-end mt-2 text-[9px] space-x-2">
           <div className="flex items-center">
-            <div className="w-3 h-3 rounded bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 mr-1"></div>
+            <div className="w-2 h-2 rounded bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 mr-0.5"></div>
             <span className="text-neutral-500 dark:text-neutral-400">Profit</span>
           </div>
           <div className="flex items-center">
-            <div className="w-3 h-3 rounded bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 mr-1"></div>
+            <div className="w-2 h-2 rounded bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 mr-0.5"></div>
             <span className="text-neutral-500 dark:text-neutral-400">Loss</span>
           </div>
           <div className="flex items-center">
-            <div className="w-3 h-3 rounded bg-neutral-100 dark:bg-neutral-700 mr-1"></div>
+            <div className="w-2 h-2 rounded bg-neutral-100 dark:bg-neutral-700 mr-0.5"></div>
             <span className="text-neutral-500 dark:text-neutral-400">No Trading</span>
           </div>
         </div>

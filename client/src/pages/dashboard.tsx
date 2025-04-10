@@ -63,16 +63,16 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-grow max-w-7xl w-full mx-auto px-2 sm:px-4 lg:px-6 py-3">
         {/* Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-5 gap-2 mb-4">
           {isLoadingMetrics ? (
             // Loading skeleton
             Array(5).fill(0).map((_, i) => (
-              <div key={i} className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm p-4 animate-pulse">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
-                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+              <div key={i} className="bg-white dark:bg-neutral-800 rounded shadow-sm p-2 animate-pulse">
+                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-1"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-1"></div>
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
               </div>
             ))
           ) : metricsData ? (
@@ -112,47 +112,47 @@ export default function Dashboard() {
               />
             </>
           ) : (
-            <div className="col-span-5 text-center py-6">Failed to load metrics data</div>
+            <div className="col-span-5 text-center py-3 text-xs">Failed to load metrics data</div>
           )}
         </div>
 
         {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
           {isLoadingEquity ? (
-            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm p-4 animate-pulse">
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-6"></div>
-              <div className="h-40 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm p-2 animate-pulse">
+              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
+              <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
             </div>
           ) : equityData ? (
             <EquityCurveChart data={equityData} />
           ) : (
-            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm p-4 text-center">
+            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm p-3 text-center text-xs">
               Failed to load equity data
             </div>
           )}
           
           {isLoadingDrawdown ? (
-            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm p-4 animate-pulse">
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-6"></div>
-              <div className="h-40 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm p-2 animate-pulse">
+              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
+              <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
             </div>
           ) : drawdownData ? (
             <DrawdownChart data={drawdownData} />
           ) : (
-            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm p-4 text-center">
+            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm p-3 text-center text-xs">
               Failed to load drawdown data
             </div>
           )}
         </div>
 
         {/* Calendar and Open Trades */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {isLoadingCalendar ? (
-            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm p-4 animate-pulse lg:col-span-2">
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-6"></div>
+            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm p-2 animate-pulse lg:col-span-2">
+              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
               <div className="grid grid-cols-7 gap-1">
                 {Array(35).fill(0).map((_, i) => (
-                  <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div key={i} className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
                 ))}
               </div>
             </div>
@@ -163,11 +163,11 @@ export default function Dashboard() {
           )}
           
           {isLoadingTrades ? (
-            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm p-4 animate-pulse">
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-6"></div>
-              <div className="space-y-3">
+            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm p-2 animate-pulse">
+              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
+              <div className="space-y-2">
                 {Array(3).fill(0).map((_, i) => (
-                  <div key={i} className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
                 ))}
               </div>
             </div>
@@ -178,7 +178,7 @@ export default function Dashboard() {
               onCloseTrade={handleCloseTrade} 
             />
           ) : (
-            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm p-4 text-center">
+            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm p-3 text-center text-xs">
               Failed to load open trades
             </div>
           )}
