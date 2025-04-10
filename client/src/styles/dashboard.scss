@@ -1,0 +1,311 @@
+// Dashboard styles
+
+// Variables
+$primary-light: #3f51b5;
+$primary-dark: #5c6bc0;
+$positive-light: #4caf50;
+$positive-dark: #66bb6a;
+$negative-light: #f44336;
+$negative-dark: #e57373;
+$neutral-50: #f5f7fa;
+$neutral-100: #e4e7eb;
+$neutral-200: #cbd2d9;
+$neutral-800: #323f4b;
+$neutral-900: #1f2933;
+
+// Metric cards
+.metric-card {
+  transition: background-color 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+
+  .metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .metric-change {
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: 500;
+
+    &.positive {
+      color: var(--positive);
+    }
+
+    &.negative {
+      color: var(--negative);
+    }
+  }
+
+  .micro-chart {
+    height: 24px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    margin-top: 8px;
+
+    .bar {
+      flex: 1;
+      margin: 0 1px;
+      border-radius: 2px;
+      transition: background-color 0.3s;
+
+      &.positive {
+        background-color: var(--positive);
+      }
+
+      &.neutral {
+        background-color: var(--neutral);
+      }
+
+      &.negative {
+        background-color: var(--negative);
+      }
+    }
+  }
+}
+
+// Chart containers
+.chart-container {
+  position: relative;
+  height: 250px;
+
+  @media (max-width: 768px) {
+    height: 200px;
+  }
+
+  .chart-period-selector {
+    display: flex;
+    gap: 8px;
+
+    button {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+
+      &.active {
+        background-color: var(--primary);
+        color: white;
+      }
+    }
+  }
+}
+
+// Calendar
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+
+  .day-header {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    padding: 4px 0;
+  }
+
+  .calendar-day {
+    aspect-ratio: 1;
+    position: relative;
+    
+    .day-content {
+      height: 100%;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s;
+
+      &.current-day {
+        border: 2px solid var(--primary);
+        background-color: rgba(var(--primary-rgb), 0.1);
+      }
+
+      &.weekend {
+        background-color: var(--muted);
+      }
+
+      &.profit {
+        background-color: rgba(var(--positive-rgb), 0.1);
+        border: 1px solid rgba(var(--positive-rgb), 0.3);
+      }
+
+      &.loss {
+        background-color: rgba(var(--negative-rgb), 0.1);
+        border: 1px solid rgba(var(--negative-rgb), 0.3);
+      }
+
+      &.disabled {
+        opacity: 0.5;
+      }
+
+      .day-number {
+        font-size: 0.75rem;
+      }
+
+      .day-pnl {
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-top: 4px;
+        text-align: center;
+
+        &.positive {
+          color: var(--positive);
+        }
+
+        &.negative {
+          color: var(--negative);
+        }
+      }
+
+      .day-trades {
+        font-size: 0.625rem;
+        color: var(--muted-foreground);
+        text-align: center;
+      }
+    }
+  }
+}
+
+// Open trades
+.trade-item {
+  position: relative;
+  border-radius: 0 0.25rem 0.25rem 0;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  transition: background-color 0.3s;
+
+  &.profit {
+    border-left: 4px solid var(--positive);
+    background-color: rgba(var(--positive-rgb), 0.05);
+  }
+
+  &.loss {
+    border-left: 4px solid var(--negative);
+    background-color: rgba(var(--negative-rgb), 0.05);
+  }
+
+  .trade-symbol {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+  }
+
+  .trade-direction {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 0 0.5rem;
+    border-radius: 0.25rem;
+    margin-left: 0.5rem;
+
+    &.long {
+      background-color: rgba(var(--positive-rgb), 0.1);
+      color: var(--positive);
+    }
+
+    &.short {
+      background-color: rgba(var(--negative-rgb), 0.1);
+      color: var(--negative);
+    }
+  }
+
+  .trade-date {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    margin-top: 0.25rem;
+  }
+
+  .trade-pnl {
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: right;
+
+    &.positive {
+      color: var(--positive);
+    }
+
+    &.negative {
+      color: var(--negative);
+    }
+  }
+
+  .trade-prices {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 0.25rem;
+  }
+
+  .trade-status {
+    display: flex;
+    align-items: center;
+
+    .status-indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-right: 0.25rem;
+
+      &.profit {
+        background-color: var(--positive);
+      }
+
+      &.loss {
+        background-color: var(--negative);
+      }
+    }
+
+    .status-text {
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+    }
+  }
+}
+
+// Custom scrollbar
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.dark {
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  // Dark mode specific variables
+  --positive: #{$positive-dark};
+  --negative: #{$negative-dark};
+  --primary: #{$primary-dark};
+  --neutral: #{$neutral-800};
+}
+
+:root {
+  // Light mode variables
+  --positive: #{$positive-light};
+  --negative: #{$negative-light};
+  --primary: #{$primary-light};
+  --neutral: #{$neutral-100};
+  --positive-rgb: 76, 175, 80;
+  --negative-rgb: 244, 67, 54;
+  --primary-rgb: 63, 81, 181;
+}
