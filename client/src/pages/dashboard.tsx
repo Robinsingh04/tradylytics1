@@ -1,16 +1,45 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { 
+  Box, 
+  Container, 
+  Grid, 
+  Skeleton, 
+  Paper, 
+  useTheme,
+  styled
+} from '@mui/material';
 import { MetricCard } from '@/components/dashboard/MetricCard';
 import { EquityCurveChart } from '@/components/dashboard/EquityCurveChart';
 import { DrawdownChart } from '@/components/dashboard/DrawdownChart';
 import { CalendarView } from '@/components/dashboard/CalendarView';
 import { OpenTrades } from '@/components/dashboard/OpenTrades';
-import { ThemeToggle } from '@/components/dashboard/ThemeToggle';
+import { Navbar } from '@/components/dashboard/Navbar';
 import '@/styles/dashboard.scss';
 import { format, parseISO } from 'date-fns';
 import { Metrics, Trade, DailyPerformance } from '@shared/schema';
 
+const DashboardContainer = styled(Box)(({ theme }) => ({
+  minHeight: '100vh',
+  display: 'flex',
+  flexDirection: 'column',
+  backgroundColor: theme.palette.mode === 'dark' ? '#121212' : '#f5f5f5',
+}));
+
+const MainContent = styled(Container)(({ theme }) => ({
+  flexGrow: 1,
+  paddingTop: '76px', // 60px navbar + 16px padding
+  paddingBottom: '16px',
+  maxWidth: '1280px',
+}));
+
+const LoadingSkeleton = styled(Skeleton)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#333333' : '#e0e0e0',
+}));
+
 export default function Dashboard() {
+  const theme = useTheme();
+  
   // Fetch metrics data
   const { data: metricsData, isLoading: isLoadingMetrics } = useQuery<Metrics>({
     queryKey: ['/api/metrics'],
@@ -53,183 +82,211 @@ export default function Dashboard() {
   })) || [];
 
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-900 text-neutral-100">
-      {/* Header */}
-      <header className="bg-black h-[60px] shadow-sm">
-        <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 h-full flex justify-between items-center">
-          <div className="flex items-center space-x-1">
-            <h1 className="text-white text-sm font-medium">Hi, User</h1>
-          </div>
-          <div className="relative flex-1 max-w-md mx-8">
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="w-full bg-neutral-900 rounded text-white pl-8 pr-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-neutral-700"
-              />
-              <div className="absolute inset-y-0 left-2 flex items-center pointer-events-none">
-                <svg className="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <button className="flex items-center text-white text-sm font-medium bg-transparent hover:bg-neutral-800 rounded p-1.5">
-                <span>Market</span>
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-            </div>
-            
-            <button className="relative text-white">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            
-            <div className="relative">
-              <button className="relative text-white">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
-              </button>
-            </div>
-            
-            <div className="h-8 w-8 rounded-full bg-neutral-700 flex items-center justify-center text-white text-sm overflow-hidden">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </header>
+    <DashboardContainer>
+      <Navbar />
 
-      {/* Main Content */}
-      <main className="flex-grow max-w-7xl w-full mx-auto px-2 sm:px-4 lg:px-6 py-3">
+      <MainContent>
         {/* Metric Cards */}
-        <div className="grid grid-cols-5 gap-2 mb-4">
+        <Grid container spacing={2} sx={{ mb: 2 }}>
           {isLoadingMetrics ? (
             // Loading skeleton
             Array(5).fill(0).map((_, i) => (
-              <div key={i} className="bg-white dark:bg-neutral-800 rounded shadow-sm p-2 animate-pulse">
-                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-1"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-1"></div>
-                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-              </div>
+              <Grid item xs={12/5} key={i}>
+                <Paper 
+                  sx={{ 
+                    p: 1, 
+                    bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+                    height: '100%'
+                  }}
+                >
+                  <LoadingSkeleton variant="text" width="40%" height={10} />
+                  <LoadingSkeleton variant="text" width="60%" height={24} />
+                  <LoadingSkeleton variant="text" width="100%" height={14} />
+                </Paper>
+              </Grid>
             ))
           ) : metricsData ? (
             <>
-              <MetricCard
-                title="Total PnL"
-                value={parseFloat(metricsData.totalPnl.toString())}
-                change={parseFloat(metricsData.pnlChange?.toString() || '0')}
-                isPositive={parseFloat(metricsData.totalPnl.toString()) > 0}
-                isMonetary={true}
-              />
-              <MetricCard
-                title="Win Rate"
-                value={`${parseFloat(metricsData.winRate.toString()).toFixed(1)}%`}
-                change={parseFloat(metricsData.winRateChange?.toString() || '0')}
-                isPositive={parseFloat(metricsData.winRateChange?.toString() || '0') > 0}
-              />
-              <MetricCard
-                title="Total Trades"
-                value={metricsData.totalTrades}
-                change={metricsData.tradesChange || 0}
-                isPositive={(metricsData.tradesChange || 0) > 0}
-              />
-              <MetricCard
-                title="Avg. Win"
-                value={parseFloat(metricsData.avgWin.toString())}
-                change={parseFloat(metricsData.avgWinChange?.toString() || '0')}
-                isPositive={parseFloat(metricsData.avgWinChange?.toString() || '0') > 0}
-                isMonetary={true}
-              />
-              <MetricCard
-                title="Avg. Loss"
-                value={parseFloat(metricsData.avgLoss.toString())}
-                change={parseFloat(metricsData.avgLossChange?.toString() || '0')}
-                isPositive={parseFloat(metricsData.avgLossChange?.toString() || '0') > 0}
-                isMonetary={true}
-              />
+              <Grid item xs={12/5}>
+                <MetricCard
+                  title="Total PnL"
+                  value={parseFloat(metricsData.totalPnl.toString())}
+                  change={parseFloat(metricsData.pnlChange?.toString() || '0')}
+                  isPositive={parseFloat(metricsData.totalPnl.toString()) > 0}
+                  isMonetary={true}
+                  chartData={[20, 25, 30, 40, 35, 45, 50, 40, 50, 60, 70, 65]}
+                />
+              </Grid>
+              <Grid item xs={12/5}>
+                <MetricCard
+                  title="Win Rate"
+                  value={`${parseFloat(metricsData.winRate.toString()).toFixed(1)}%`}
+                  change={parseFloat(metricsData.winRateChange?.toString() || '0')}
+                  isPositive={parseFloat(metricsData.winRateChange?.toString() || '0') > 0}
+                  chartData={[30, 35, 40, 45, 50, 55, 50, 45, 50, 55, 60, 65]}
+                />
+              </Grid>
+              <Grid item xs={12/5}>
+                <MetricCard
+                  title="Total Trades"
+                  value={metricsData.totalTrades}
+                  change={metricsData.tradesChange || 0}
+                  isPositive={(metricsData.tradesChange || 0) > 0}
+                  chartData={[10, 15, 20, 25, 30, 25, 20, 25, 30, 35, 40, 45]}
+                />
+              </Grid>
+              <Grid item xs={12/5}>
+                <MetricCard
+                  title="Avg. Win"
+                  value={parseFloat(metricsData.avgWin.toString())}
+                  change={parseFloat(metricsData.avgWinChange?.toString() || '0')}
+                  isPositive={parseFloat(metricsData.avgWinChange?.toString() || '0') > 0}
+                  isMonetary={true}
+                  chartData={[40, 45, 50, 55, 50, 45, 50, 55, 60, 65, 70, 75]}
+                />
+              </Grid>
+              <Grid item xs={12/5}>
+                <MetricCard
+                  title="Avg. Loss"
+                  value={parseFloat(metricsData.avgLoss.toString())}
+                  change={parseFloat(metricsData.avgLossChange?.toString() || '0')}
+                  isPositive={parseFloat(metricsData.avgLossChange?.toString() || '0') > 0}
+                  isMonetary={true}
+                  chartData={[60, 55, 50, 45, 40, 45, 40, 35, 30, 25, 20, 15]}
+                />
+              </Grid>
             </>
           ) : (
-            <div className="col-span-5 text-center py-3 text-xs">Failed to load metrics data</div>
+            <Grid item xs={12}>
+              <Box sx={{ textAlign: 'center', py: 1.5, fontSize: '0.75rem' }}>
+                Failed to load metrics data
+              </Box>
+            </Grid>
           )}
-        </div>
+        </Grid>
 
         {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-          {isLoadingEquity ? (
-            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm p-2 animate-pulse">
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
-              <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-            </div>
-          ) : equityData ? (
-            <EquityCurveChart data={equityData} />
-          ) : (
-            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm p-3 text-center text-xs">
-              Failed to load equity data
-            </div>
-          )}
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Grid item xs={12} md={6}>
+            {isLoadingEquity ? (
+              <Paper 
+                sx={{ 
+                  p: 1, 
+                  bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+                }}
+              >
+                <LoadingSkeleton variant="text" width="30%" height={10} />
+                <LoadingSkeleton variant="rectangular" height={180} />
+              </Paper>
+            ) : equityData ? (
+              <EquityCurveChart data={equityData} />
+            ) : (
+              <Paper 
+                sx={{ 
+                  p: 1, 
+                  bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+                  textAlign: 'center',
+                  fontSize: '0.75rem',
+                }}
+              >
+                Failed to load equity data
+              </Paper>
+            )}
+          </Grid>
           
-          {isLoadingDrawdown ? (
-            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm p-2 animate-pulse">
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
-              <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-            </div>
-          ) : drawdownData ? (
-            <DrawdownChart data={drawdownData} />
-          ) : (
-            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm p-3 text-center text-xs">
-              Failed to load drawdown data
-            </div>
-          )}
-        </div>
+          <Grid item xs={12} md={6}>
+            {isLoadingDrawdown ? (
+              <Paper 
+                sx={{ 
+                  p: 1, 
+                  bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+                }}
+              >
+                <LoadingSkeleton variant="text" width="30%" height={10} />
+                <LoadingSkeleton variant="rectangular" height={180} />
+              </Paper>
+            ) : drawdownData ? (
+              <DrawdownChart data={drawdownData} />
+            ) : (
+              <Paper 
+                sx={{ 
+                  p: 1, 
+                  bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+                  textAlign: 'center',
+                  fontSize: '0.75rem',
+                }}
+              >
+                Failed to load drawdown data
+              </Paper>
+            )}
+          </Grid>
+        </Grid>
 
         {/* Calendar and Open Trades */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {isLoadingCalendar ? (
-            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm p-2 animate-pulse lg:col-span-2">
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
-              <div className="grid grid-cols-7 gap-1">
-                {Array(35).fill(0).map((_, i) => (
-                  <div key={i} className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="lg:col-span-2">
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={8}>
+            {isLoadingCalendar ? (
+              <Paper 
+                sx={{ 
+                  p: 1, 
+                  bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+                }}
+              >
+                <LoadingSkeleton variant="text" width="30%" height={10} />
+                <Grid container spacing={1}>
+                  {Array(35).fill(0).map((_, i) => (
+                    <Grid item xs={12/7} key={i}>
+                      <LoadingSkeleton variant="rectangular" height={50} />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Paper>
+            ) : (
               <CalendarView monthlyData={formattedCalendarData} />
-            </div>
-          )}
+            )}
+          </Grid>
           
-          {isLoadingTrades ? (
-            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm p-2 animate-pulse">
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
-              <div className="space-y-2">
-                {Array(3).fill(0).map((_, i) => (
-                  <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                ))}
-              </div>
-            </div>
-          ) : openTrades ? (
-            <OpenTrades 
-              trades={openTrades} 
-              onEditTrade={handleEditTrade} 
-              onCloseTrade={handleCloseTrade} 
-            />
-          ) : (
-            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm p-3 text-center text-xs">
-              Failed to load open trades
-            </div>
-          )}
-        </div>
-      </main>
-    </div>
+          <Grid item xs={12} md={4}>
+            {isLoadingTrades ? (
+              <Paper 
+                sx={{ 
+                  p: 1, 
+                  bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+                  height: '100%'
+                }}
+              >
+                <LoadingSkeleton variant="text" width="30%" height={10} />
+                <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {Array(3).fill(0).map((_, i) => (
+                    <LoadingSkeleton key={i} variant="rectangular" height={80} />
+                  ))}
+                </Box>
+              </Paper>
+            ) : openTrades ? (
+              <OpenTrades 
+                trades={openTrades} 
+                onEditTrade={handleEditTrade} 
+                onCloseTrade={handleCloseTrade} 
+              />
+            ) : (
+              <Paper 
+                sx={{ 
+                  p: 1, 
+                  bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
+                  textAlign: 'center',
+                  fontSize: '0.75rem',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                Failed to load open trades
+              </Paper>
+            )}
+          </Grid>
+        </Grid>
+      </MainContent>
+    </DashboardContainer>
   );
 }
