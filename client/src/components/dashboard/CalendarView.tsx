@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isWeekend, isSameDay } from 'date-fns';
+import { DayDetailsPopup } from './DayDetailsPopup';
 
 interface DayData {
   date: Date;
@@ -24,10 +24,11 @@ export function CalendarView({
   currentDate = new Date() 
 }: CalendarViewProps) {
   const [viewDate, setViewDate] = useState(currentDate);
+  const [selectedDay, setSelectedDay] = useState<DayData | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const monthStart = startOfMonth(viewDate);
   const monthEnd = endOfMonth(viewDate);
-  const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
   
   // Previous and next month navigation
   const prevMonth = () => {
@@ -61,12 +62,12 @@ export function CalendarView({
     };
   });
   
-  // Calendar rows (weeks)
+  // Generate weeks array for display
   const weeks: DayData[][] = [];
   let days: DayData[] = [];
   
   calendarDays.forEach((day, i) => {
-    if (i % 7 === 0 && days.length) {
+    if (i % 7 === 0 && days.length) { // Use 7 days per week
       weeks.push(days);
       days = [];
     }
@@ -76,110 +77,162 @@ export function CalendarView({
     }
   });
   
+  // Format currency
+  const formatCurrency = (value: number) => {
+    if (Math.abs(value) >= 1000) {
+      return `${value > 0 ? '+' : ''}₹${Math.abs(Math.round(value / 100) / 10)}k`;
+    }
+    return `${value > 0 ? '+' : ''}₹${Math.abs(value)}`;
+  };
+
+  // Handle day click
+  const handleDayClick = (day: DayData) => {
+    if (!day.isCurrentMonth) return; // Don't open modal for days outside current month
+    
+    // Only show modal for days with data
+    if (day.pnl !== null) {
+      setSelectedDay(day);
+      setIsModalOpen(true);
+    }
+  };
+
+  // Generate mock data for the day details modal
+  const generateDayDetails = (day: DayData) => {
+    // In a real app, you would fetch this data from your API
+    const pnl = day.pnl || 0;
+    const tradeCount = day.tradesCount || 4; // Ensure at least some trades for demo
+    
+    // For demo purposes, we'll generate some mock data
+    const isPositive = pnl >= 0;
+    const wins = isPositive ? Math.max(1, Math.ceil(tradeCount * 0.6)) : Math.max(1, Math.floor(tradeCount * 0.4));
+    const losses = Math.max(1, tradeCount - wins);
+    
+    return {
+      netPnl: pnl,
+      tradeCount: tradeCount,
+      winRate: (wins / (wins + losses)) * 100,
+      profitFactor: Math.max(0.1, isPositive ? 1.5 : 0.5),
+      wins,
+      losses,
+      instruments: [
+        { 
+          name: 'NIFTY', 
+          trades: Math.max(1, Math.ceil(tradeCount * 0.6)), 
+          pnl: Math.round(pnl * 0.7) 
+        },
+        { 
+          name: 'BANKNIFTY', 
+          trades: Math.max(1, Math.floor(tradeCount * 0.4)), 
+          pnl: Math.round(pnl * 0.3) 
+        }
+      ],
+      timeOfDay: {
+        morning: { 
+          trades: Math.max(1, Math.ceil(tradeCount * 0.4)), 
+          pnl: Math.round(pnl * 0.5) 
+        },
+        afternoon: { 
+          trades: Math.max(1, Math.ceil(tradeCount * 0.4)), 
+          pnl: Math.round(pnl * 0.3) 
+        },
+        evening: { 
+          trades: Math.max(1, Math.floor(tradeCount * 0.2)), 
+          pnl: Math.round(pnl * 0.2) 
+        }
+      }
+    };
+  };
+  
   return (
-    <Card className="h-full bg-neutral-800 border-neutral-700">
-      <CardContent className="p-2">
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="text-xs font-medium">Monthly Performance</h2>
-          <div className="flex items-center space-x-1">
-            <button 
-              className="p-0.5 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded"
-              onClick={prevMonth}
-            >
-              <ChevronLeft className="h-3 w-3" />
-            </button>
-            <span className="text-xs">{format(viewDate, 'MMMM yyyy')}</span>
-            <button 
-              className="p-0.5 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded"
-              onClick={nextMonth}
-            >
-              <ChevronRight className="h-3 w-3" />
-            </button>
+    <div className="calendar-wrapper">
+      <div className="card-header">
+        <div className="card-title">Monthly Performance</div>
+        <div className="month-navigation">
+          <button className="month-nav-button" onClick={prevMonth}>
+            &lt;
+          </button>
+          <span className="current-month">{format(viewDate, 'MMMM yyyy')}</span>
+          <button className="month-nav-button" onClick={nextMonth}>
+            &gt;
+          </button>
+        </div>
+      </div>
+      
+      <div className="calendar-grid">
+        {/* Day headers */}
+        {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
+          <div key={index} className="day-header">
+            {day}
           </div>
-        </div>
+        ))}
         
-        {/* Days of week */}
-        <div className="grid grid-cols-7 mb-1">
-          {['M', 'T1', 'W', 'T2', 'F', 'S1', 'S2'].map((day, index) => (
-            <div key={index} className="text-[9px] text-neutral-500 dark:text-neutral-400 text-center">
-              {day.charAt(0)}
-            </div>
-          ))}
-        </div>
-        
-        {/* Calendar grid */}
-        <div className="grid grid-cols-7 gap-1">
-          {weeks.map((week, weekIndex) => 
-            week.map((day, dayIndex) => {
-              const isToday = isSameDay(day.date, new Date());
-              const isWeekendDay = isWeekend(day.date);
+        {/* Calendar days */}
+        {calendarDays.map((day, index) => {
+          const dayNumber = format(day.date, 'd');
+          const isWeekendDay = isWeekend(day.date);
+          const isToday = isSameDay(day.date, new Date());
+          
+          let dayClass = "calendar-day";
+          if (!day.isCurrentMonth) {
+            dayClass += " faded";
+          }
+          
+          // Add positive/negative class based on PnL
+          if (day.pnl !== null) {
+            dayClass += day.pnl > 0 ? " positive" : " negative";
+          }
+          
+          // Add weekend class
+          if (isWeekendDay) {
+            dayClass += " weekend";
+          }
+          
+          // Add today class
+          if (isToday) {
+            dayClass += " today";
+          }
+          
+          // Add cursor pointer for clickable days
+          if (day.isCurrentMonth) {
+            dayClass += " cursor-pointer";
+          }
+          
+          return (
+            <div 
+              key={index} 
+              className={dayClass}
+              onClick={() => handleDayClick(day)}
+            >
+              <div className="day-number">{dayNumber}</div>
               
-              let dayClass = 'h-full rounded p-0.5 aspect-square';
+              {day.isCurrentMonth && isWeekendDay && (
+                <div className="day-label">wknd</div>
+              )}
               
-              if (!day.isCurrentMonth) {
-                dayClass += ' opacity-50 bg-neutral-100 dark:bg-neutral-700';
-              } else if (isWeekendDay) {
-                dayClass += ' bg-neutral-100 dark:bg-neutral-700';
-              } else if (day.pnl !== null) {
-                if (day.pnl > 0) {
-                  dayClass += ' bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30';
-                } else if (day.pnl < 0) {
-                  dayClass += ' bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30';
-                } else {
-                  dayClass += ' bg-neutral-50 dark:bg-neutral-800';
-                }
-              } else {
-                dayClass += ' bg-neutral-50 dark:bg-neutral-800';
-              }
-              
-              if (isToday) {
-                dayClass += ' bg-primary-light/10 dark:bg-primary-dark/20 border-2 border-primary-light dark:border-primary-dark';
-              }
-              
-              return (
-                <div key={`${weekIndex}-${dayIndex}`} className="w-full">
-                  <div className={dayClass}>
-                    <div className="text-[9px] leading-tight">{format(day.date, 'd')}</div>
-                    {day.isCurrentMonth && day.pnl !== null && (
-                      <div className="mt-0.5 text-center">
-                        <div className={`text-[9px] leading-tight font-medium ${day.pnl > 0 ? 'text-positive-light dark:text-positive-dark' : 'text-negative-light dark:text-negative-dark'}`}>
-                          {day.pnl > 0 ? '+' : ''}${Math.abs(day.pnl).toFixed(0)}
-                        </div>
-                        <div className="text-[7px] leading-tight text-neutral-500 dark:text-neutral-400">
-                          {day.tradesCount}t
-                        </div>
-                      </div>
-                    )}
-                    {day.isCurrentMonth && isWeekendDay && (
-                      <div className="mt-0.5 text-center">
-                        <div className="text-[7px] leading-tight text-neutral-500 dark:text-neutral-400">
-                          wknd
-                        </div>
-                      </div>
-                    )}
+              {day.isCurrentMonth && day.pnl !== null && (
+                <>
+                  <div className={`day-pnl ${day.pnl > 0 ? 'positive' : 'negative'}`}>
+                    {formatCurrency(day.pnl)}
                   </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-        
-        {/* Legend */}
-        <div className="flex justify-end mt-2 text-[9px] space-x-2">
-          <div className="flex items-center">
-            <div className="w-2 h-2 rounded bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 mr-0.5"></div>
-            <span className="text-neutral-500 dark:text-neutral-400">Profit</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-2 h-2 rounded bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 mr-0.5"></div>
-            <span className="text-neutral-500 dark:text-neutral-400">Loss</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-2 h-2 rounded bg-neutral-100 dark:bg-neutral-700 mr-0.5"></div>
-            <span className="text-neutral-500 dark:text-neutral-400">No Trading</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+                  {day.tradesCount && (
+                    <div className="day-trades">{day.tradesCount}t</div>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Day Details Popup */}
+      {selectedDay && (
+        <DayDetailsPopup
+          date={selectedDay.date}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          data={generateDayDetails(selectedDay)}
+        />
+      )}
+    </div>
   );
 }

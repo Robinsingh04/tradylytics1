@@ -1,0 +1,128 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/functions' as func;
+
+// Dark theme variables
+.dark-theme {
+  // Background colors
+  --bg-primary: #{func.theme-color('dark', 'bg-primary')};
+  --bg-secondary: #{func.theme-color('dark', 'bg-secondary')};
+  --bg-tertiary: #{func.theme-color('dark', 'bg-tertiary')};
+  
+  // RGB versions for backgrounds (for rgba usage)
+  --bg-primary-rgb: 18, 18, 18;
+  --bg-secondary-rgb: 30, 30, 30;
+  --bg-tertiary-rgb: 42, 42, 42;
+  
+  // Text colors
+  --text-primary: #{func.theme-color('dark', 'text-primary')};
+  --text-secondary: #{func.theme-color('dark', 'text-secondary')};
+  
+  // Border color
+  --border: #{func.theme-color('dark', 'border')};
+  
+  // Adjusted shadow for dark mode
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  
+  // Chart colors
+  --chart-grid: rgba(255, 255, 255, 0.1);
+  --chart-tooltip-bg: rgba(30, 30, 30, 0.9);
+  
+  // Scrollbar styles
+  --scrollbar-track: #{func.theme-color('dark', 'bg-secondary')};
+  --scrollbar-thumb: #{func.theme-color('dark', 'bg-tertiary')};
+  
+  // Form elements
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --input-border: rgba(255, 255, 255, 0.1);
+  --input-color: #{func.theme-color('dark', 'text-primary')};
+  --input-placeholder: rgba(255, 255, 255, 0.5);
+  --input-focus-bg: rgba(255, 255, 255, 0.08);
+  
+  // Selection
+  --selection-bg: #{func.rgba-color('primary', 0.4)};
+  --selection-color: white;
+}
+
+// Dark theme specific styles
+.dark-theme {
+  // Custom scrollbar for webkit browsers
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 6px;
+    border: 3px solid var(--scrollbar-track);
+  }
+  
+  // Card and surface effects
+  .card, 
+  .surface,
+  .dialog,
+  .modal-content {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    
+    &:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+  }
+  
+  // Text selection
+  ::selection {
+    background-color: var(--selection-bg);
+    color: var(--selection-color);
+  }
+  
+  // Form inputs
+  input, select, textarea {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--input-color);
+    
+    &::placeholder {
+      color: var(--input-placeholder);
+    }
+    
+    &:focus {
+      background-color: var(--input-focus-bg);
+      border-color: func.color('primary');
+    }
+  }
+  
+  // Dark theme specific adjustments for charts
+  .recharts-cartesian-grid-horizontal line,
+  .recharts-cartesian-grid-vertical line {
+    stroke: var(--chart-grid);
+  }
+  
+  .recharts-tooltip-wrapper .recharts-default-tooltip {
+    background-color: var(--chart-tooltip-bg) !important;
+    border-color: var(--border) !important;
+  }
+  
+  // Adjust button styles for dark mode
+  .btn {
+    &-outline {
+      border: 1px solid var(--border);
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+    }
+  }
+  
+  // Code blocks
+  pre, code {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+  }
+} 

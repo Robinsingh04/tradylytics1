@@ -13,58 +13,446 @@ $neutral-200: #cbd2d9;
 $neutral-800: #323f4b;
 $neutral-900: #1f2933;
 
-// Metric cards
+// Modern color palette
+$primary-color: #1E88E5;
+$secondary-color: #42A5F5;
+$accent-color: #FF4081;
+$background-color: #F5F5F5;
+$text-color: #212121;
+$light-text-color: #757575;
+
+// Variables for dynamic theme color
+$default-theme-color: #1E88E5;
+
+:root {
+  // Light mode variables (default)
+  --theme-color: #{$default-theme-color};
+  --theme-color-light: lighten(#{$default-theme-color}, 20%);
+  --theme-color-dark: darken(#{$default-theme-color}, 20%);
+  
+  // Convert theme color to RGB for rgba() usage
+  --theme-color-rgb: 30, 136, 229;
+  
+  // Light mode colors
+  --bg-primary: #F5F5F5;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #EEEEEE;
+  --text-primary: #212121;
+  --text-secondary: #616161;
+  
+  // RGB versions for backgrounds
+  --bg-primary-rgb: 245, 245, 245;
+  --bg-secondary-rgb: 255, 255, 255;
+  --bg-tertiary-rgb: 238, 238, 238;
+  
+  // Status colors
+  --success: #4CAF50;
+  --error: #F44336;
+  --warning: #FF9800;
+  --info: #2196F3;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 500;
+  color: $text-color;
+}
+
+// Buttons
+button {
+  background-color: var(--theme-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: var(--theme-color-dark);
+  }
+}
+
+// Links
+a {
+  color: var(--theme-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: var(--theme-color-dark);
+    text-decoration: none;
+    opacity: 0.9;
+  }
+}
+
+// Cards
+.card {
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(var(--theme-color-rgb, 0, 0, 0), 0.1);
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+  
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(var(--theme-color-rgb, 0, 0, 0), 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    h3 {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin: 0;
+    }
+    
+    .card-actions {
+      display: flex;
+      align-items: center;
+      
+      button {
+        background: transparent;
+        border: none;
+        color: var(--theme-color);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+        
+        &:hover {
+          background-color: rgba(var(--theme-color-rgb, 0, 0, 0), 0.05);
+        }
+      }
+    }
+  }
+  
+  .card-body {
+    padding: 20px;
+  }
+}
+
+// Layout
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+// Interactive elements
+.interactive {
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+// Time range toggle
+.time-range-toggle {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0;
+  padding: 4px;
+  border-radius: 6px;
+  background-color: var(--bg-secondary);
+  width: fit-content;
+  margin-left: auto;
+  
+  &-button {
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      color: var(--text-primary);
+    }
+    
+    &.active {
+      background-color: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+  }
+}
+
+// Dashboard layout
+.dashboard {
+  width: 100%;
+  
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 8px 12px;
+  }
+  
+  &-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+}
+
+// Metrics container
+.metrics-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+// Metric card
 .metric-card {
-  transition: background-color 0.3s, box-shadow 0.3s;
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
   position: relative;
   overflow: hidden;
-
-  .metric-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1.2;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   }
-
-  .metric-change {
+  
+  &-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    font-size: 0.75rem;
-    font-weight: 500;
-
+    margin-bottom: 12px;
+  }
+  
+  &-label {
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  
+  &-value {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    letter-spacing: -0.03em;
+  }
+  
+  &-change {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.01em;
+    
     &.positive {
-      color: var(--positive);
+      background-color: rgba(76, 175, 80, 0.15);
+      color: #4CAF50;
     }
-
+    
     &.negative {
-      color: var(--negative);
+      background-color: rgba(244, 67, 54, 0.15);
+      color: #F44336;
     }
   }
+  
+  &-chart {
+    height: 60px;
+    margin-top: 12px;
+    position: relative;
+  }
+}
 
-  .micro-chart {
-    height: 24px;
-    display: flex;
-    align-items: flex-end;
+// Line charts
+.line-chart {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  z-index: 1;
+  overflow: hidden;
+  
+  &-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
     overflow: hidden;
-    margin-top: 8px;
-
-    .bar {
-      flex: 1;
-      margin: 0 1px;
-      border-radius: 2px;
-      transition: background-color 0.3s;
-
-      &.positive {
-        background-color: var(--positive);
-      }
-
-      &.neutral {
-        background-color: var(--neutral);
-      }
-
-      &.negative {
-        background-color: var(--negative);
-      }
+  }
+  
+  &-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+  }
+  
+  &-tooltip {
+    position: absolute;
+    padding: 12px 16px;
+    background-color: rgba(var(--bg-secondary-rgb, 30, 30, 30), 0.95);
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 100;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    min-width: 140px;
+    max-width: 200px;
+    transform-origin: center bottom;
+    animation: tooltip-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    word-wrap: break-word;
+    
+    &-value {
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+    
+    &-time {
+      color: var(--text-secondary);
+      font-size: 12px;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    // Arrow for tooltip placed above the point
+    &.above::after {
+      content: '';
+      position: absolute;
+      bottom: -8px; // Positioned below the tooltip
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid rgba(var(--bg-secondary-rgb, 30, 30, 30), 0.95);
+      z-index: 5;
+    }
+    
+    // Arrow for tooltip placed below the point
+    &.below::after {
+      content: '';
+      position: absolute;
+      top: -8px; // Positioned above the tooltip
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 8px solid rgba(var(--bg-secondary-rgb, 30, 30, 30), 0.95);
+      z-index: 5;
+    }
+  }
+  
+  &-hover-line {
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background-color: var(--theme-color);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  
+  &-point {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--theme-color);
+    transform: translate(-5px, -5px);
+    pointer-events: none;
+    box-shadow: 0 0 0 3px rgba(var(--theme-color-rgb, 30, 136, 229), 0.2);
+  }
+}
+
+// Chart cards section
+.charts-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.chart-card {
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  height: 100%;
+  min-height: 300px;
+  max-width: 100%;
+  
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  &-title {
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  &-content {
+    height: calc(100% - 40px);
+    overflow: hidden;
+    position: relative;
+    width: 100%;
   }
 }
 
@@ -72,20 +460,28 @@ $neutral-900: #1f2933;
 .chart-container {
   position: relative;
   height: 250px;
+  width: 100%;
+  overflow: hidden;
 
   @media (max-width: 768px) {
     height: 200px;
   }
 
+  @media (max-width: 480px) {
+    height: 180px;
+  }
+
   .chart-period-selector {
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
 
     button {
       font-size: 0.75rem;
       padding: 0.25rem 0.5rem;
       border-radius: 4px;
       transition: background-color 0.2s;
+      white-space: nowrap;
 
       &.active {
         background-color: var(--primary);
@@ -95,175 +491,432 @@ $neutral-900: #1f2933;
   }
 }
 
-// Calendar
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-
-  .day-header {
-    text-align: center;
-    font-size: 0.75rem;
-    color: var(--muted-foreground);
-    padding: 4px 0;
-  }
-
-  .calendar-day {
-    aspect-ratio: 1;
-    position: relative;
+// Calendar styling
+.calendar-wrapper {
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  margin-bottom: 16px;
+  height: auto;
+  min-height: 380px;
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
     
-    .day-content {
-      height: 100%;
-      padding: 4px;
-      border-radius: 4px;
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .month-navigation {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      .month-nav-button {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 14px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        
+        &:hover {
+          background-color: var(--bg-tertiary);
+        }
+      }
+      
+      .current-month {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+    }
+  }
+  
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr) !important;
+    gap: 6px;
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    overflow: hidden;
+    padding: 8px;
+    
+    .day-header {
+      text-align: center;
+      color: #AAAAAA;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 0;
+      background-color: transparent;
+      text-transform: uppercase;
+    }
+    
+    .calendar-day {
+      position: relative;
       display: flex;
       flex-direction: column;
-      transition: background-color 0.3s;
-
-      &.current-day {
-        border: 2px solid var(--primary);
-        background-color: rgba(var(--primary-rgb), 0.1);
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-size: 13px;
+      background-color: #121212;
+      border-radius: 50%;
+      aspect-ratio: 1;
+      width: 90%;
+      margin: 0 auto;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        border: 2px solid var(--theme-color);
+        box-shadow: 0 0 0 2px rgba(var(--theme-color-rgb, 0, 0, 0), 0.2);
       }
-
+      
+      &.selected {
+        box-shadow: 0 0 0 3px var(--theme-color);
+      }
+      
+      &.faded {
+        opacity: 0.7;
+      }
+      
+      &.positive {
+        background-color: rgba(76, 175, 80, 0.8);
+        color: white;
+      }
+      
+      &.negative {
+        background-color: rgba(244, 67, 54, 0.8);
+        color: white;
+      }
+      
       &.weekend {
-        background-color: var(--muted);
+        background-color: rgba(0, 0, 0, 0.3);
+        color: rgba(255, 255, 255, 0.7);
       }
-
-      &.profit {
-        background-color: rgba(var(--positive-rgb), 0.1);
-        border: 1px solid rgba(var(--positive-rgb), 0.3);
+      
+      &.today {
+        border: 2px solid var(--theme-color);
+        
+        &::after {
+          content: 'Today';
+          position: absolute;
+          top: -20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background-color: var(--theme-color);
+          color: white;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-size: 10px;
+          font-weight: 500;
+          white-space: nowrap;
+        }
       }
-
-      &.loss {
-        background-color: rgba(var(--negative-rgb), 0.1);
-        border: 1px solid rgba(var(--negative-rgb), 0.3);
-      }
-
-      &.disabled {
-        opacity: 0.5;
-      }
-
+      
       .day-number {
-        font-size: 0.75rem;
-      }
-
-      .day-pnl {
-        font-size: 0.75rem;
+        font-size: 14px;
         font-weight: 500;
-        margin-top: 4px;
-        text-align: center;
-
+        margin-bottom: 2px;
+        opacity: 0.9;
+      }
+      
+      .day-label {
+        font-size: 10px;
+        color: #AAAAAA;
+      }
+      
+      .day-pnl {
+        font-size: 13px;
+        font-weight: 500;
+        margin-top: 2px;
+        
         &.positive {
-          color: var(--positive);
+          color: white;
         }
-
+        
         &.negative {
-          color: var(--negative);
+          color: white;
         }
       }
-
+      
       .day-trades {
-        font-size: 0.625rem;
-        color: var(--muted-foreground);
-        text-align: center;
+        font-size: 10px;
+        color: white;
+        margin-top: 1px;
       }
     }
   }
 }
 
+// Open Trades styling
+.open-trades {
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 16px;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+  
+  .open-trades-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .open-trades-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  
+  .trade-item {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: rgba(0, 0, 0, 0.15);
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: rgba(var(--theme-color-rgb, 0, 0, 0), 0.1);
+    }
+    
+    .trade-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .trade-symbol {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    
+    .trade-type {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+      
+      &.buy {
+        background-color: rgba(76, 175, 80, 0.15);
+        color: #4CAF50;
+      }
+      
+      &.sell {
+        background-color: rgba(244, 67, 54, 0.15);
+        color: #F44336;
+      }
+    }
+    
+    .trade-pnl {
+      font-weight: 600;
+      
+      &.positive {
+        color: #4CAF50;
+      }
+      
+      &.negative {
+        color: #F44336;
+      }
+    }
+    
+    .trade-details {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .trade-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+      
+      button {
+        background: none;
+        border: none;
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        color: var(--text-secondary);
+        
+        &:hover {
+          background-color: var(--bg-tertiary);
+          color: var(--text-primary);
+        }
+      }
+    }
+  }
+}
+
+// Style the trade PnL amounts
+.text-green-400 {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.text-red-400 {
+  color: #f44336;
+  font-weight: 600;
+}
+
+// Card headers
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+}
+
 // Open trades
-.trade-item {
-  position: relative;
-  border-radius: 0 0.25rem 0.25rem 0;
-  padding: 0.75rem;
-  margin-bottom: 0.75rem;
-  transition: background-color 0.3s;
-
+.trade-row {
+  padding: 12px 12px 12px 0;
+  display: flex;
+  justify-content: space-between;
+  border-left: 3px solid;
+  margin-bottom: 10px;
+  background-color: #1a1a1a;
+  border-radius: 0 4px 4px 0;
+  
   &.profit {
-    border-left: 4px solid var(--positive);
-    background-color: rgba(var(--positive-rgb), 0.05);
+    border-left-color: #4caf50;
   }
-
+  
   &.loss {
-    border-left: 4px solid var(--negative);
-    background-color: rgba(var(--negative-rgb), 0.05);
+    border-left-color: #f44336;
   }
-
-  .trade-symbol {
-    font-weight: 500;
+  
+  .trade-details {
+    margin-left: 12px;
+  }
+  
+  .symbol-direction {
     display: flex;
     align-items: center;
+    margin-bottom: 4px;
   }
-
-  .trade-direction {
-    display: inline-block;
-    font-size: 0.75rem;
-    padding: 0 0.5rem;
-    border-radius: 0.25rem;
-    margin-left: 0.5rem;
-
-    &.long {
-      background-color: rgba(var(--positive-rgb), 0.1);
-      color: var(--positive);
-    }
-
-    &.short {
-      background-color: rgba(var(--negative-rgb), 0.1);
-      color: var(--negative);
-    }
-  }
-
-  .trade-date {
-    font-size: 0.75rem;
-    color: var(--muted-foreground);
-    margin-top: 0.25rem;
-  }
-
-  .trade-pnl {
-    font-size: 0.875rem;
+  
+  .symbol {
     font-weight: 500;
-    text-align: right;
-
+    font-size: 15px;
+    margin-right: 8px;
+  }
+  
+  .direction {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    
+    &.BUY {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: #66bb6a;
+    }
+    
+    &.SELL {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: #ef5350;
+    }
+  }
+  
+  .quantity-date {
+    display: flex;
+    font-size: 11px;
+    color: #aaa;
+    margin-bottom: 2px;
+    
+    .quantity {
+      margin-right: 8px;
+    }
+  }
+  
+  .prices {
+    font-size: 11px;
+    color: #aaa;
+    
+    .separator {
+      margin: 0 6px;
+    }
+  }
+  
+  .trade-pnl-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  
+  .pnl {
+    font-size: 14px;
+    font-weight: 500;
+    
     &.positive {
-      color: var(--positive);
+      color: #4caf50;
     }
-
+    
     &.negative {
-      color: var(--negative);
+      color: #f44336;
+    }
+    
+    .percent {
+      font-size: 11px;
+      opacity: 0.9;
+      margin-left: 2px;
     }
   }
-
-  .trade-prices {
-    font-size: 0.75rem;
-    color: var(--muted-foreground);
+  
+  .actions {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-top: 0.25rem;
-  }
-
-  .trade-status {
-    display: flex;
-    align-items: center;
-
-    .status-indicator {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      margin-right: 0.25rem;
-
-      &.profit {
-        background-color: var(--positive);
+    gap: 8px;
+    margin-top: 4px;
+    
+    button {
+      font-size: 11px;
+      padding: 2px 8px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background: none;
+      
+      &.edit-btn {
+        color: #5c6bc0;
+        
+        &:hover {
+          background-color: rgba(92, 107, 192, 0.1);
+        }
       }
-
-      &.loss {
-        background-color: var(--negative);
+      
+      &.close-btn {
+        color: #ef5350;
+        
+        &:hover {
+          background-color: rgba(239, 83, 80, 0.1);
+        }
       }
-    }
-
-    .status-text {
-      font-size: 0.75rem;
-      color: var(--muted-foreground);
     }
   }
 }
@@ -292,20 +945,305 @@ $neutral-900: #1f2933;
     background: rgba(255, 255, 255, 0.2);
   }
 
-  // Dark mode specific variables
-  --positive: #{$positive-dark};
-  --negative: #{$negative-dark};
-  --primary: #{$primary-dark};
-  --neutral: #{$neutral-800};
+  // Dark mode colors
+  --bg-primary: #121212;
+  --bg-secondary: #1E1E1E;
+  --bg-tertiary: #2A2A2A;
+  --text-primary: #FFFFFF;
+  --text-secondary: #B2B2B2;
+  
+  // RGB versions for backgrounds
+  --bg-primary-rgb: 18, 18, 18;
+  --bg-secondary-rgb: 30, 30, 30;
+  --bg-tertiary-rgb: 42, 42, 42;
+  
+  // Status colors (slightly adjusted for dark mode)
+  --success: #66BB6A;
+  --error: #E57373;
+  --warning: #FFA726;
+  --info: #42A5F5;
+  
+  // The theme color variables remain the same
+  // They're inherited from :root and should behave the same in both modes
 }
 
-:root {
-  // Light mode variables
-  --positive: #{$positive-light};
-  --negative: #{$negative-light};
-  --primary: #{$primary-light};
-  --neutral: #{$neutral-100};
-  --positive-rgb: 76, 175, 80;
-  --negative-rgb: 244, 67, 54;
-  --primary-rgb: 63, 81, 181;
+.light {
+  // Light mode colors (explicitly defined for clarity)
+  --bg-primary: #F5F5F5;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #EEEEEE;
+  --text-primary: #212121;
+  --text-secondary: #616161;
+  
+  // RGB versions for backgrounds
+  --bg-primary-rgb: 245, 245, 245;
+  --bg-secondary-rgb: 255, 255, 255;
+  --bg-tertiary-rgb: 238, 238, 238;
+}
+
+// Animations
+@keyframes tooltip-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.95) translateX(-50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) translateX(-50%);
+  }
+}
+
+// Bottom section with calendar and open trades
+.bottom-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+  
+  &-calendar, &-trades {
+    min-height: 300px;
+  }
+}
+
+// Update buttons to use theme color
+.btn {
+  background-color: var(--theme-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: var(--theme-color-dark);
+  }
+  
+  &.btn-secondary {
+    background-color: transparent;
+    color: var(--theme-color);
+    border: 1px solid var(--theme-color);
+    
+    &:hover {
+      background-color: rgba(var(--theme-color-rgb, 0, 0, 0), 0.05);
+    }
+  }
+}
+
+// Update tabs to use theme color
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(var(--theme-color-rgb, 0, 0, 0), 0.1);
+  
+  .tab {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-secondary);
+    position: relative;
+    
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: transparent;
+      transition: background-color 0.2s ease;
+    }
+    
+    &.active {
+      color: var(--theme-color);
+      
+      &:after {
+        background-color: var(--theme-color);
+      }
+    }
+    
+    &:hover:not(.active) {
+      color: var(--text-primary);
+    }
+  }
+}
+
+// Update form elements to use theme color
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+  border: 1px solid rgba(var(--theme-color-rgb, 0, 0, 0), 0.1);
+  border-radius: 6px;
+  padding: 10px 12px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: border-color 0.2s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: var(--theme-color);
+    box-shadow: 0 0 0 2px rgba(var(--theme-color-rgb, 0, 0, 0), 0.1);
+  }
+}
+
+// Update links to use theme color
+a {
+  color: var(--theme-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: var(--theme-color-dark);
+    text-decoration: none;
+    opacity: 0.9;
+  }
+}
+
+// Update day details popup to use theme color
+.day-details-popup {
+  border-radius: 16px;
+  background-color: var(--bg-secondary);
+  
+  .card-header {
+    background-color: var(--theme-color);
+    color: white;
+  }
+  
+  .positive-value {
+    color: var(--success);
+  }
+  
+  .negative-value {
+    color: var(--error);
+  }
+  
+  .progress-bar {
+    background-color: rgba(var(--theme-color-rgb, 0, 0, 0), 0.1);
+    
+    .progress {
+      background-color: var(--theme-color);
+    }
+  }
+}
+
+// Update calendar to use theme color
+.calendar {
+  .today {
+    background-color: var(--theme-color) !important;
+    color: white !important;
+  }
+  
+  .calendar-day {
+    &:hover {
+      background-color: rgba(var(--theme-color-rgb, 0, 0, 0), 0.05);
+    }
+    
+    &.selected {
+      border-color: var(--theme-color);
+    }
+  }
+}
+
+// Interactive elements and hover states
+button, 
+.button,
+.dropdown-item, 
+.user-menu-item,
+.tab,
+a,
+.card {
+  &:hover, &:focus, &.active, &.selected {
+    transition: all 0.2s ease;
+  }
+  
+  &:hover {
+    color: var(--theme-color);
+  }
+  
+  &.active, &.selected {
+    color: var(--theme-color);
+    border-color: var(--theme-color);
+  }
+}
+
+// Update sidebar items to use theme color
+.sidebar-item {
+  &:hover, &.active {
+    background-color: rgba(var(--theme-color-rgb, 0, 0, 0), 0.1);
+    
+    .icon {
+      color: var(--theme-color);
+    }
+    
+    .label {
+      color: var(--theme-color);
+    }
+  }
+}
+
+// Update metric cards to use theme color on hover
+.metric-card {
+  &:hover {
+    border-color: var(--theme-color);
+  }
+}
+
+// Update user-avatar to use theme color
+.user-avatar {
+  background-color: var(--theme-color);
+  border: 2px solid transparent;
+  
+  &:hover {
+    border-color: var(--theme-color-light);
+    background-color: var(--theme-color-dark);
+  }
+}
+
+// Update dropdown-menu items
+.dropdown-item, .notification-item, .user-menu-item {
+  &:hover {
+    background-color: rgba(var(--theme-color-rgb, 0, 0, 0), 0.1);
+  }
+}
+
+// Time range toggle
+.time-range-toggle-button {
+  &.active {
+    background-color: var(--theme-color);
+    color: white;
+  }
+  
+  &:hover:not(.active) {
+    color: var(--theme-color);
+  }
+}
+
+// Chart period selector
+.chart-period-selector {
+  button {
+    &.active {
+      background-color: var(--theme-color);
+      color: white;
+    }
+    
+    &:hover:not(.active) {
+      color: var(--theme-color);
+      background-color: rgba(var(--theme-color-rgb, 0, 0, 0), 0.1);
+    }
+  }
+}
+
+// Open trades hover effect
+.trade-row, .trade-item {
+  &:hover {
+    background-color: rgba(var(--theme-color-rgb, 0, 0, 0), 0.1);
+  }
 }

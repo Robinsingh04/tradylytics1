@@ -1,0 +1,144 @@
+// Import variables
+@use 'variables' as vars;
+
+// Color functions
+@function color($color-name, $variant: 'base') {
+  @if map-has-key(vars.$colors, $color-name) {
+    @if type-of(map-get(vars.$colors, $color-name)) == 'map' {
+      @if map-has-key(map-get(vars.$colors, $color-name), $variant) {
+        @return map-get(map-get(vars.$colors, $color-name), $variant);
+      } @else {
+        @error "Color variant '#{$variant}' not found in color '#{$color-name}'";
+      }
+    } @else if $variant == 'base' {
+      @return map-get(vars.$colors, $color-name);
+    } @else {
+      @error "Color '#{$color-name}' doesn't have variants";
+    }
+  } @else {
+    @error "Color '#{$color-name}' not found in $colors map";
+  }
+}
+
+// Get RGB values for a color (for use in rgba())
+@function color-rgb($color-name) {
+  @if map-has-key(vars.$colors, $color-name) {
+    @if map-has-key(map-get(vars.$colors, $color-name), 'rgb') {
+      @return map-get(map-get(vars.$colors, $color-name), 'rgb');
+    } @else {
+      @error "RGB values not defined for color '#{$color-name}'";
+    }
+  } @else {
+    @error "Color '#{$color-name}' not found in $colors map";
+  }
+}
+
+// Create rgba color with opacity
+@function rgba-color($color-name, $opacity) {
+  $rgb: color-rgb($color-name);
+  @return rgba(nth($rgb, 1), nth($rgb, 2), nth($rgb, 3), $opacity);
+}
+
+// Theme color function
+@function theme-color($theme, $color-name) {
+  @if map-has-key(vars.$themes, $theme) {
+    $theme-map: map-get(vars.$themes, $theme);
+    
+    @if map-has-key($theme-map, $color-name) {
+      @return map-get($theme-map, $color-name);
+    } @else {
+      @error "Color '#{$color-name}' not found in theme '#{$theme}'";
+    }
+  } @else {
+    @error "Theme '#{$theme}' not found";
+  }
+}
+
+// Spacing functions
+@function spacing($key) {
+  @if map-has-key(vars.$spacing, $key) {
+    @return map-get(vars.$spacing, $key);
+  } @else {
+    @error "Spacing '#{$key}' not found in $spacing map";
+  }
+}
+
+// Font size functions
+@function font-size($key) {
+  @if map-has-key(vars.$font-sizes, $key) {
+    @return map-get(vars.$font-sizes, $key);
+  } @else {
+    @error "Font size '#{$key}' not found in $font-sizes map";
+  }
+}
+
+// Breakpoint function
+@function breakpoint($key) {
+  @if map-has-key(vars.$breakpoints, $key) {
+    @return map-get(vars.$breakpoints, $key);
+  } @else {
+    @error "Breakpoint '#{$key}' not found in $breakpoints map";
+  }
+}
+
+// Z-index function
+@function z-index($key) {
+  @if map-has-key(vars.$z-indices, $key) {
+    @return map-get(vars.$z-indices, $key);
+  } @else {
+    @error "Z-index '#{$key}' not found in $z-indices map";
+  }
+}
+
+// Border radius function
+@function border-radius($key) {
+  @if map-has-key(vars.$border-radius, $key) {
+    @return map-get(vars.$border-radius, $key);
+  } @else {
+    @error "Border radius '#{$key}' not found in $border-radius map";
+  }
+}
+
+// Shadow function
+@function shadow($key) {
+  @if map-has-key(vars.$shadows, $key) {
+    @return map-get(vars.$shadows, $key);
+  } @else {
+    @error "Shadow '#{$key}' not found in $shadows map";
+  }
+}
+
+// Font weight function
+@function font-weight($key) {
+  @if map-has-key(vars.$font-weights, $key) {
+    @return map-get(vars.$font-weights, $key);
+  } @else {
+    @error "Font weight '#{$key}' not found in $font-weights map";
+  }
+}
+
+// Transition duration function
+@function transition-duration($key) {
+  @if map-has-key(vars.$transitions, $key) {
+    @return map-get(vars.$transitions, $key);
+  } @else {
+    @error "Transition duration '#{$key}' not found in $transitions map";
+  }
+}
+
+// Strip unit from value
+@function strip-unit($value) {
+  @return $value / ($value * 0 + 1);
+}
+
+// Convert px to rem
+@function rem($px) {
+  $value: strip-unit($px);
+  @return #{$value / 16}rem;
+}
+
+// Convert px to em
+@function em($px, $base: 16) {
+  $value: strip-unit($px);
+  @return #{$value / $base}em;
+} 

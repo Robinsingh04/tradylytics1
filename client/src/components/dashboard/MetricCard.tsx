@@ -1,341 +1,71 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { 
-  Card as MuiCard, 
-  CardContent as MuiCardContent,
-  Box,
-  Typography,
-  useTheme
-} from '@mui/material';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { styled } from '@mui/material/styles';
-import { useSyncHover } from '../../hooks/use-sync-hover';
-
-// Import Chart.js utilities
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Filler,
-  Legend,
-  ChartEvent,
-  ActiveElement,
-  TooltipItem,
-  ChartTypeRegistry
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
-
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Filler,
-  Legend
-);
-
-// Define data point interface
-export interface ChartDataPoint {
-  value: number;
-  label: string;
-}
+import React from 'react';
+import { LineChart, DataPoint } from './LineChart';
+import { useSyncHover } from '../../hooks/useSyncHover';
 
 interface MetricCardProps {
-  title: string;
+  label: string;
   value: string | number;
-  change: string | number;
-  isPositive: boolean;
-  isMonetary?: boolean;
-  chartData?: number[];
+  change: number;
   color?: string;
-  prefix?: string;
-  suffix?: string;
+  chartData?: DataPoint[];
+  syncId?: string;
 }
 
-const StyledCard = styled(MuiCard)(({ theme }) => ({
-  height: '100%',
-  backgroundColor: theme.palette.mode === 'dark' ? '#111' : '#ffffff',
-  boxShadow: 'none',
-  border: `1px solid ${theme.palette.mode === 'dark' ? '#1d1d1d' : '#e0e0e0'}`,
-  borderRadius: '8px',
-  overflow: 'hidden',
-}));
-
-const StyledCardContent = styled(MuiCardContent)({
-  padding: 14,
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  '&:last-child': {
-    paddingBottom: 14,
-  },
-});
-
-const IconWrapper = styled(Box)(({ theme }) => ({
-  width: 24,
-  height: 24,
-  borderRadius: '50%',
-  backgroundColor: theme.palette.mode === 'dark' ? '#1d1d1d' : '#f0f0f0',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginRight: 8,
-}));
-
-export function MetricCard({ 
-  title, 
+export const MetricCard = ({ 
+  label, 
   value, 
   change, 
-  isPositive, 
-  isMonetary = false,
-  chartData = [30, 45, 65, 40, 70, 90, 85, 95, 80, 90, 100, 90],
-  color,
-  prefix = '',
-  suffix = '',
-}: MetricCardProps) {
-  const theme = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const chartRef = useRef<ChartJS | null>(null);
-  const { activeIndex, setActiveIndex } = useSyncHover();
-  
-  // Handle hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  color = '#4CAF50', 
+  chartData = [],
+  syncId = 'dashboard-metrics'
+}: MetricCardProps) => {
+  const isPositive = change >= 0;
+  const { hoveredIndex, setHoveredIndex } = useSyncHover(syncId);
 
-  // Handle sync hover effect
-  useEffect(() => {
-    const chart = chartRef.current;
-    
-    if (chart && activeIndex !== null) {
-      // Get current active elements
-      const activeElements = chart.getActiveElements();
-      
-      // Only update if we don't already have the right point active
-      if (activeElements.length === 0 || activeElements[0].index !== activeIndex) {
-        try {
-          // Set active elements (the visible point)
-          chart.setActiveElements([{
-            datasetIndex: 0,
-            index: activeIndex
-          }]);
-          
-          // Force the tooltip to update
-          if (chart.tooltip) {
-            chart.tooltip.setActiveElements([{
-              datasetIndex: 0,
-              index: activeIndex
-            }], { x: 0, y: 0 });
-          }
-          
-          // Update the chart
-          chart.update('none'); // Use 'none' to prevent animation
-        } catch (error) {
-          console.log('Chart hover sync error:', error);
-        }
-      }
-    } else if (chart && activeIndex === null) {
-      // Clear active elements when no hover
-      chart.setActiveElements([]);
-      chart.update('none');
-    }
-  }, [activeIndex]);
-
-  const handleHover = useCallback(
-    (event: ChartEvent, elements: ActiveElement[]) => {
-      // Only set active index if we have elements and the mouse is actually over the chart
-      if (elements && elements.length > 0 && event.native) {
-        setActiveIndex(elements[0].index);
-      }
-    },
-    [setActiveIndex]
-  );
-  
-  // Handle mouse leave for the entire card
-  const handleMouseLeave = useCallback(() => {
-    setActiveIndex(null);
-  }, [setActiveIndex]);
-
-  if (!mounted) return null;
-
-  const formattedValue = isMonetary 
-    ? typeof value === 'string' ? value : `₹${value.toLocaleString()}`
-    : `${prefix}${value}${suffix}`;
-
-  const formattedChange = typeof change === 'string' 
-    ? change 
-    : `${isPositive ? '+' : ''}${change}%`;
-
-  const positiveColor = '#00c853';
-  const negativeColor = '#ff5252';
-  const chartColor = color || (isPositive ? positiveColor : negativeColor);
-  const changeColor = isPositive ? positiveColor : negativeColor;
-
-  // Generate chart labels (12 months)
-  const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  
-  // Configure chart options
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: {
-      mode: 'index' as const,
-      intersect: false,
-    },
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        enabled: true,
-        backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)',
-        titleColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
-        bodyColor: theme.palette.mode === 'dark' ? '#ccc' : '#333',
-        borderColor: chartColor,
-        borderWidth: 1,
-        padding: 6,
-        displayColors: false,
-        titleFont: {
-          size: 10,
-        },
-        bodyFont: {
-          size: 9,
-        },
-        callbacks: {
-          title: (context: any) => {
-            return context[0].label;
-          },
-          label: (context: any) => {
-            return `Value: ${context.raw.toFixed(1)}`;
-          },
-        },
-      },
-      hover: {
-        mode: 'index' as const,
-        intersect: false,
-      },
-    },
-    scales: {
-      x: {
-        display: false,
-      },
-      y: {
-        display: false,
-        min: Math.min(...chartData) * 0.9,
-        max: Math.max(...chartData) * 1.05,
-        beginAtZero: false,
-      },
-    },
-    elements: {
-      point: {
-        radius: 0,
-        hoverRadius: 5,
-        hoverBorderWidth: 2,
-        borderWidth: 2,
-      },
-      line: {
-        tension: 0.4,
-        borderWidth: 1.5,
-        fill: false,
-      },
-    },
-    onHover: handleHover,
+  const handleHover = (index: number | null) => {
+    setHoveredIndex(index);
   };
 
-  // Create gradient
-  const createGradientFill = (ctx: any, color: string) => {
-    if (!ctx) return 'transparent';
-    
-    const gradient = ctx.createLinearGradient(0, 0, 0, 100);
-    gradient.addColorStop(0, `${color}33`); // 20% opacity
-    gradient.addColorStop(1, `${color}00`); // 0% opacity
-    return gradient;
-  };
+  // Format the change value to 2 decimal places
+  const formattedChange = Math.abs(change).toFixed(2);
 
-  // Prepare chart data
-  const data = {
-    labels,
-    datasets: [
-      {
-        data: chartData,
-        borderColor: chartColor,
-        backgroundColor: (context: any) => {
-          const chart = context.chart;
-          const { ctx } = chart;
-          return createGradientFill(ctx, chartColor);
-        },
-        borderWidth: 1.5,
-        fill: true,
-        pointBackgroundColor: chartColor,
-        pointBorderColor: chartColor,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: theme.palette.mode === 'dark' ? '#fff' : chartColor,
-        pointHoverBorderColor: theme.palette.mode === 'dark' ? chartColor : '#fff',
-        tension: 0.4,
-      },
-    ],
-  };
+  // Determine prefix and suffix for values based on the current value format
+  let valuePrefix = '';
+  let valueSuffix = '';
+  
+  if (typeof value === 'string') {
+    if (value.startsWith('₹')) valuePrefix = '₹';
+    if (value.endsWith('%')) valueSuffix = '%';
+  }
 
   return (
-    <StyledCard onMouseLeave={handleMouseLeave}>
-      <StyledCardContent>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-          <IconWrapper sx={{ bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}>
-            <Typography fontSize="0.9rem" fontWeight={500} sx={{ color: chartColor }}>
-              {title.charAt(0)}
-            </Typography>
-          </IconWrapper>
-          <Typography
-            fontSize="0.7rem"
-            fontWeight={500}
-            color={theme.palette.mode === 'dark' ? 'text.secondary' : 'text.primary'}
-          >
-            {title}
-          </Typography>
-        </Box>
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-          <Typography
-            variant="h6"
-            fontWeight={600}
-            fontSize="1.1rem"
-            sx={{ color: theme.palette.mode === 'dark' ? '#fff' : '#000' }}
-          >
-            {formattedValue}
-          </Typography>
-          <Typography
-            fontSize="0.7rem"
-            fontWeight={600}
-            sx={{ color: changeColor, display: 'flex', alignItems: 'center' }}
-          >
-            {isPositive ? (
-              <ArrowUpwardIcon sx={{ fontSize: 12, mr: 0.3 }} />
-            ) : (
-              <ArrowDownwardIcon sx={{ fontSize: 12, mr: 0.3 }} />
-            )}
-            {formattedChange}
-          </Typography>
-        </Box>
-        
-        <Box sx={{ flex: 1, minHeight: 50 }}>
-          <Line 
-            data={data} 
-            options={options}
-            style={{ height: '100%' }}
-            ref={(ref: any) => {
-              // Access the underlying Chart.js instance
-              if (ref) {
-                chartRef.current = ref.current;
-              }
-            }}
+    <div className="metric-card">
+      <div className="metric-card-header">
+        <span className="metric-card-label">{label}</span>
+        <span className={`metric-card-change ${isPositive ? 'positive' : 'negative'}`}>
+          {isPositive ? '+' : '-'}{formattedChange}%
+        </span>
+      </div>
+      <div 
+        className="metric-card-value" 
+        style={{ color }}
+      >
+        {value}
+      </div>
+      
+      {chartData.length > 0 && (
+        <div className="metric-card-chart">
+          <LineChart 
+            data={chartData}
+            color={color}
+            onHover={handleHover}
+            hoveredIndex={hoveredIndex}
+            syncId={syncId}
+            valuePrefix={valuePrefix}
+            valueSuffix={valueSuffix}
           />
-        </Box>
-      </StyledCardContent>
-    </StyledCard>
+        </div>
+      )}
+    </div>
   );
-}
+};

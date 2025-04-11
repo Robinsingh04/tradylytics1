@@ -1,0 +1,56 @@
+/*
+ * TradyLytics Financial Tracker
+ * Main SCSS file
+ */
+
+// Abstracts (variables, functions, mixins)
+@use 'abstracts/variables';
+@use 'abstracts/functions';
+@use 'abstracts/mixins';
+
+// Vendors (third-party libraries)
+// @use 'vendors/normalize';
+// @use 'vendors/recharts-overrides';
+
+// Base styles
+@use 'base/reset';
+@use 'base/typography';
+
+// Layout
+@use 'layout/layout';
+@use 'layout/navbar';
+@use 'layout/sidebar';
+
+// Components
+@use 'components/buttons';
+@use 'components/metric-card';
+@use 'components/dashboard';
+// Add other components as needed
+
+// Pages
+@use 'dashboard';
+
+// Themes
+@use 'themes/light';
+@use 'themes/dark';
+
+// Utilities (should come last to override other styles if needed)
+@use 'utilities/spacing';
+@use 'utilities/flex';
+
+// Apply light theme by default
+:root {
+  @extend .light-theme;
+}
+
+// Apply theme based on data-theme attribute
+html[data-theme="dark"] {
+  @extend .dark-theme;
+}
+
+// Add dark theme based on user's system preference
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    @extend .dark-theme;
+  }
+} 

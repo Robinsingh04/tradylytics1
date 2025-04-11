@@ -17,26 +17,23 @@ import { OpenTrades } from '@/components/dashboard/OpenTrades';
 import { Navbar } from '@/components/dashboard/Navbar';
 import { TimeframeSelector, Timeframe } from '@/components/dashboard/TimeframeSelector';
 import { SyncHoverProvider } from '@/hooks/use-sync-hover';
-import '@/styles/dashboard.scss';
+import '@/styles/main.scss';
 import { format, parseISO } from 'date-fns';
 import { Metrics, Trade, DailyPerformance } from '@shared/schema';
+import { DataPoint } from '@/types/chart';
 
-const DashboardContainer = styled(Box)(({ theme }) => ({
+// Theme-aware styled components using SASS classes instead of custom styling
+const DashboardContainer = styled(Box)(() => ({
   minHeight: '100vh',
   display: 'flex',
   flexDirection: 'column',
-  backgroundColor: theme.palette.mode === 'dark' ? '#121212' : '#f5f5f5',
 }));
 
-const MainContent = styled(Container)(({ theme }) => ({
+const MainContent = styled(Container)(() => ({
   flexGrow: 1,
   paddingTop: '76px', // 60px navbar + 16px padding
   paddingBottom: '16px',
   maxWidth: '1280px',
-}));
-
-const LoadingSkeleton = styled(Skeleton)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#333333' : '#e0e0e0',
 }));
 
 export default function Dashboard() {
@@ -83,6 +80,14 @@ export default function Dashboard() {
     pnl: parseFloat(day.pnl.toString()),
     tradesCount: day.tradesCount
   })) || [];
+  
+  // Transform chart data format to match DataPoint interface
+  const generateChartData = (values: number[]): DataPoint[] => {
+    return values.map((value, index) => ({
+      x: index,
+      y: value
+    }));
+  };
 
   // Synthetic chart data for different timeframes
   const getChartDataByTimeframe = (seed: number = 0, isPositive: boolean = true) => {
@@ -94,14 +99,19 @@ export default function Dashboard() {
     // For negative trend, reverse and scale the data
     if (!isPositive) {
       return {
-        day: dayData.map(v => 100 - (v - 75) / 2),
-        week: weekData.map(v => 100 - (v - 75) / 2),
-        month: monthData.map(v => 100 - (v - 75) / 2),
-        year: yearData.map(v => 100 - (v - 75) / 2)
+        day: generateChartData(dayData.map(v => 100 - (v - 75) / 2)),
+        week: generateChartData(weekData.map(v => 100 - (v - 75) / 2)),
+        month: generateChartData(monthData.map(v => 100 - (v - 75) / 2)),
+        year: generateChartData(yearData.map(v => 100 - (v - 75) / 2))
       };
     }
     
-    return { day: dayData, week: weekData, month: monthData, year: yearData };
+    return { 
+      day: generateChartData(dayData), 
+      week: generateChartData(weekData), 
+      month: generateChartData(monthData), 
+      year: generateChartData(yearData) 
+    };
   };
 
   // Generate chart data for each metric
@@ -111,33 +121,45 @@ export default function Dashboard() {
   const avgWinChartData = getChartDataByTimeframe(4, true);
   const avgLossChartData = getChartDataByTimeframe(5, false);
   
+  // Transform data for chart components
+  const formattedEquityData = equityData?.map(item => ({
+    date: item.date,
+    value: item.equity,
+  }));
+  
+  const formattedDrawdownData = drawdownData?.map(item => ({
+    date: item.date,
+    value: item.drawdown,
+  }));
+  
   return (
-    <DashboardContainer>
+    <DashboardContainer className="dashboard">
       <Navbar />
 
       <MainContent>
         {/* Timeframe Selector */}
-        <TimeframeSelector 
-          value={timeframe} 
-          onChange={setTimeframe} 
-        />
+        <div className="d-flex justify-content-end mb-3">
+          <TimeframeSelector 
+            value={timeframe} 
+            onChange={setTimeframe} 
+          />
+        </div>
         
         {/* Metric Cards */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: {xs: '1fr', sm: '1fr 1fr', md: 'repeat(5, 1fr)'}, gap: 2, mb: 2 }}>
+        <div className="metrics-grid mb-4">
           {isLoadingMetrics ? (
             // Loading skeleton
             Array(5).fill(0).map((_, i) => (
               <Paper 
                 key={i}
-                sx={{ 
-                  p: 1, 
-                  bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-                  height: '100%'
-                }}
+                className="metric-card metric-card--loading"
               >
-                <LoadingSkeleton variant="text" width="40%" height={10} />
-                <LoadingSkeleton variant="text" width="60%" height={24} />
-                <LoadingSkeleton variant="text" width="100%" height={14} />
+                <div className="metric-card__header">
+                  <div className="metric-card__title">Loading...</div>
+                </div>
+                <div className="metric-card__value">0</div>
+                <div className="metric-card__change"></div>
+                <div className="metric-card__chart"></div>
               </Paper>
             ))
           ) : metricsData ? (
@@ -187,100 +209,65 @@ export default function Dashboard() {
               />
             </SyncHoverProvider>
           ) : (
-            <Box sx={{ gridColumn: 'span 5', textAlign: 'center', py: 1.5, fontSize: '0.75rem' }}>
+            <div className="text-center py-4 text-sm">
               Failed to load metrics data
-            </Box>
+            </div>
           )}
-        </Box>
+        </div>
 
         {/* Charts */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: {xs: '1fr', md: '1fr 1fr'}, gap: 2, mb: 2 }}>
+        <div className="d-flex flex-column flex-md-row gap-4 mb-4">
           {isLoadingEquity ? (
-            <Paper 
-              sx={{ 
-                p: 1, 
-                bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-              }}
-            >
-              <LoadingSkeleton variant="text" width="30%" height={10} />
-              <LoadingSkeleton variant="rectangular" height={180} />
-            </Paper>
-          ) : equityData ? (
-            <EquityCurveChart data={equityData} />
+            <div className="card flex-1">
+              <div className="card-body p-4">
+                <div className="skeleton-chart"></div>
+              </div>
+            </div>
+          ) : formattedEquityData ? (
+            <EquityCurveChart data={formattedEquityData} />
           ) : (
-            <Paper 
-              sx={{ 
-                p: 1, 
-                bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-                textAlign: 'center',
-                fontSize: '0.75rem',
-              }}
-            >
-              Failed to load equity data
-            </Paper>
+            <div className="card flex-1">
+              <div className="card-body p-4 text-center text-sm">
+                Failed to load equity data
+              </div>
+            </div>
           )}
           
           {isLoadingDrawdown ? (
-            <Paper 
-              sx={{ 
-                p: 1, 
-                bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-              }}
-            >
-              <LoadingSkeleton variant="text" width="30%" height={10} />
-              <LoadingSkeleton variant="rectangular" height={180} />
-            </Paper>
-          ) : drawdownData ? (
-            <DrawdownChart data={drawdownData} />
+            <div className="card flex-1">
+              <div className="card-body p-4">
+                <div className="skeleton-chart"></div>
+              </div>
+            </div>
+          ) : formattedDrawdownData ? (
+            <DrawdownChart data={formattedDrawdownData} />
           ) : (
-            <Paper 
-              sx={{ 
-                p: 1, 
-                bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-                textAlign: 'center',
-                fontSize: '0.75rem',
-              }}
-            >
-              Failed to load drawdown data
-            </Paper>
+            <div className="card flex-1">
+              <div className="card-body p-4 text-center text-sm">
+                Failed to load drawdown data
+              </div>
+            </div>
           )}
-        </Box>
+        </div>
 
         {/* Calendar and Open Trades */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: {xs: '1fr', md: '8fr 4fr'}, gap: 2 }}>
+        <div className="d-flex flex-column flex-lg-row gap-4">
           {isLoadingCalendar ? (
-            <Paper 
-              sx={{ 
-                p: 1, 
-                bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-              }}
-            >
-              <LoadingSkeleton variant="text" width="30%" height={10} />
-              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1 }}>
-                {Array(35).fill(0).map((_, i) => (
-                  <LoadingSkeleton key={i} variant="rectangular" height={50} />
-                ))}
-              </Box>
-            </Paper>
+            <div className="card flex-1">
+              <div className="card-body p-4">
+                <div className="skeleton-calendar"></div>
+              </div>
+            </div>
           ) : (
             <CalendarView monthlyData={formattedCalendarData} />
           )}
           
           {isLoadingTrades ? (
-            <Paper 
-              sx={{ 
-                p: 1, 
-                bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-                height: '100%'
-              }}
-            >
-              <LoadingSkeleton variant="text" width="30%" height={10} />
-              <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {Array(3).fill(0).map((_, i) => (
-                  <LoadingSkeleton key={i} variant="rectangular" height={80} />
-                ))}
-              </Box>
-            </Paper>
+            <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
+              <div className="card-body p-4">
+                <div className="skeleton-trades"></div>
+              </div>
+            </div>
           ) : openTrades ? (
             <OpenTrades 
               trades={openTrades} 
@@ -288,22 +275,13 @@ export default function Dashboard() {
               onCloseTrade={handleCloseTrade} 
             />
           ) : (
-            <Paper 
-              sx={{ 
-                p: 1, 
-                bgcolor: theme.palette.mode === 'dark' ? '#212121' : '#fff',
-                textAlign: 'center',
-                fontSize: '0.75rem',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              Failed to load open trades
-            </Paper>
+            <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
+              <div className="card-body p-4 text-center text-sm">
+                Failed to load open trades
+              </div>
+            </div>
           )}
-        </Box>
+        </div>
       </MainContent>
     </DashboardContainer>
   );

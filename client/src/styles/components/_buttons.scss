@@ -1,0 +1,289 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/functions' as func;
+@use '../abstracts/mixins' as mix;
+@use 'sass:math';
+
+// Base button placeholder
+%button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: func.font-weight('medium');
+  border: none;
+  border-radius: func.border-radius('md');
+  cursor: pointer;
+  transition: 
+    background-color func.transition-duration('fast'),
+    color func.transition-duration('fast'),
+    border-color func.transition-duration('fast'),
+    box-shadow func.transition-duration('fast'),
+    transform func.transition-duration('fast');
+  text-decoration: none;
+  
+  &:disabled,
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  
+  &:focus {
+    outline: none;
+  }
+  
+  @include mix.focus;
+}
+
+// Button component
+.btn {
+  @extend %button-base;
+  padding: func.spacing(2) func.spacing(4);
+  font-size: func.font-size('sm');
+  
+  // Icon handling
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    
+    &--left {
+      margin-right: func.spacing(1);
+    }
+    
+    &--right {
+      margin-left: func.spacing(1);
+    }
+  }
+  
+  // Button sizes
+  &--xs {
+    padding: func.spacing(1) func.spacing(2);
+    font-size: func.font-size('xs');
+    border-radius: func.border-radius('sm');
+    
+    .btn__icon {
+      &--left {
+        margin-right: func.spacing(1) * 0.75;
+      }
+      
+      &--right {
+        margin-left: func.spacing(1) * 0.75;
+      }
+    }
+  }
+  
+  &--sm {
+    padding: func.spacing(1) func.spacing(3);
+    font-size: func.font-size('xs');
+  }
+  
+  &--md {
+    // Default size already defined
+  }
+  
+  &--lg {
+    padding: func.spacing(3) func.spacing(5);
+    font-size: func.font-size('base');
+  }
+  
+  &--xl {
+    padding: func.spacing(4) func.spacing(6);
+    font-size: func.font-size('md');
+    font-weight: func.font-weight('semibold');
+    border-radius: func.border-radius('lg');
+  }
+  
+  // Button variants - Using SASS maps and loops for variants
+  $button-variants: (
+    'primary': (
+      'bg': func.color('primary'),
+      'text': white,
+      'hover-bg': func.color('primary', 'dark'),
+      'active-bg': darken(func.color('primary', 'dark'), 5%)
+    ),
+    'secondary': (
+      'bg': func.color('secondary'),
+      'text': white,
+      'hover-bg': func.color('secondary', 'dark'),
+      'active-bg': darken(func.color('secondary', 'dark'), 5%)
+    ),
+    'success': (
+      'bg': func.color('success'),
+      'text': white,
+      'hover-bg': func.color('success', 'dark'),
+      'active-bg': darken(func.color('success', 'dark'), 5%)
+    ),
+    'error': (
+      'bg': func.color('error'),
+      'text': white,
+      'hover-bg': func.color('error', 'dark'),
+      'active-bg': darken(func.color('error', 'dark'), 5%)
+    ),
+    'warning': (
+      'bg': func.color('warning'),
+      'text': func.color('neutral', 800),
+      'hover-bg': func.color('warning', 'dark'),
+      'active-bg': darken(func.color('warning', 'dark'), 5%)
+    ),
+    'info': (
+      'bg': func.color('info'),
+      'text': white,
+      'hover-bg': func.color('info', 'dark'),
+      'active-bg': darken(func.color('info', 'dark'), 5%)
+    )
+  );
+  
+  // Generate button variants
+  @each $name, $colors in $button-variants {
+    &--#{$name} {
+      background-color: map-get($colors, 'bg');
+      color: map-get($colors, 'text');
+      
+      @include mix.hover {
+        background-color: map-get($colors, 'hover-bg');
+      }
+      
+      &:active {
+        background-color: map-get($colors, 'active-bg');
+      }
+    }
+    
+    // Outline version of each variant
+    &--outline-#{$name} {
+      background-color: transparent;
+      color: map-get($colors, 'bg');
+      border: 1px solid map-get($colors, 'bg');
+      
+      @include mix.hover {
+        background-color: rgba(map-get($colors, 'bg'), 0.1);
+      }
+      
+      &:active {
+        background-color: rgba(map-get($colors, 'bg'), 0.2);
+      }
+    }
+    
+    // Text version of each variant (no background, just color)
+    &--text-#{$name} {
+      background-color: transparent;
+      color: map-get($colors, 'bg');
+      
+      @include mix.hover {
+        background-color: rgba(map-get($colors, 'bg'), 0.1);
+      }
+      
+      &:active {
+        background-color: rgba(map-get($colors, 'bg'), 0.2);
+      }
+    }
+  }
+  
+  // Special button types
+  &--link {
+    background: none;
+    padding: 0;
+    color: func.color('primary');
+    font-weight: func.font-weight('regular');
+    
+    @include mix.hover {
+      text-decoration: none;
+      opacity: 0.8;
+    }
+  }
+  
+  &--icon {
+    padding: func.spacing(2);
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    &.btn--sm {
+      padding: func.spacing(1);
+    }
+    
+    &.btn--lg {
+      padding: func.spacing(3);
+    }
+  }
+  
+  // Loading state
+  &--loading {
+    position: relative;
+    pointer-events: none;
+    
+    .btn__text {
+      opacity: 0;
+    }
+    
+    &::after {
+      content: '';
+      position: absolute;
+      width: 1em;
+      height: 1em;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      animation: btn-spin 0.75s linear infinite;
+    }
+  }
+  
+  // Block button (full width)
+  &--block {
+    display: flex;
+    width: 100%;
+  }
+  
+  // Button group
+  &-group {
+    display: inline-flex;
+    
+    .btn {
+      border-radius: 0;
+      
+      &:first-child {
+        border-top-left-radius: func.border-radius('md');
+        border-bottom-left-radius: func.border-radius('md');
+      }
+      
+      &:last-child {
+        border-top-right-radius: func.border-radius('md');
+        border-bottom-right-radius: func.border-radius('md');
+      }
+      
+      &:not(:last-child) {
+        border-right-width: 0;
+      }
+    }
+    
+    // Vertical button group
+    &--vertical {
+      flex-direction: column;
+      
+      .btn {
+        &:first-child {
+          border-radius: 0;
+          border-top-left-radius: func.border-radius('md');
+          border-top-right-radius: func.border-radius('md');
+        }
+        
+        &:last-child {
+          border-radius: 0;
+          border-bottom-left-radius: func.border-radius('md');
+          border-bottom-right-radius: func.border-radius('md');
+        }
+        
+        &:not(:last-child) {
+          border-right-width: 1px;
+          border-bottom-width: 0;
+        }
+      }
+    }
+  }
+}
+
+// Button animations
+@keyframes btn-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

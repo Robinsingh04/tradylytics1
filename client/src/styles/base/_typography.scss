@@ -1,0 +1,151 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/functions' as func;
+@use '../abstracts/mixins' as mix;
+
+// Typography base styles
+
+// Font family
+body {
+  font-family: vars.$font-family-base;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code, pre, kbd, samp {
+  font-family: vars.$font-family-code;
+}
+
+// Heading styles
+%heading {
+  margin-bottom: func.spacing(2);
+  font-weight: func.font-weight('medium');
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+@for $i from 1 through 6 {
+  h#{$i} {
+    @extend %heading;
+    font-size: func.font-size(if($i == 1, '5xl',
+                               if($i == 2, '4xl', 
+                               if($i == 3, '3xl', 
+                               if($i == 4, '2xl', 
+                               if($i == 5, 'xl', 
+                               'lg'))))));
+    
+    margin-top: func.spacing(if($i <= 2, 6, 4));
+    
+    // Responsive font sizes
+    @include mix.respond-below('md') {
+      font-size: func.font-size(if($i == 1, '4xl',
+                                if($i == 2, '3xl', 
+                                if($i == 3, '2xl', 
+                                if($i == 4, 'xl', 
+                                if($i == 5, 'lg', 
+                                'md'))))));
+      margin-top: func.spacing(if($i <= 2, 5, 3));
+    }
+  }
+}
+
+// Paragraph styles
+p {
+  margin-bottom: func.spacing(4);
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Links
+a {
+  color: func.color('primary');
+  text-decoration: none;
+  transition: color func.transition-duration('fast');
+  
+  @include mix.hover {
+    color: func.color('primary', 'dark');
+    text-decoration: none;
+  }
+  
+  @include mix.focus;
+}
+
+// Lists
+ul, ol {
+  margin: func.spacing(3) 0 func.spacing(4) func.spacing(5);
+  
+  li {
+    margin-bottom: func.spacing(2);
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Bold and italics
+strong, b {
+  font-weight: func.font-weight('bold');
+}
+
+em, i {
+  font-style: italic;
+}
+
+// Selection styles
+::selection {
+  background-color: func.rgba-color('primary', 0.2);
+  color: var(--text-primary);
+}
+
+// Text utilities
+.text {
+  // Text alignments
+  &-left { text-align: left !important; }
+  &-center { text-align: center !important; }
+  &-right { text-align: right !important; }
+  &-justify { text-align: justify !important; }
+  
+  // Text transforms
+  &-lowercase { text-transform: lowercase !important; }
+  &-uppercase { text-transform: uppercase !important; }
+  &-capitalize { text-transform: capitalize !important; }
+  
+  // Text decorations
+  &-underline { text-decoration: underline !important; }
+  &-strikethrough { text-decoration: line-through !important; }
+  &-no-decoration { text-decoration: none !important; }
+  
+  // Font weights
+  @each $weight-name, $weight-value in vars.$font-weights {
+    &-#{$weight-name} {
+      font-weight: $weight-value !important;
+    }
+  }
+  
+  // Font sizes
+  @each $size-name, $size-value in vars.$font-sizes {
+    &-#{$size-name} {
+      font-size: $size-value !important;
+    }
+  }
+  
+  // Text wrapping
+  &-nowrap { white-space: nowrap !important; }
+  &-wrap { white-space: normal !important; }
+  
+  // Text truncation
+  &-truncate {
+    @include mix.truncate(1);
+  }
+  
+  // Text colors
+  @each $color-name, $color-value in vars.$colors {
+    @if type-of($color-value) == 'map' and map-has-key($color-value, 'base') {
+      &-#{$color-name} {
+        color: map-get($color-value, 'base') !important;
+      }
+    }
+  }
+} 

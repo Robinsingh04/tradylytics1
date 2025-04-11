@@ -1,0 +1,180 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/functions' as func;
+@use '../abstracts/mixins' as mix;
+
+// Define a placeholder for shared card styles
+%card-base {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: func.border-radius('lg');
+  box-shadow: func.shadow('md');
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: func.shadow('lg');
+  }
+}
+
+// Metric Card Component
+.metric-card {
+  @extend %card-base;
+  background-color: var(--bg-secondary);
+  padding: func.spacing(4);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+  
+  // Card header
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: func.spacing(2);
+  }
+  
+  // Card title
+  &__title {
+    color: var(--text-secondary);
+    font-size: func.font-size('sm');
+    font-weight: func.font-weight('medium');
+    margin: 0;
+  }
+  
+  // Card value
+  &__value {
+    font-size: func.font-size('3xl');
+    font-weight: func.font-weight('bold');
+    margin: 0 0 func.spacing(1) 0;
+    color: var(--text-primary);
+    display: flex;
+    align-items: baseline;
+    
+    &-prefix, &-suffix {
+      font-size: func.font-size('lg');
+      margin: 0 func.spacing(1);
+      color: var(--text-secondary);
+    }
+  }
+  
+  // Change indicator
+  &__change {
+    display: flex;
+    align-items: center;
+    font-size: func.font-size('sm');
+    font-weight: func.font-weight('medium');
+    margin-bottom: func.spacing(2);
+    
+    &-icon {
+      margin-right: func.spacing(1);
+    }
+    
+    &--positive {
+      color: func.color('success');
+    }
+    
+    &--negative {
+      color: func.color('error');
+    }
+  }
+  
+  // Chart container
+  &__chart {
+    flex-grow: 1;
+    margin-top: auto;
+    min-height: 40px;
+  }
+  
+  // Color variants using a loop
+  $card-colors: (
+    'success': func.color('success'),
+    'error': func.color('error'),
+    'primary': func.color('primary'),
+    'secondary': func.color('secondary'),
+    'info': func.color('info'),
+    'warning': func.color('warning')
+  );
+  
+  @each $name, $color in $card-colors {
+    &--#{$name} {
+      border-left: 4px solid $color;
+      
+      .metric-card__header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: $color;
+        opacity: 0.2;
+      }
+      
+      .metric-card__value {
+        color: $color;
+      }
+    }
+  }
+  
+  // Responsive adjustments
+  @include mix.respond-below('md') {
+    padding: func.spacing(3);
+    
+    &__value {
+      font-size: func.font-size('2xl');
+    }
+  }
+  
+  @include mix.respond-below('sm') {
+    padding: func.spacing(2);
+    
+    &__header {
+      margin-bottom: func.spacing(1);
+    }
+    
+    &__title {
+      font-size: func.font-size('xs');
+    }
+    
+    &__value {
+      font-size: func.font-size('xl');
+    }
+    
+    &__chart {
+      min-height: 30px;
+    }
+  }
+  
+  // Animation for value changes
+  @keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+  }
+  
+  &--loading {
+    .metric-card__value,
+    .metric-card__change,
+    .metric-card__chart {
+      animation: pulse 1.5s infinite;
+      background: linear-gradient(90deg, 
+                                var(--bg-tertiary) 0%, 
+                                var(--bg-secondary) 50%, 
+                                var(--bg-tertiary) 100%);
+      background-size: 200% 100%;
+      animation: pulse 2s infinite linear;
+    }
+  }
+  
+  // Dark mode specific styles
+  @include mix.themed('dark') {
+    background-color: rgba(30, 30, 30, 0.7);
+    backdrop-filter: blur(12px);
+    
+    &__title {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+} 

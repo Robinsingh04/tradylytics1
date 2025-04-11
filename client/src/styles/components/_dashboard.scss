@@ -1,0 +1,210 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/functions' as func;
+@use '../abstracts/mixins' as mix;
+
+// Dashboard component styles
+.dashboard {
+  width: 100%;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  
+  // Header styles
+  &__header {
+    @include mix.flex(row, space-between, center);
+    margin-bottom: func.spacing(3);
+    background-color: var(--bg-secondary);
+    border-radius: func.border-radius('lg');
+    padding: func.spacing(2) func.spacing(3);
+    box-shadow: func.shadow('sm');
+  }
+  
+  &__title {
+    font-size: func.font-size('lg');
+    font-weight: func.font-weight('semibold');
+    color: var(--text-primary);
+    margin: 0;
+  }
+  
+  // Dashboard content area
+  &__content {
+    margin-bottom: func.spacing(4);
+  }
+  
+  // Metrics grid layout
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: func.spacing(3);
+    
+    @include mix.respond-to('sm') {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    @include mix.respond-to('md') {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
+    @include mix.respond-to('lg') {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+  
+  // Chart containers
+  .chart-container {
+    background-color: var(--bg-secondary);
+    border-radius: func.border-radius('lg');
+    padding: func.spacing(4);
+    box-shadow: func.shadow('sm');
+    margin-bottom: func.spacing(3);
+    border: 1px solid var(--border);
+    transition: box-shadow 0.2s ease;
+    
+    &:hover {
+      box-shadow: func.shadow('md');
+    }
+    
+    &__header {
+      @include mix.flex(row, space-between, center);
+      margin-bottom: func.spacing(3);
+    }
+    
+    &__title {
+      font-size: func.font-size('md');
+      font-weight: func.font-weight('medium');
+      margin: 0;
+    }
+  }
+  
+  // Skeleton loading states
+  .skeleton {
+    &-chart {
+      height: 200px;
+      background: linear-gradient(90deg, 
+                              var(--bg-tertiary) 0%, 
+                              var(--bg-secondary) 50%, 
+                              var(--bg-tertiary) 100%);
+      background-size: 200% 100%;
+      animation: pulse 2s infinite linear;
+      border-radius: func.border-radius('md');
+    }
+    
+    &-calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: func.spacing(1);
+      
+      &::before {
+        content: '';
+        display: block;
+        height: 30px;
+        margin-bottom: func.spacing(2);
+        background: linear-gradient(90deg, 
+                                var(--bg-tertiary) 0%, 
+                                var(--bg-secondary) 50%, 
+                                var(--bg-tertiary) 100%);
+        background-size: 200% 100%;
+        animation: pulse 2s infinite linear;
+        grid-column: 1 / -1;
+        border-radius: func.border-radius('sm');
+      }
+      
+      @for $i from 1 through 35 {
+        &::after:nth-child(#{$i}) {
+          content: '';
+          display: block;
+          height: 40px;
+          background: linear-gradient(90deg, 
+                                  var(--bg-tertiary) 0%, 
+                                  var(--bg-secondary) 50%, 
+                                  var(--bg-tertiary) 100%);
+          background-size: 200% 100%;
+          animation: pulse 2s infinite linear;
+          animation-delay: #{$i * 0.05}s;
+          border-radius: func.border-radius('sm');
+        }
+      }
+    }
+    
+    &-trades {
+      @include mix.flex(column, flex-start, stretch, nowrap);
+      gap: func.spacing(2);
+      
+      &::before {
+        content: '';
+        display: block;
+        height: 24px;
+        width: 30%;
+        margin-bottom: func.spacing(1);
+        background: linear-gradient(90deg, 
+                                var(--bg-tertiary) 0%, 
+                                var(--bg-secondary) 50%, 
+                                var(--bg-tertiary) 100%);
+        background-size: 200% 100%;
+        animation: pulse 2s infinite linear;
+        border-radius: func.border-radius('sm');
+      }
+      
+      @for $i from 1 through an {
+        &::after:nth-child(#{$i}) {
+          content: '';
+          display: block;
+          height: 70px;
+          background: linear-gradient(90deg, 
+                                  var(--bg-tertiary) 0%, 
+                                  var(--bg-secondary) 50%, 
+                                  var(--bg-tertiary) 100%);
+          background-size: 200% 100%;
+          animation: pulse 2s infinite linear;
+          animation-delay: #{$i * 0.1}s;
+          border-radius: func.border-radius('sm');
+        }
+      }
+    }
+  }
+  
+  // Animation for loading skeletons
+  @keyframes pulse {
+    0% { background-position: 0% 0; }
+    100% { background-position: -200% 0; }
+  }
+  
+  // Text utility classes
+  .text {
+    &-sm {
+      font-size: func.font-size('sm');
+    }
+    
+    &-center {
+      text-align: center;
+    }
+  }
+  
+  // Padding utilities
+  .p-4 {
+    padding: func.spacing(4);
+  }
+  
+  .py-4 {
+    padding-top: func.spacing(4);
+    padding-bottom: func.spacing(4);
+  }
+
+  // Margin utilities
+  .mb-3 {
+    margin-bottom: func.spacing(3);
+  }
+  
+  .mb-4 {
+    margin-bottom: func.spacing(4);
+  }
+  
+  // Flex utility
+  .flex-1 {
+    flex: 1;
+  }
+  
+  // Gap utility
+  .gap-4 {
+    gap: func.spacing(4);
+  }
+}
