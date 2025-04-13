@@ -1,0 +1,153 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/functions' as func;
+@use '../abstracts/mixins' as mix;
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:color';
+
+.calendar-container {
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .calendar-controls {
+      display: flex;
+      gap: 0.5rem;
+      
+      button {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        
+        &:hover {
+          background-color: var(--button-hover);
+          color: var(--text-primary);
+        }
+      }
+    }
+  }
+  
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    
+    .weekday-header {
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      padding: 0.5rem 0;
+    }
+  }
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #1A1A1A;
+  color: #FFFFFF;
+  
+  .day-number {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+  
+  .day-amount {
+    font-size: 0.75rem;
+    font-weight: 600;
+    
+    &.profit {
+      color: var(--profit-color);
+    }
+    
+    &.loss {
+      color: var(--loss-color);
+    }
+  }
+  
+  .day-trades {
+    font-size: 0.625rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  &.today {
+    position: relative;
+    
+    &:after {
+      content: 'Today';
+      position: absolute;
+      bottom: -0.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.625rem;
+      font-weight: 600;
+      color: #FFFFFF;
+      background-color: var(--theme-color, #3f51b5);
+      padding: 0.125rem 0.375rem;
+      border-radius: 1rem;
+      white-space: nowrap;
+    }
+  }
+  
+  &.inactive {
+    opacity: 0.5;
+    background-color: #323232;
+  }
+  
+  &.has-profit {
+    background-color: #132E1A;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+  
+  &.has-loss {
+    background-color: #2A1215;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+  
+  &.current-month {
+    background-color: #1A1A1A;
+  }
+  
+  &.other-month {
+    background-color: #323232;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+// End of calendar styles 

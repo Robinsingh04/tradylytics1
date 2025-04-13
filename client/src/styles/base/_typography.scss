@@ -1,6 +1,8 @@
 @use '../abstracts/variables' as vars;
 @use '../abstracts/functions' as func;
 @use '../abstracts/mixins' as mix;
+@use 'sass:map';
+@use 'sass:meta';
 
 // Typography base styles
 
@@ -61,7 +63,7 @@ p {
 a {
   color: func.color('primary');
   text-decoration: none;
-  transition: color func.transition-duration('fast');
+  transition: color func.transition('fast');
   
   @include mix.hover {
     color: func.color('primary', 'dark');
@@ -142,9 +144,9 @@ em, i {
   
   // Text colors
   @each $color-name, $color-value in vars.$colors {
-    @if type-of($color-value) == 'map' and map-has-key($color-value, 'base') {
+    @if meta.type-of($color-value) == 'map' and map.has-key($color-value, 'base') {
       &-#{$color-name} {
-        color: map-get($color-value, 'base') !important;
+        color: map.get($color-value, 'base') !important;
       }
     }
   }

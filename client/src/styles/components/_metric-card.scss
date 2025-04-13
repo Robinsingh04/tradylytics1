@@ -6,12 +6,11 @@
 %card-base {
   position: relative;
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease;
   border-radius: func.border-radius('lg');
   box-shadow: func.shadow('md');
   
   &:hover {
-    transform: translateY(-4px);
     box-shadow: func.shadow('lg');
   }
 }
@@ -81,10 +80,13 @@
   }
   
   // Chart container
-  &__chart {
+  &__chart, &-chart {
     flex-grow: 1;
     margin-top: auto;
     min-height: 40px;
+    position: relative;
+    overflow: visible !important; /* Ensure tooltips are not cut off */
+    z-index: 10;
   }
   
   // Color variants using a loop

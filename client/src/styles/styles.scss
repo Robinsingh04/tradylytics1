@@ -1,7 +1,7 @@
 // Import layout styles
-@import './layout/layout';
-@import './layout/navbar';
-@import './layout/sidebar';
+@use './layout/layout';
+@use './layout/navbar';
+@use './layout/sidebar';
 
 // Import any other existing styles
-@import './dashboard'; 
+@use './dashboard'; 

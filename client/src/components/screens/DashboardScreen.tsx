@@ -154,17 +154,19 @@ export const DashboardScreen = () => {
 
   return (
     <div className="dashboard">
-      <div className="dashboard-header">
-        <h2 className="dashboard-title">Trading Dashboard</h2>
-        <TimeRangeToggle activeRange={timeRange} onChange={setTimeRange} />
-      </div>
+      <div className="performance-metrics-container">
+        <div className="performance-header">
+          <h2 className="dashboard-title">Performance Metrics</h2>
+          <TimeRangeToggle activeRange={timeRange} onChange={setTimeRange} />
+        </div>
 
-      <div className="metrics-container">
-        {metrics.map((metric, index) => (
-          <div key={index} className="metric-card-wrapper">
-            <MetricCard {...metric} />
-          </div>
-        ))}
+        <div className="metrics-container metrics-container-compact">
+          {metrics.map((metric, index) => (
+            <div key={index} className="metric-card-wrapper">
+              <MetricCard {...metric} />
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="charts-container">

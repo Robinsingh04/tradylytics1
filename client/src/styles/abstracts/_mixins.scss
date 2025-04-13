@@ -1,11 +1,14 @@
 // Import variables and functions
 @use 'variables' as vars;
 @use 'functions' as func;
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:list';
 
 // Responsive breakpoints
 @mixin respond-to($breakpoint) {
-  @if map-has-key(vars.$breakpoints, $breakpoint) {
-    $breakpoint-value: map-get(vars.$breakpoints, $breakpoint);
+  @if map.has-key(vars.$breakpoints, $breakpoint) {
+    $breakpoint-value: map.get(vars.$breakpoints, $breakpoint);
     
     @media (min-width: $breakpoint-value) {
       @content;
@@ -17,8 +20,8 @@
 
 // Max-width breakpoints
 @mixin respond-below($breakpoint) {
-  @if map-has-key(vars.$breakpoints, $breakpoint) {
-    $breakpoint-value: map-get(vars.$breakpoints, $breakpoint);
+  @if map.has-key(vars.$breakpoints, $breakpoint) {
+    $breakpoint-value: map.get(vars.$breakpoints, $breakpoint);
     
     @media (max-width: ($breakpoint-value - 1px)) {
       @content;
@@ -30,9 +33,9 @@
 
 // Between breakpoints
 @mixin respond-between($lower, $upper) {
-  @if map-has-key(vars.$breakpoints, $lower) and map-has-key(vars.$breakpoints, $upper) {
-    $lower-value: map-get(vars.$breakpoints, $lower);
-    $upper-value: map-get(vars.$breakpoints, $upper);
+  @if map.has-key(vars.$breakpoints, $lower) and map.has-key(vars.$breakpoints, $upper) {
+    $lower-value: map.get(vars.$breakpoints, $lower);
+    $upper-value: map.get(vars.$breakpoints, $upper);
     
     @media (min-width: $lower-value) and (max-width: ($upper-value - 1px)) {
       @content;
@@ -125,8 +128,8 @@
   $result: ();
   
   @each $property in $properties {
-    $temp: $property func.transition-duration('normal') ease;
-    $result: append($result, $temp, comma);
+    $temp: $property func.transition('normal') ease;
+    $result: list.append($result, $temp, comma);
   }
   
   transition: $result;
@@ -160,11 +163,11 @@
 // Generate color variants
 @mixin generate-color-variants($property, $prefix: '') {
   @each $name, $value in vars.$colors {
-    @if type-of($value) == 'map' and map-has-key($value, 'base') {
+    @if meta.type-of($value) == 'map' and map.has-key($value, 'base') {
       &.#{$prefix}#{$name} {
-        #{$property}: map-get($value, 'base');
+        #{$property}: map.get($value, 'base');
       }
-    } @else if type-of($value) != 'map' {
+    } @else if meta.type-of($value) != 'map' {
       &.#{$prefix}#{$name} {
         #{$property}: $value;
       }

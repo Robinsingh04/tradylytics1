@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import { useColorMode } from '../hooks/use-color-mode';
 
 type ThemeMode = 'light' | 'dark';
 
@@ -19,12 +20,11 @@ const ThemeContext = createContext<ThemeContextType>({
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { mode: colorMode, toggleColorMode } = useColorMode();
   const [themeColor, setThemeColor] = useState<string>(
     localStorage.getItem('themeColor') || defaultThemeColor
   );
-  const [themeMode, setThemeMode] = useState<ThemeMode>(
-    (localStorage.getItem('themeMode') as ThemeMode) || 'light'
-  );
+  const [themeMode, setThemeMode] = useState<ThemeMode>(colorMode);
 
   // Helper functions to generate lighter and darker variants
   const lightenColor = (color: string, percent: number): string => {
@@ -48,25 +48,33 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     // Save to localStorage
     localStorage.setItem('themeColor', themeColor);
-    localStorage.setItem('themeMode', themeMode);
 
     // Apply theme color to CSS variables
     document.documentElement.style.setProperty('--theme-color', themeColor);
     document.documentElement.style.setProperty('--theme-color-light', lightenColor(themeColor, 20));
     document.documentElement.style.setProperty('--theme-color-dark', darkenColor(themeColor, 20));
+  }, [themeColor]);
 
-    // Apply theme mode
-    if (themeMode === 'dark') {
-      document.body.classList.add('dark');
-      document.body.classList.remove('light');
-    } else {
-      document.body.classList.add('light');
-      document.body.classList.remove('dark');
+  // Sync themeMode with colorMode
+  useEffect(() => {
+    setThemeMode(colorMode);
+  }, [colorMode]);
+
+  // Handle theme mode changes
+  const handleThemeModeChange = (mode: ThemeMode) => {
+    setThemeMode(mode);
+    if (mode !== colorMode) {
+      toggleColorMode();
     }
-  }, [themeColor, themeMode]);
+  };
 
   return (
-    <ThemeContext.Provider value={{ themeColor, themeMode, setThemeColor, setThemeMode }}>
+    <ThemeContext.Provider value={{ 
+      themeColor, 
+      themeMode, 
+      setThemeColor, 
+      setThemeMode: handleThemeModeChange 
+    }}>
       {children}
     </ThemeContext.Provider>
   );

@@ -16,7 +16,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
   };
 
   return (
-    <div className={`app-layout ${isDarkTheme ? 'dark' : 'light'}`}>
+    <div className={`app-layout ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
       <Navbar 
         toggleTheme={toggleTheme} 
         isDarkTheme={isDarkTheme} 

@@ -75,6 +75,21 @@
     }
   }
   
+  // Ensure chart widths are strictly enforced
+  .d-flex.flex-md-row > .chart-container {
+    &:first-child {
+      width: 60% !important;
+      min-width: 60% !important;
+      flex: 0 0 60% !important;
+    }
+    
+    &:last-child {
+      width: 40% !important;
+      min-width: 40% !important;
+      flex: 0 0 40% !important;
+    }
+  }
+  
   // Skeleton loading states
   .skeleton {
     &-chart {
@@ -109,7 +124,7 @@
       }
       
       @for $i from 1 through 35 {
-        &::after:nth-child(#{$i}) {
+        &:nth-child(#{$i})::after {
           content: '';
           display: block;
           height: 40px;
@@ -144,8 +159,8 @@
         border-radius: func.border-radius('sm');
       }
       
-      @for $i from 1 through an {
-        &::after:nth-child(#{$i}) {
+      @for $i from 1 through 3 {
+        &:nth-child(#{$i})::after {
           content: '';
           display: block;
           height: 70px;
@@ -157,6 +172,7 @@
           animation: pulse 2s infinite linear;
           animation-delay: #{$i * 0.1}s;
           border-radius: func.border-radius('sm');
+          margin-bottom: func.spacing(2);
         }
       }
     }
@@ -206,5 +222,118 @@
   // Gap utility
   .gap-4 {
     gap: func.spacing(4);
+  }
+
+  // Chart-related styles
+  .chart-card {
+    background-color: var(--bg-secondary);
+    border-radius: func.border-radius('lg');
+    padding: func.spacing(2);
+    box-shadow: func.shadow('sm');
+    border: 1px solid var(--border);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    
+    &-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: func.spacing(1) func.spacing(2);
+      margin-bottom: func.spacing(1);
+    }
+    
+    &-title {
+      font-size: func.font-size('md');
+      font-weight: func.font-weight('semibold');
+      margin: 0;
+    }
+    
+    &-content {
+      flex: 1;
+      position: relative;
+      min-height: 240px;
+      height: 100%;
+    }
+  }
+  
+  .time-range-toggle {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    
+    &-button {
+      background: none;
+      border: none;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-secondary);
+      
+      &:hover {
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+      }
+      
+      &.active {
+        background-color: var(--theme-color);
+        color: white;
+      }
+    }
+  }
+  
+  // Chart tooltip styles
+  .line-chart {
+    &-tooltip {
+      background-color: var(--bg-secondary);
+      border-radius: 6px;
+      padding: 8px 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      pointer-events: none;
+      font-size: 12px;
+      z-index: 9999;
+      min-width: 100px;
+      
+      // Fix for tooltip being cut off at screen edges
+      position: absolute;
+      transform: translate(-50%, 0);
+      
+      // Position a triangle arrow to point to the data point
+      &::before {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      
+      // Different arrow positions for above/below tooltips
+      &.above::before {
+        border-top: 6px solid var(--bg-secondary);
+        bottom: -6px;
+      }
+      
+      &.below::before {
+        border-bottom: 6px solid var(--bg-secondary);
+        top: -6px;
+      }
+      
+      &-value {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+      }
+      
+      &-time {
+        color: var(--text-secondary);
+        font-size: 11px;
+      }
+    }
   }
 }

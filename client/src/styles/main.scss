@@ -25,10 +25,9 @@
 @use 'components/buttons';
 @use 'components/metric-card';
 @use 'components/dashboard';
+@use 'components/trade-card';
+@use 'components/calendar';
 // Add other components as needed
-
-// Pages
-@use 'dashboard';
 
 // Themes
 @use 'themes/light';
@@ -48,9 +47,42 @@ html[data-theme="dark"] {
   @extend .dark-theme;
 }
 
-// Add dark theme based on user's system preference
+// Add dark theme based on system preference (without using @extend)
 @media (prefers-color-scheme: dark) {
   html:not([data-theme="light"]) {
-    @extend .dark-theme;
+    // Import properties from dark theme
+    // We use variable assignment instead of @extend to avoid cross-media query issues
+    --bg-primary: #000000;
+    --bg-secondary: #0D0D0D;
+    --bg-tertiary: #1A1A1A;
+    --bg-primary-rgb: 0, 0, 0;
+    --bg-secondary-rgb: 13, 13, 13;
+    --bg-tertiary-rgb: 26, 26, 26;
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255, 255, 255, 0.85);
+    --text-tertiary: rgba(255, 255, 255, 0.65);
+    --border: rgba(255, 255, 255, 0.1);
+    --border-hover: rgba(255, 255, 255, 0.2);
+    --card-bg: rgba(255, 255, 255, 0.02);
+    --card-hover: rgba(255, 255, 255, 0.04);
+    --card-active: rgba(255, 255, 255, 0.06);
+    --button-hover: rgba(255, 255, 255, 0.06);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.7);
+    --chart-grid: rgba(255, 255, 255, 0.06);
+    --chart-tooltip-bg: rgba(13, 13, 13, 0.98);
+    --scrollbar-track: var(--bg-secondary);
+    --scrollbar-thumb: rgba(255, 255, 255, 0.15);
+    --scrollbar-thumb-hover: rgba(255, 255, 255, 0.25);
+    --input-bg: rgba(255, 255, 255, 0.02);
+    --input-border: rgba(255, 255, 255, 0.1);
+    --input-color: var(--text-primary);
+    --input-placeholder: var(--text-tertiary);
+    --input-focus-bg: rgba(255, 255, 255, 0.03);
+    --sell-bg: rgba(239, 68, 68, 0.1);
+    --buy-bg: rgba(34, 197, 94, 0.1);
+    --profit-color: #34d399;
+    --loss-color: #f87171;
   }
 } 

@@ -4,53 +4,72 @@
 // Light theme variables
 .light-theme {
   // Background colors
-  --bg-primary: #{func.theme-color('light', 'bg-primary')};
-  --bg-secondary: #{func.theme-color('light', 'bg-secondary')};
-  --bg-tertiary: #{func.theme-color('light', 'bg-tertiary')};
+  --bg-primary: #F8F9FC;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F0F2F5;
   
   // RGB versions for backgrounds (for rgba usage)
-  --bg-primary-rgb: 245, 245, 245;
+  --bg-primary-rgb: 248, 249, 252;
   --bg-secondary-rgb: 255, 255, 255;
-  --bg-tertiary-rgb: 238, 238, 238;
+  --bg-tertiary-rgb: 240, 242, 245;
   
   // Text colors
-  --text-primary: #{func.theme-color('light', 'text-primary')};
-  --text-secondary: #{func.theme-color('light', 'text-secondary')};
+  --text-primary: #1A1A1A;
+  --text-secondary: rgba(26, 26, 26, 0.85);
+  --text-tertiary: rgba(26, 26, 26, 0.65);
   
-  // Border color
-  --border: #{func.theme-color('light', 'border')};
+  // Border colors
+  --border: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.15);
   
-  // Shadow variables
-  --shadow-sm: #{func.shadow('sm')};
-  --shadow-md: #{func.shadow('base')};
-  --shadow-lg: #{func.shadow('lg')};
+  // Card and button backgrounds
+  --card-bg: rgba(255, 255, 255, 1);
+  --card-hover: rgba(248, 249, 252, 1);
+  --card-active: rgba(240, 242, 245, 1);
+  --button-hover: rgba(0, 0, 0, 0.04);
+  
+  // Gradients
+  --gradient-primary: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(248, 249, 252, 0.9));
+  --gradient-hover: linear-gradient(135deg, rgba(248, 249, 252, 1), rgba(240, 242, 245, 0.9));
+  
+  // Shadows for light mode
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.08);
   
   // Chart colors
-  --chart-grid: rgba(0, 0, 0, 0.1);
-  --chart-tooltip-bg: rgba(255, 255, 255, 0.9);
+  --chart-grid: rgba(0, 0, 0, 0.06);
+  --chart-tooltip-bg: rgba(255, 255, 255, 0.98);
   
   // Scrollbar styles
-  --scrollbar-track: #{func.theme-color('light', 'bg-tertiary')};
-  --scrollbar-thumb: #{rgba(0, 0, 0, 0.2)};
+  --scrollbar-track: var(--bg-tertiary);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.15);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
   
   // Form elements
-  --input-bg: white;
-  --input-border: rgba(0, 0, 0, 0.1);
-  --input-color: #{func.theme-color('light', 'text-primary')};
-  --input-placeholder: rgba(0, 0, 0, 0.4);
-  --input-focus-bg: white;
+  --input-bg: rgba(255, 255, 255, 1);
+  --input-border: var(--border);
+  --input-color: var(--text-primary);
+  --input-placeholder: var(--text-tertiary);
+  --input-focus-bg: rgba(255, 255, 255, 1);
   
   // Selection
   --selection-bg: #{func.rgba-color('primary', 0.2)};
-  --selection-color: #{func.theme-color('light', 'text-primary')};
+  --selection-color: var(--text-primary);
+  
+  // Trade card colors
+  --sell-bg: rgba(250, 240, 240, 0.4);
+  --buy-bg: rgba(240, 250, 240, 0.4);
+  --profit-color: #22c55e;
+  --loss-color: #ef4444;
 }
 
 // Light theme specific styles
 .light-theme {
   // Custom scrollbar for webkit browsers
   ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
+    width: 6px;
+    height: 6px;
   }
   
   ::-webkit-scrollbar-track {
@@ -59,8 +78,11 @@
   
   ::-webkit-scrollbar-thumb {
     background-color: var(--scrollbar-thumb);
-    border-radius: 6px;
-    border: 3px solid var(--scrollbar-track);
+    border-radius: 3px;
+    
+    &:hover {
+      background-color: var(--scrollbar-thumb-hover);
+    }
   }
   
   // Card and surface effects
@@ -68,12 +90,34 @@
   .surface,
   .dialog,
   .modal-content {
-    background-color: var(--bg-secondary);
+    background: var(--card-bg);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-md);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     
     &:hover {
+      background: var(--card-hover);
+      border-color: var(--border-hover);
       box-shadow: var(--shadow-lg);
+    }
+    
+    &:active {
+      background: var(--card-active);
+    }
+  }
+  
+  // Glass effect cards
+  .glass-card {
+    background: var(--gradient-primary);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &:hover {
+      background: var(--gradient-hover);
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
     }
   }
   
@@ -88,6 +132,7 @@
     background-color: var(--input-bg);
     border: 1px solid var(--input-border);
     color: var(--input-color);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     
     &::placeholder {
       color: var(--input-placeholder);
@@ -96,11 +141,11 @@
     &:focus {
       background-color: var(--input-focus-bg);
       border-color: func.color('primary');
-      box-shadow: 0 0 0 3px func.rgba-color('primary', 0.2);
+      box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.1);
     }
   }
   
-  // Light theme specific adjustments for charts
+  // Dark theme specific adjustments for charts
   .recharts-cartesian-grid-horizontal line,
   .recharts-cartesian-grid-vertical line {
     stroke: var(--chart-grid);
@@ -108,32 +153,58 @@
   
   .recharts-tooltip-wrapper .recharts-default-tooltip {
     background-color: var(--chart-tooltip-bg) !important;
-    border-color: var(--border) !important;
+    border: 1px solid var(--border) !important;
     box-shadow: var(--shadow-md) !important;
   }
   
-  // Adjust button styles for light mode
+  // Buttons
   .btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    
     &-outline {
       border: 1px solid var(--border);
+      background: transparent;
       
       &:hover {
-        background-color: rgba(0, 0, 0, 0.05);
+        background: var(--button-hover);
+        border-color: var(--border-hover);
+        transform: translateY(-1px);
       }
     }
     
     &-primary {
-      box-shadow: 0 2px 4px func.rgba-color('primary', 0.3);
+      background: var(--gradient-primary);
+      border: 1px solid var(--border);
       
       &:hover {
-        box-shadow: 0 4px 8px func.rgba-color('primary', 0.4);
+        background: var(--gradient-hover);
+        border-color: var(--border-hover);
+        transform: translateY(-1px);
       }
     }
   }
   
   // Code blocks
   pre, code {
-    background-color: var(--bg-tertiary);
+    background-color: rgba(0, 0, 0, 0.03);
     border: 1px solid var(--border);
+  }
+  
+  // Links
+  a {
+    color: func.color('primary');
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &:hover {
+      color: func.color('primary', 'dark');
+    }
+  }
+  
+  // Text styles
+  .text-gradient {
+    background: linear-gradient(135deg, var(--text-primary) 0%, rgba(26, 26, 26, 0.85) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 } 

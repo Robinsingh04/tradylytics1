@@ -1,0 +1,105 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/functions' as func;
+@use '../abstracts/mixins' as mix;
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:color';
+
+.trade-card {
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border-radius: 4px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #1A1A1A; // Dark background regardless of theme
+  color: #FFFFFF;
+  
+  // Card header
+  .trade-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    
+    .trade-type {
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.875rem;
+    }
+    
+    .trade-profit,
+    .trade-loss {
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+  }
+  
+  // Trade details
+  .trade-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  // Trade actions
+  .trade-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  // Edit and Close buttons
+  .edit, .close {
+    background: transparent;
+    border: none;
+    color: rgba(120, 155, 255, 0.9);
+    font-size: 0.75rem;
+    cursor: pointer;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  
+  .close {
+    color: rgba(255, 120, 120, 0.9);
+  }
+  
+  // Sell card variant
+  &.sell {
+    border-left: 3px solid var(--loss-color, #ef4444);
+    
+    .trade-type {
+      color: var(--loss-color, #ef4444);
+    }
+    
+    &:hover {
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+    }
+    
+    // Negative amount
+    .loss {
+      color: var(--loss-color, #ef4444);
+    }
+  }
+  
+  // Buy card variant
+  &.buy {
+    border-left: 3px solid var(--profit-color, #22c55e);
+    
+    .trade-type {
+      color: var(--profit-color, #22c55e);
+    }
+    
+    &:hover {
+      box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
+    }
+  }
+  
+  // Positive amount styling
+  .profit {
+    color: var(--profit-color, #22c55e);
+  }
+} 

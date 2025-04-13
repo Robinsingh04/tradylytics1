@@ -93,10 +93,12 @@ const applyTheme = (isDarkTheme: boolean, themeColor: string) => {
   
   // Apply theme mode (dark or light)
   if (isDarkTheme) {
-    document.body.classList.add('dark');
-    document.body.classList.remove('light');
+    document.body.classList.add('dark-theme');
+    document.body.classList.remove('light-theme');
+    document.documentElement.setAttribute('data-theme', 'dark');
   } else {
-    document.body.classList.add('light');
-    document.body.classList.remove('dark');
+    document.body.classList.add('light-theme');
+    document.body.classList.remove('dark-theme');
+    document.documentElement.setAttribute('data-theme', 'light');
   }
 }; 

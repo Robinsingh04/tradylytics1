@@ -1,6 +1,7 @@
 @use '../abstracts/variables' as vars;
 @use '../abstracts/functions' as func;
 @use '../abstracts/mixins' as mix;
+@use 'sass:meta';
 
 // Utility classes for margins and paddings
 
@@ -33,7 +34,7 @@ $sides: (
         @if $side == '' {
           // Apply to all sides
           #{$prop}: $space-value !important;
-        } @else if type-of($side) == 'list' {
+        } @else if meta.type-of($side) == 'list' {
           // Apply to multiple sides (x or y)
           @each $s in $side {
             #{$prop}-#{$s}: $space-value !important;
@@ -50,7 +51,7 @@ $sides: (
       .#{$prop-abbr}#{$side-abbr}-auto {
         @if $side == '' {
           margin: auto !important;
-        } @else if type-of($side) == 'list' {
+        } @else if meta.type-of($side) == 'list' {
           @each $s in $side {
             margin-#{$s}: auto !important;
           }
@@ -82,7 +83,7 @@ $breakpoint-suffix: (
           .#{$class-name} {
             @if $side == '' {
               #{$prop}: $space-value !important;
-            } @else if type-of($side) == 'list' {
+            } @else if meta.type-of($side) == 'list' {
               @each $s in $side {
                 #{$prop}-#{$s}: $space-value !important;
               }
@@ -97,7 +98,7 @@ $breakpoint-suffix: (
           .#{$prop-abbr}#{$side-abbr}-auto-#{$bp-suffix} {
             @if $side == '' {
               margin: auto !important;
-            } @else if type-of($side) == 'list' {
+            } @else if meta.type-of($side) == 'list' {
               @each $s in $side {
                 margin-#{$s}: auto !important;
               }

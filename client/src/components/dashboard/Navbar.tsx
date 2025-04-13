@@ -16,15 +16,15 @@ import { GradientText } from './GradientText';
 import { ThemeToggle } from './ThemeToggle';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  height: '60px',
+  height: '48px',
   backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#ffffff',
   boxShadow: 'none',
   borderBottom: `1px solid ${theme.palette.mode === 'dark' ? '#333333' : '#e0e0e0'}`,
 }));
 
 const StyledToolbar = styled(Toolbar)({
-  height: '60px',
-  minHeight: '60px',
+  height: '48px',
+  minHeight: '48px',
   padding: '0 16px',
   display: 'flex',
   justifyContent: 'space-between',

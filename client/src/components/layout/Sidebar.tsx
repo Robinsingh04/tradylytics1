@@ -16,7 +16,7 @@ const SidebarItem = ({ icon, label, to, isActive = false, expanded }: SidebarIte
         <div className="icon">
           <span className="material-icons">{icon}</span>
         </div>
-        <div className={`label ${expanded ? 'expanded' : ''}`}>{label}</div>
+        <span className={`label ${expanded ? 'expanded' : ''}`}>{label}</span>
         {!expanded && <div className="sidebar-tooltip">{label}</div>}
       </a>
     </Link>
@@ -57,7 +57,7 @@ export const Sidebar = ({ onExpandChange }: SidebarProps) => {
     >
       <div className="sidebar-header">
         <div className="logo-icon">TL</div>
-        <div className={`logo-text ${expanded ? 'expanded' : ''}`}>TradyLytics</div>
+        <span className={`logo-text ${expanded ? 'expanded' : ''}`}>TradyLytics</span>
       </div>
       
       <div className="sidebar-menu">

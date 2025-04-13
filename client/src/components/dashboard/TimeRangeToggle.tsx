@@ -13,6 +13,14 @@ export const TimeRangeToggle: React.FC<TimeRangeToggleProps> = ({
 }) => {
   const ranges: TimeRange[] = ['day', 'week', 'month', 'year'];
   
+  // Map of time ranges to their abbreviated labels
+  const rangeLabels: Record<TimeRange, string> = {
+    day: 'D',
+    week: 'W',
+    month: 'M',
+    year: 'Y'
+  };
+  
   return (
     <div className="time-range-toggle">
       {ranges.map((range) => (
@@ -21,7 +29,7 @@ export const TimeRangeToggle: React.FC<TimeRangeToggleProps> = ({
           className={`time-range-toggle-button ${activeRange === range ? 'active' : ''}`}
           onClick={() => onChange(range)}
         >
-          {range.charAt(0).toUpperCase() + range.slice(1)}
+          <span>{rangeLabels[range]}</span>
         </button>
       ))}
     </div>

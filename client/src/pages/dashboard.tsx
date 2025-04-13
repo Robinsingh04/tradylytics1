@@ -31,7 +31,7 @@ const DashboardContainer = styled(Box)(() => ({
 
 const MainContent = styled(Container)(() => ({
   flexGrow: 1,
-  paddingTop: '76px', // 60px navbar + 16px padding
+  paddingTop: '64px', // 48px navbar + 16px padding
   paddingBottom: '16px',
   maxWidth: '1280px',
 }));
@@ -216,39 +216,52 @@ export default function Dashboard() {
         </div>
 
         {/* Charts */}
-        <div className="d-flex flex-column flex-md-row gap-4 mb-4">
-          {isLoadingEquity ? (
-            <div className="card flex-1">
-              <div className="card-body p-4">
-                <div className="skeleton-chart"></div>
-              </div>
-            </div>
-          ) : formattedEquityData ? (
-            <EquityCurveChart data={formattedEquityData} />
-          ) : (
-            <div className="card flex-1">
-              <div className="card-body p-4 text-center text-sm">
+        <Box sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: { xs: '1fr', md: '60% 40%' },
+          gap: 2,
+          mb: 2
+        }}>
+          <Box sx={{ 
+            bgcolor: 'background.paper', 
+            borderRadius: 1, 
+            overflow: 'hidden',
+            boxShadow: 1,
+            height: '100%'
+          }}>
+            {isLoadingEquity ? (
+              <Box sx={{ p: 2 }}>
+                <Skeleton variant="rectangular" height={240} />
+              </Box>
+            ) : formattedEquityData ? (
+              <EquityCurveChart data={formattedEquityData} />
+            ) : (
+              <Box sx={{ p: 2, textAlign: 'center' }}>
                 Failed to load equity data
-              </div>
-            </div>
-          )}
+              </Box>
+            )}
+          </Box>
           
-          {isLoadingDrawdown ? (
-            <div className="card flex-1">
-              <div className="card-body p-4">
-                <div className="skeleton-chart"></div>
-              </div>
-            </div>
-          ) : formattedDrawdownData ? (
-            <DrawdownChart data={formattedDrawdownData} />
-          ) : (
-            <div className="card flex-1">
-              <div className="card-body p-4 text-center text-sm">
+          <Box sx={{ 
+            bgcolor: 'background.paper', 
+            borderRadius: 1, 
+            overflow: 'hidden',
+            boxShadow: 1,
+            height: '100%'
+          }}>
+            {isLoadingDrawdown ? (
+              <Box sx={{ p: 2 }}>
+                <Skeleton variant="rectangular" height={240} />
+              </Box>
+            ) : formattedDrawdownData ? (
+              <DrawdownChart data={formattedDrawdownData} />
+            ) : (
+              <Box sx={{ p: 2, textAlign: 'center' }}>
                 Failed to load drawdown data
-              </div>
-            </div>
-          )}
-        </div>
+              </Box>
+            )}
+          </Box>
+        </Box>
 
         {/* Calendar and Open Trades */}
         <div className="d-flex flex-column flex-lg-row gap-4">

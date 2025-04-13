@@ -4,6 +4,8 @@ import { useSyncHover } from '../../hooks/useSyncHover';
 
 interface EquityCurveChartProps {
   timeRanges?: string[];
+  data?: any[];
+  style?: React.CSSProperties;
 }
 
 // Generate mock data for the equity curve
@@ -30,7 +32,9 @@ const generateEquityData = (days: number): DataPoint[] => {
 };
 
 export const EquityCurveChart: React.FC<EquityCurveChartProps> = ({ 
-  timeRanges = ['1W', '1M', '3M', 'YTD', '1Y', 'All']
+  timeRanges = ['1W', '1M', '3M', 'YTD', '1Y', 'All'],
+  data,
+  style
 }) => {
   const [activeRange, setActiveRange] = useState('1M');
   const [chartData, setChartData] = useState<DataPoint[]>([]);
@@ -63,15 +67,15 @@ export const EquityCurveChart: React.FC<EquityCurveChartProps> = ({
         break;
     }
     
-    setChartData(generateEquityData(days));
-  }, [activeRange]);
+    setChartData(data || generateEquityData(days));
+  }, [activeRange, data]);
   
   const handleHover = (index: number | null) => {
     setHoveredIndex(index);
   };
   
   return (
-    <div className="chart-card">
+    <div className="chart-card" style={{ width: '100%', height: '100%' }}>
       <div className="chart-card-header">
         <h3 className="chart-card-title">Equity Curve</h3>
         <div className="time-range-toggle">
@@ -87,7 +91,7 @@ export const EquityCurveChart: React.FC<EquityCurveChartProps> = ({
         </div>
       </div>
       
-      <div className="chart-card-content" style={{ height: '240px' }}>
+      <div className="chart-card-content">
         <LineChart 
           data={chartData}
           color="#4CAF50"

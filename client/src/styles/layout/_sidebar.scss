@@ -4,9 +4,9 @@
   left: 0;
   height: 100vh;
   background-color: var(--bg-primary);
-  width: 60px;
+  width: 70px;
   overflow: hidden;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.25s ease;
   z-index: 1200; // Higher than navbar to ensure it's on top
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   
@@ -17,7 +17,7 @@
   &-header {
     display: flex;
     align-items: center;
-    height: 60px;
+    height: 48px;
     padding: 0 16px;
     border-bottom: 1px solid var(--bg-tertiary);
   }
@@ -58,18 +58,15 @@
     font-weight: 600;
     opacity: 0;
     transform: translateX(-10px);
-    transition: 
-      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-      max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s ease;
     white-space: nowrap;
-    max-width: 0;
+    width: 0;
     overflow: hidden;
     
     &.expanded {
       opacity: 1;
       transform: translateX(0);
-      max-width: 160px;
+      width: 120px;
     }
   }
 }
@@ -86,10 +83,9 @@
   text-decoration: none !important;
   position: relative;
   
-  // Center the content when collapsed
+  // Don't center content when collapsed, keep left aligned like TL
   .sidebar:not(.expanded) & {
-    justify-content: center;
-    padding: 12px 8px;
+    padding: 12px 16px; // Keep same padding to maintain icon position
   }
   
   &:hover {
@@ -111,11 +107,11 @@
     width: 24px;
     height: 24px;
     margin-right: 16px;
-    transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
     
-    // Remove right margin when collapsed
+    // Always keep margin even when collapsed
     .sidebar:not(.expanded) & {
-      margin-right: 0;
+      margin-right: 16px;
     }
   }
   
@@ -125,23 +121,21 @@
     white-space: nowrap;
     opacity: 0;
     transform: translateX(-10px);
-    transition: 
-      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-      max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    max-width: 0;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    width: 0;
     overflow: hidden;
     
     &.expanded {
       opacity: 1;
       transform: translateX(0);
-      max-width: 160px;
+      width: 140px;
     }
   }
   
   .sidebar-tooltip {
     position: absolute;
-    left: 60px; // Sidebar width when collapsed
+    left: 50px; // Adjusted to account for icon position
     top: 50%;
     transform: translateY(-50%);
     background-color: var(--bg-secondary);
@@ -156,7 +150,7 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     border: 1px solid rgba(var(--theme-color-rgb, 0, 0, 0), 0.1);
     backdrop-filter: blur(8px);
     

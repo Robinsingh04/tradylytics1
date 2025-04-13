@@ -20,7 +20,7 @@ interface LineChartProps {
 export const LineChart: React.FC<LineChartProps> = ({
   data,
   color,
-  height = 40,
+  height = 100,
   showTooltip = true,
   onHover,
   hoveredIndex,
@@ -53,31 +53,41 @@ export const LineChart: React.FC<LineChartProps> = ({
     if (!containerRef.current) return { left: x, top: y - 40, position: 'above' };
     
     const rect = containerRef.current.getBoundingClientRect();
-    const tooltipWidth = 180; // Increase tooltip width estimate
-    const tooltipHeight = 80; // Increase tooltip height estimate
-    const arrowHeight = 8; // Height of the triangle arrow
-    const cursorOffset = 15; // Offset from cursor
+    const tooltipWidth = 160; // Increased estimated tooltip width
+    const tooltipHeight = 80; // Increased estimated tooltip height
+    const arrowOffset = 10; // Offset for the arrow
+    const padding = 12; // Increased padding from container edges
     
-    // Calculate the position ensuring the tooltip stays within the container
+    // Calculate the initial position
     let left = x;
-    let top = y - tooltipHeight - arrowHeight - cursorOffset; // Position above the point with more padding
+    let top = y - tooltipHeight - arrowOffset;
     let position = 'above';
     
-    // Adjust horizontal position if too close to the right edge
-    if (x + (tooltipWidth / 2) > rect.width) {
-      left = rect.width - (tooltipWidth / 2);
+    // Check if tooltip would be cut off at the top
+    if (top < padding) {
+      // If there's not enough space above, try placing it below
+      const spaceBelow = rect.height - y - arrowOffset;
+      
+      // If there's enough space below, place it there
+      if (spaceBelow >= tooltipHeight + padding) {
+        top = y + arrowOffset;
+        position = 'below';
+      } else {
+        // If there's not enough space below either, place it where there's more space
+        if (y < rect.height / 2) {
+          // More space below
+          top = y + arrowOffset;
+          position = 'below';
+        } else {
+          // More space above, adjust to fit with padding
+          top = Math.max(padding, y - tooltipHeight - arrowOffset);
+          position = 'above';
+        }
+      }
     }
     
-    // Adjust horizontal position if too close to the left edge
-    if (x - (tooltipWidth / 2) < 0) {
-      left = tooltipWidth / 2;
-    }
-    
-    // If too close to the top, position below the point instead
-    if (top < 0) {
-      top = y + arrowHeight + cursorOffset; // Position below the point with more padding
-      position = 'below';
-    }
+    // Ensure tooltip stays within container horizontally
+    left = Math.max(padding + tooltipWidth/2, Math.min(rect.width - padding - tooltipWidth/2, left));
     
     return { left, top, position };
   };
@@ -98,12 +108,12 @@ export const LineChart: React.FC<LineChartProps> = ({
     
     // Calculate min and max values for scaling
     const values = data.map(point => point.value);
-    const minValue = Math.min(...values) * 0.95; // Add some padding
-    const maxValue = Math.max(...values) * 1.05; // Add some padding
+    const minValue = Math.min(...values) * 0.98; // Reduce padding
+    const maxValue = Math.max(...values) * 1.02; // Reduce padding
     const valueRange = maxValue - minValue;
     
-    // Padding
-    const padding = { top: 8, right: 8, bottom: 8, left: 8 };
+    // Reduce padding
+    const padding = { top: 4, right: 4, bottom: 4, left: 4 };
     const chartWidth = canvas.width / (window.devicePixelRatio || 1) - padding.left - padding.right;
     const chartHeight = canvas.height / (window.devicePixelRatio || 1) - padding.top - padding.bottom;
     
@@ -314,11 +324,13 @@ export const LineChart: React.FC<LineChartProps> = ({
       className="line-chart" 
       ref={containerRef} 
       style={{ 
-        height,
+        height: '100%',
         position: 'relative',
         zIndex: 5,
         width: '100%',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'flex-start'
       }}
     >
       <canvas 
@@ -335,15 +347,8 @@ export const LineChart: React.FC<LineChartProps> = ({
         <div 
           className={`line-chart-tooltip ${getTooltipPosition(activePoint.x, activePoint.y).position}`}
           style={{
-            position: 'absolute',
             left: getTooltipPosition(activePoint.x, activePoint.y).left,
-            top: getTooltipPosition(activePoint.x, activePoint.y).top,
-            transform: 'translateX(-50%)',
-            zIndex: 100,
-            maxWidth: '200px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap'
+            top: getTooltipPosition(activePoint.x, activePoint.y).top
           }}
         >
           <div className="line-chart-tooltip-value">{formatValue(activePoint.value)}</div>

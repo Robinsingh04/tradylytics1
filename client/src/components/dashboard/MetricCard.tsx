@@ -54,7 +54,18 @@ export const MetricCard = ({
       </div>
       
       {chartData.length > 0 && (
-        <div className="metric-card-chart">
+        <div 
+          className="metric-card-chart" 
+          style={{ 
+            overflow: 'visible',
+            position: 'relative',
+            zIndex: 1,
+            flex: 1,
+            minHeight: 0,
+            display: 'flex',
+            alignItems: 'flex-start'
+          }}
+        >
           <LineChart 
             data={chartData}
             color={color}
@@ -63,6 +74,7 @@ export const MetricCard = ({
             syncId={syncId}
             valuePrefix={valuePrefix}
             valueSuffix={valueSuffix}
+            showTooltip={true}
           />
         </div>
       )}
