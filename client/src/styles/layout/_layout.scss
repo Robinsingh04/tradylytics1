@@ -3,16 +3,90 @@
   min-height: 100vh;
   background-color: var(--bg-primary);
   color: var(--text-primary);
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 }
 
 .main-content {
   flex: 1;
-  margin-left: 60px; // Same as collapsed sidebar width
-  margin-top: 48px; // Same as navbar height
   padding: 16px;
-  transition: margin-left 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+  margin-left: 240px; // Sidebar width
+  transition: margin-left 0.3s ease;
   
-  &.sidebar-expanded {
-    margin-left: 220px; // Same as expanded sidebar width
+  @media (max-width: 992px) {
+    margin-left: 200px;
+  }
+  
+  @media (max-width: 768px) {
+    margin-left: 0;
+    margin-top: 60px; // Mobile navbar height
+    padding: 12px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 8px;
+  }
+}
+
+// Responsive containers
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
+  
+  @media (max-width: 768px) {
+    padding: 0 12px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0 8px;
+  }
+}
+
+// Responsive spacing
+.section {
+  margin-bottom: 24px;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 20px;
+  }
+  
+  @media (max-width: 480px) {
+    margin-bottom: 16px;
+  }
+}
+
+// Scrollable containers for overflowing content
+.scrollable-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--theme-color-rgb, 0, 0, 0), 0.3);
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+// Fix for mobile tables
+.responsive-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  
+  table {
+    min-width: 600px;
   }
 } 

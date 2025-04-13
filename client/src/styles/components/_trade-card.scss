@@ -13,6 +13,14 @@
   background-color: #1A1A1A; // Dark background regardless of theme
   color: #FFFFFF;
   
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.5rem;
+  }
+  
   // Card header
   .trade-header {
     display: flex;
@@ -20,17 +28,30 @@
     align-items: center;
     margin-bottom: 0.5rem;
     
+    @media (max-width: 480px) {
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+    
     .trade-type {
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       font-size: 0.875rem;
+      
+      @media (max-width: 480px) {
+        font-size: 0.75rem;
+      }
     }
     
     .trade-profit,
     .trade-loss {
       font-weight: 600;
       font-size: 0.875rem;
+      
+      @media (max-width: 480px) {
+        font-size: 0.75rem;
+      }
     }
   }
   
@@ -40,6 +61,12 @@
     justify-content: space-between;
     font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.7);
+    
+    @media (max-width: 480px) {
+      flex-direction: column;
+      gap: 0.25rem;
+      font-size: 0.675rem;
+    }
   }
   
   // Trade actions
@@ -48,6 +75,10 @@
     justify-content: flex-end;
     gap: 0.5rem;
     margin-top: 0.5rem;
+    
+    @media (max-width: 480px) {
+      margin-top: 0.75rem;
+    }
   }
   
   // Edit and Close buttons
@@ -57,6 +88,11 @@
     color: rgba(120, 155, 255, 0.9);
     font-size: 0.75rem;
     cursor: pointer;
+    
+    @media (max-width: 480px) {
+      font-size: 0.675rem;
+      padding: 0.25rem 0.5rem;
+    }
     
     &:hover {
       text-decoration: underline;
@@ -77,6 +113,10 @@
     
     &:hover {
       box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+      
+      @media (max-width: 480px) {
+        box-shadow: none;
+      }
     }
     
     // Negative amount
@@ -95,11 +135,174 @@
     
     &:hover {
       box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
+      
+      @media (max-width: 480px) {
+        box-shadow: none;
+      }
     }
   }
   
   // Positive amount styling
   .profit {
     color: var(--profit-color, #22c55e);
+  }
+}
+
+// Trade rows in OpenTrades component
+.trade-row {
+  background-color: rgba(var(--bg-secondary-rgb, 30, 30, 30), 0.6);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px;
+  }
+  
+  &.profit {
+    border-left-color: var(--success, #4CAF50);
+  }
+  
+  &.loss {
+    border-left-color: var(--error, #F44336);
+  }
+  
+  .trade-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    
+    .symbol-direction {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      .symbol {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-primary);
+      }
+      
+      .direction {
+        font-size: 12px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 500;
+        
+        &.BUY {
+          background-color: rgba(76, 175, 80, 0.1);
+          color: #4CAF50;
+        }
+        
+        &.SELL {
+          background-color: rgba(244, 67, 54, 0.1);
+          color: #F44336;
+        }
+      }
+    }
+    
+    .quantity-date {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      
+      @media (max-width: 480px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+      }
+    }
+    
+    .prices {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      
+      @media (max-width: 480px) {
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      
+      .separator {
+        @media (max-width: 480px) {
+          display: none;
+        }
+      }
+    }
+  }
+  
+  .trade-pnl-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    
+    @media (max-width: 768px) {
+      width: 100%;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .pnl {
+      font-weight: 600;
+      font-size: 14px;
+      
+      &.positive {
+        color: var(--success, #4CAF50);
+      }
+      
+      &.negative {
+        color: var(--error, #F44336);
+      }
+      
+      .percent {
+        font-size: 12px;
+        margin-left: 4px;
+        opacity: 0.8;
+      }
+    }
+    
+    .actions {
+      display: flex;
+      gap: 8px;
+      
+      button {
+        background: none;
+        border: none;
+        font-size: 12px;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        
+        &.edit-btn {
+          color: var(--info, #2196F3);
+          
+          &:hover {
+            background-color: rgba(33, 150, 243, 0.1);
+          }
+        }
+        
+        &.close-btn {
+          color: var(--error, #F44336);
+          
+          &:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+          }
+        }
+      }
+    }
   }
 } 

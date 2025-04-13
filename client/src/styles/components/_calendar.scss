@@ -12,16 +12,35 @@
   border: 1px solid var(--border);
   box-shadow: var(--shadow-md);
   
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+  }
+  
   .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
     
+    @media (max-width: 480px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
     h2 {
       font-size: 1.25rem;
       font-weight: 600;
       margin: 0;
+      
+      @media (max-width: 480px) {
+        font-size: 1rem;
+      }
     }
     
     .calendar-controls {
@@ -41,6 +60,11 @@
         cursor: pointer;
         transition: all 0.2s ease;
         
+        @media (max-width: 480px) {
+          width: 28px;
+          height: 28px;
+        }
+        
         &:hover {
           background-color: var(--button-hover);
           color: var(--text-primary);
@@ -54,12 +78,21 @@
     grid-template-columns: repeat(7, 1fr);
     gap: 0.5rem;
     
+    @media (max-width: 768px) {
+      gap: 0.25rem;
+    }
+    
     .weekday-header {
       text-align: center;
       font-size: 0.75rem;
       font-weight: 600;
       color: var(--text-secondary);
       padding: 0.5rem 0;
+      
+      @media (max-width: 480px) {
+        font-size: 0.625rem;
+        padding: 0.25rem 0;
+      }
     }
   }
 }
@@ -77,15 +110,36 @@
   background-color: #1A1A1A;
   color: #FFFFFF;
   
+  @media (max-width: 768px) {
+    border-radius: 6px;
+  }
+  
   .day-number {
     font-size: 1rem;
     font-weight: 500;
     margin-bottom: 0.25rem;
+    
+    @media (max-width: 768px) {
+      font-size: 0.875rem;
+      margin-bottom: 0.125rem;
+    }
+    
+    @media (max-width: 480px) {
+      font-size: 0.75rem;
+    }
   }
   
   .day-amount {
     font-size: 0.75rem;
     font-weight: 600;
+    
+    @media (max-width: 768px) {
+      font-size: 0.625rem;
+    }
+    
+    @media (max-width: 480px) {
+      font-size: 0.5rem;
+    }
     
     &.profit {
       color: var(--profit-color);
@@ -99,11 +153,19 @@
   .day-trades {
     font-size: 0.625rem;
     color: rgba(255, 255, 255, 0.7);
+    
+    @media (max-width: 480px) {
+      font-size: 0.5rem;
+    }
   }
   
   &:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-sm);
+    
+    @media (max-width: 480px) {
+      transform: none;
+    }
   }
   
   &.today {
@@ -122,6 +184,12 @@
       padding: 0.125rem 0.375rem;
       border-radius: 1rem;
       white-space: nowrap;
+      
+      @media (max-width: 480px) {
+        font-size: 0.5rem;
+        padding: 0.0625rem 0.25rem;
+        bottom: -0.375rem;
+      }
     }
   }
   
@@ -151,3 +219,336 @@
 }
 
 // End of calendar styles 
+
+// Calendar wrapper (in CalendarView component)
+.calendar-wrapper {
+  width: 100%;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.5rem;
+  }
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    
+    @media (max-width: 480px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+  }
+  
+  .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    
+    @media (max-width: 480px) {
+      font-size: 0.875rem;
+    }
+  }
+  
+  .month-navigation {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .month-nav-button {
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+    padding: 0;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+  
+  .current-month {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    
+    @media (max-width: 480px) {
+      font-size: 0.75rem;
+    }
+  }
+} 
+
+// Day Details Popup styles for the modal
+.day-details-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  
+  &-content {
+    background-color: var(--bg-secondary);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    @media (max-width: 768px) {
+      max-width: 100%;
+      max-height: 85vh;
+    }
+  }
+  
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+      color: var(--text-primary);
+      
+      @media (max-width: 480px) {
+        font-size: 16px;
+      }
+    }
+  }
+  
+  &-close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    padding: 0;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+  }
+}
+
+.day-details-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 20px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (max-width: 480px) {
+    padding: 16px;
+    gap: 12px;
+  }
+}
+
+.day-details-stat {
+  .stat-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  
+  .stat-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    
+    &.positive {
+      color: var(--success, #4CAF50);
+    }
+    
+    &.negative {
+      color: var(--error, #F44336);
+    }
+    
+    @media (max-width: 480px) {
+      font-size: 16px;
+    }
+  }
+}
+
+.day-details-section {
+  padding: 0 20px 20px;
+  
+  @media (max-width: 480px) {
+    padding: 0 16px 16px;
+  }
+  
+  h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 12px;
+    color: var(--text-primary);
+    
+    @media (max-width: 480px) {
+      font-size: 14px;
+    }
+  }
+}
+
+.day-details-results {
+  display: flex;
+  gap: 16px;
+  
+  .result-item {
+    flex: 1;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 12px;
+    
+    .result-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+    
+    .result-value {
+      font-size: 18px;
+      font-weight: 600;
+      
+      &.positive {
+        color: var(--success, #4CAF50);
+      }
+      
+      &.negative {
+        color: var(--error, #F44336);
+      }
+      
+      @media (max-width: 480px) {
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+.day-details-instruments {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+  
+  .instrument-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 12px;
+    
+    .instrument-name {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+    
+    .instrument-trades {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+    
+    .instrument-pnl {
+      font-size: 16px;
+      font-weight: 600;
+      
+      &.positive {
+        color: var(--success, #4CAF50);
+      }
+      
+      &.negative {
+        color: var(--error, #F44336);
+      }
+    }
+  }
+}
+
+.day-details-time {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+  
+  .time-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 12px;
+    
+    .time-label {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+    
+    .time-trades {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+    
+    .time-pnl {
+      font-size: 16px;
+      font-weight: 600;
+      
+      &.positive {
+        color: var(--success, #4CAF50);
+      }
+      
+      &.negative {
+        color: var(--error, #F44336);
+      }
+    }
+  }
+} 
