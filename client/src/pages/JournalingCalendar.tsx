@@ -82,32 +82,38 @@ export const JournalingCalendar = () => {
           xs: '1fr', 
           md: 'minmax(0, 1fr) 320px' // Use minmax to prevent trade table from shrinking too much
         },
-        gridTemplateRows: { xs: 'auto auto auto', md: '1fr 1fr' },
+        gridTemplateRows: { 
+          xs: 'auto auto auto', 
+          md: 'auto auto 1fr' 
+        },
         gridTemplateAreas: {
           xs: `
-            "trades"
             "calendar"
             "metrics"
+            "trades"
           `,
           md: `
             "trades calendar"
             "trades metrics"
+            "trades ."
           `
         },
         gap: 2,
         height: 'calc(100% - 40px)',
+        m: 0, // Remove outer margin
+        p: 0
       }}>
-        {/* TOP RIGHT - Quadrant 1 (Calendar) */}
+        {/* TOP RIGHT - Calendar */}
         <Box sx={{ 
           gridArea: 'calendar',
           width: { xs: '100%', md: '320px' },
           maxWidth: '100%',
-          justifySelf: 'end',
-          alignSelf: 'start'
+          height: 'fit-content'
         }}>
           <QuadrantPaper 
             elevation={1} 
             className="journaling-paper calendar-panel"
+            sx={{ p: 1.5, width: '100%' }}
           >
             <ComponentTitle variant="h6">Select Trading Day</ComponentTitle>
             <CalendarSelector 
@@ -117,7 +123,24 @@ export const JournalingCalendar = () => {
           </QuadrantPaper>
         </Box>
         
-        {/* SPANS TOP-LEFT AND BOTTOM-LEFT - Quadrants 2 & 3 (Trade Table) */}
+        {/* MIDDLE RIGHT - Directly below Calendar - Metrics Panel */}
+        <Box sx={{ 
+          gridArea: 'metrics',
+          width: { xs: '100%', md: '320px' },
+          maxWidth: '100%',
+          height: 'fit-content'
+        }}>
+          <QuadrantPaper 
+            elevation={1} 
+            className="journaling-paper metrics-panel"
+            sx={{ p: 1.5, width: '100%' }}
+          >
+            <ComponentTitle variant="h6">Daily Metrics</ComponentTitle>
+            <DailyMetricsPanel metrics={metrics} />
+          </QuadrantPaper>
+        </Box>
+        
+        {/* LEFT SIDE - Trade Table */}
         <Box sx={{ 
           gridArea: 'trades',
           display: 'flex',
@@ -127,27 +150,11 @@ export const JournalingCalendar = () => {
           <TradeTablePaper 
             elevation={1} 
             className="journaling-paper trade-table-panel"
+            sx={{ width: '100%' }}
           >
             <ComponentTitle variant="h6">Trade Details</ComponentTitle>
             <TradeDetailsTable trades={trades} />
           </TradeTablePaper>
-        </Box>
-        
-        {/* BOTTOM RIGHT - Quadrant 4 (Metrics Panel) */}
-        <Box sx={{ 
-          gridArea: 'metrics',
-          width: { xs: '100%', md: '320px' },
-          maxWidth: '100%',
-          justifySelf: 'end',
-          alignSelf: 'start'
-        }}>
-          <QuadrantPaper 
-            elevation={1} 
-            className="journaling-paper metrics-panel"
-          >
-            <ComponentTitle variant="h6">Daily Metrics</ComponentTitle>
-            <DailyMetricsPanel metrics={metrics} />
-          </QuadrantPaper>
         </Box>
       </Box>
     </PageContainer>

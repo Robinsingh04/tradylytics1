@@ -48,6 +48,30 @@
   @media (min-width: 960px) {
     width: 320px;
   }
+  
+  // Style for the metrics cards
+  .MuiPaper-root {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 6px;
+    overflow: hidden;
+    
+    &:hover {
+      box-shadow: var(--shadow-sm);
+      border-color: var(--border-hover);
+    }
+  }
+  
+  // Grid container for side-by-side metrics
+  .MuiGrid-container {
+    margin: 0;
+    width: 100%;
+  }
+  
+  // Make sure all progress indicators have smooth transitions
+  .MuiCircularProgress-root,
+  .MuiLinearProgress-root {
+    transition: all 0.3s ease;
+  }
 }
 
 // Calendar Selector Styles
@@ -305,12 +329,14 @@
       padding: 12px 16px;
       white-space: nowrap;
       border-bottom: 2px solid var(--border);
+      font-size: 0.68rem;
+      letter-spacing: 0.02em;
     }
   }
   
   .MuiTableBody-root {
     .MuiTableRow-root {
-      transition: background-color 0.2s ease;
+      transition: background-color 0.2s ease, border-left-color 0.2s ease;
       
       &:hover {
         background-color: rgba(var(--primary-rgb), 0.05);
@@ -320,6 +346,21 @@
         padding: 12px 16px;
         border-bottom: 1px solid var(--border);
       }
+    }
+  }
+  
+  // Trade status colors
+  .trade-win {
+    background-color: rgba(var(--profit-color-rgb), 0.02);
+    &:hover {
+      background-color: rgba(var(--profit-color-rgb), 0.05);
+    }
+  }
+  
+  .trade-loss {
+    background-color: rgba(var(--loss-color-rgb), 0.02);
+    &:hover {
+      background-color: rgba(var(--loss-color-rgb), 0.05);
     }
   }
   
@@ -343,12 +384,199 @@
   }
 }
 
+// Custom styles for trade direction indicators
+.direction-indicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.7rem;
+  
+  &.long {
+    background-color: rgba(var(--profit-color-rgb), 0.1);
+    color: var(--profit-color);
+    svg {
+      margin-right: 3px;
+      font-size: 0.85rem;
+    }
+  }
+  
+  &.short {
+    background-color: rgba(var(--loss-color-rgb), 0.1);
+    color: var(--loss-color);
+    svg {
+      margin-right: 3px;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+// Price change indicators
+.price-change {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.65rem;
+  
+  &.higher {
+    color: var(--profit-color);
+  }
+  
+  &.lower {
+    color: var(--loss-color);
+  }
+  
+  svg {
+    font-size: 0.8rem;
+    margin-left: 2px;
+  }
+}
+
+// P&L display
+.pnl-display {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.7rem;
+  
+  &.profit {
+    background-color: rgba(var(--profit-color-rgb), 0.1);
+    color: var(--profit-color);
+  }
+  
+  &.loss {
+    background-color: rgba(var(--loss-color-rgb), 0.1);
+    color: var(--loss-color);
+  }
+  
+  svg {
+    margin-right: 3px;
+    font-size: 1rem;
+  }
+}
+
+// Setup & Strategy display
+.strategy-chip {
+  background-color: rgba(14, 165, 233, 0.1);
+  color: #0ea5e9;
+  font-weight: 600;
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+// ROI display
+.roi-display {
+  font-weight: 700;
+  font-size: 0.65rem;
+  
+  &.positive {
+    color: var(--profit-color);
+  }
+  
+  &.negative {
+    color: var(--loss-color);
+  }
+}
+
+// Symbol display with status dot
+.symbol-with-status {
+  display: flex;
+  align-items: center;
+  
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    
+    &.win {
+      background-color: var(--profit-color);
+    }
+    
+    &.loss {
+      background-color: var(--loss-color);
+    }
+  }
+  
+  .symbol-text {
+    font-weight: 600;
+    font-size: 0.7rem;
+  }
+}
+
 // Metrics Panel Styles
 .metrics-panel {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0; // Important for flex child
+  
+  // P&L Chart specific fixes
+  .pnl-chart-container {
+    overflow: visible !important;
+    min-height: 120px; // Match the new height
+    position: relative;
+    z-index: 1;
+    margin: 0 !important;
+    padding: 0 !important;
+    
+    .recharts-wrapper {
+      overflow: visible !important;
+      margin: 0 !important;
+      
+      .recharts-surface {
+        overflow: visible !important;
+      }
+    }
+    
+    // Make axis ticks compact but ensure they're visible
+    .recharts-cartesian-axis-tick-value {
+      font-size: 9px !important;
+    }
+    
+    // Fix for Y-axis text alignment
+    .recharts-yAxis .recharts-cartesian-axis-tick-value {
+      text-anchor: end !important;
+    }
+    
+    // Push the right axis ticks slightly left
+    .recharts-yAxis .recharts-cartesian-axis-tick {
+      transform: translateX(-3px);
+    }
+    
+    // Ensure tooltip is visible and above other elements
+    .recharts-tooltip-wrapper {
+      z-index: 10;
+      pointer-events: none;
+    }
+    
+    // Adjust all of the margins around the chart
+    .recharts-wrapper .recharts-cartesian-grid {
+      transform: translateX(0);
+    }
+    
+    // Ensure the chart area uses the full available width
+    .recharts-area {
+      transform-origin: center;
+      margin: 0;
+    }
+    
+    // Fix for axis text being cut off
+    .recharts-cartesian-axis text {
+      fill: var(--text-secondary);
+    }
+    
+    // Make sure chart container takes full space
+    .recharts-responsive-container {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+  }
   
   .metric-card {
     background-color: var(--bg-tertiary);
@@ -733,5 +961,185 @@
   
   .journaling-paper-hidden-mobile {
     display: none !important;
+  }
+}
+
+// Trade Detail Dialog Styles
+.MuiDialog-paper.trade-detail-dialog {
+  overflow: visible;
+  
+  .MuiDialogTitle-root {
+    padding: 16px 24px;
+    background-color: var(--bg-tertiary);
+    
+    .dialog-title-content {
+      display: flex;
+      align-items: center;
+      
+      .symbol {
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-right: 12px;
+      }
+      
+      .direction-chip, .status-chip {
+        margin-right: 8px;
+      }
+    }
+  }
+  
+  .MuiDialogContent-root {
+    padding: 24px;
+  }
+  
+  // Trade stat cards
+  .stat-card {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 16px;
+    height: 100%;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .stat-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      
+      svg {
+        margin-right: 8px;
+        color: var(--text-secondary);
+      }
+      
+      .stat-title {
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+    }
+    
+    .stat-content {
+      .stat-item {
+        margin-bottom: 12px;
+        
+        .stat-label {
+          font-size: 0.75rem;
+          color: var(--text-secondary);
+          margin-bottom: 4px;
+        }
+        
+        .stat-value {
+          font-weight: 500;
+          font-size: 0.875rem;
+          
+          &.profit {
+            color: var(--profit-color);
+          }
+          
+          &.loss {
+            color: var(--loss-color);
+          }
+        }
+      }
+    }
+  }
+  
+  // Price display
+  .price-display {
+    .entry-price, .exit-price, .stop-loss {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      
+      .price-label {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
+      
+      .price-value {
+        font-weight: 600;
+        font-size: 0.875rem;
+        
+        &.higher {
+          color: var(--profit-color);
+        }
+        
+        &.lower {
+          color: var(--loss-color);
+        }
+      }
+    }
+  }
+  
+  // Setup and pattern chips
+  .setup-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+    
+    .setup-chip {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background-color: rgba(var(--primary-rgb), 0.1);
+      color: var(--primary);
+      font-weight: 500;
+    }
+  }
+  
+  // Rating displays
+  .rating-display {
+    display: flex;
+    align-items: center;
+    
+    .MuiRating-root {
+      font-size: 1rem;
+    }
+    
+    .rating-value {
+      margin-left: 8px;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+  }
+  
+  // Trade notes
+  .trade-notes {
+    margin-top: 16px;
+    padding: 12px;
+    background-color: var(--bg-tertiary);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    
+    .notes-header {
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Make dialog fade in gracefully
+.MuiBackdrop-root {
+  backdrop-filter: blur(2px);
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.MuiDialog-paper {
+  animation: dialogFadeIn 0.2s ease-out;
+}
+
+@keyframes dialogFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 } 

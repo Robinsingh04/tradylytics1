@@ -11,50 +11,49 @@ export const generateMockTradeData = (date: Date): Trade[] => {
   const setupTypes = ['Momentum', 'Reversal', 'Breakout', 'Pullback', 'Support/Resistance', 'Trend Continuation'];
   const catalysts = ['Earnings', 'Economic Data', 'Technical Pattern', 'News', 'Sector Move', 'Market Momentum', 'Volume Spike'];
   
+  // Target win rate (you can adjust this to match the image - about 28.6%)
+  const targetWinRate = 0.286; // ~28.6% win rate
+  
   for (let i = 0; i < numTrades; i++) {
-    const isWin = Math.random() > 0.4; // 60% win rate
+    // More realistic win/loss distribution
+    const isWin = Math.random() < targetWinRate;
     const direction = Math.random() > 0.5 ? 'Long' : 'Short';
-    const openTime = addMinutes(addHours(date, 9 + Math.floor(Math.random() * 6)), Math.floor(Math.random() * 60));
+    
+    // Trading hours
+    const openTime = addMinutes(addHours(new Date(date.setHours(0, 0, 0, 0)), 9 + Math.floor(Math.random() * 6)), Math.floor(Math.random() * 60));
     const durationMinutes = 15 + Math.floor(Math.random() * 120); // 15-135 minutes
     const closeTime = addMinutes(openTime, durationMinutes);
+    
     const symbol = ['AAPL', 'MSFT', 'AMZN', 'TSLA', 'GOOGL', 'META', 'NFLX', 'SPY', 'QQQ'][Math.floor(Math.random() * 9)];
     const entryPrice = parseFloat((50 + Math.random() * 200).toFixed(2));
     
     // Calculate exit price based on win/loss status and direction
-    let percentChange;
-    if (direction === 'Long') {
-      percentChange = isWin ? 
-        (0.5 + Math.random() * 2.5) / 100 : // 0.5% to 3% gain for long win
-        (-2.5 - Math.random() * 1.5) / 100; // -2.5% to -4% loss for long loss
+    // Ensure average win ($160) is smaller than average loss ($388.20) - about 0.41:1 ratio
+    let netPL;
+    if (isWin) {
+      netPL = 120 + Math.random() * 80; // $120-$200 for winning trades
     } else {
-      percentChange = isWin ? 
-        (-0.5 - Math.random() * 2.5) / 100 : // -0.5% to -3% for short win (price went down)
-        (2.5 + Math.random() * 1.5) / 100;  // 2.5% to 4% for short loss (price went up)
+      netPL = -(280 + Math.random() * 220); // -$280 to -$500 for losing trades 
+    }
+    netPL = parseFloat(netPL.toFixed(2));
+    
+    // Calculate exit price based on P&L
+    let exitPrice;
+    if (direction === 'Long') {
+      exitPrice = parseFloat((entryPrice + (netPL / 100)).toFixed(2));
+    } else {
+      exitPrice = parseFloat((entryPrice - (netPL / 100)).toFixed(2));
     }
     
-    const exitPrice = parseFloat((entryPrice * (1 + percentChange)).toFixed(2));
-    
-    // Calculate stop loss price (between entry and exit for losses, beyond exit for wins)
+    // Calculate stop loss price
     let stopLoss = null;
     if (Math.random() > 0.2) { // 80% of trades have stop loss
       if (direction === 'Long') {
-        stopLoss = isWin ? 
-          entryPrice - (entryPrice * (0.5 + Math.random()) / 100) : // 0.5-1.5% below entry for wins
-          exitPrice - (entryPrice * (0.2 + Math.random() * 0.3) / 100); // Slightly below exit for losses
+        stopLoss = entryPrice - (entryPrice * (0.5 + Math.random()) / 100);
       } else {
-        stopLoss = isWin ?
-          entryPrice + (entryPrice * (0.5 + Math.random()) / 100) : // 0.5-1.5% above entry for wins
-          exitPrice + (entryPrice * (0.2 + Math.random() * 0.3) / 100); // Slightly above exit for losses
+        stopLoss = entryPrice + (entryPrice * (0.5 + Math.random()) / 100);
       }
       stopLoss = parseFloat(stopLoss.toFixed(2));
-    }
-    
-    // Calculate NetPL based on direction
-    let netPL;
-    if (direction === 'Long') {
-      netPL = parseFloat(((exitPrice - entryPrice) * 100).toFixed(2));
-    } else {
-      netPL = parseFloat(((entryPrice - exitPrice) * 100).toFixed(2));
     }
     
     // NetROI calculation (as a percentage)
@@ -113,6 +112,36 @@ export const generateMockTradeData = (date: Date): Trade[] => {
 
 // Generate mock metrics data for a given date
 export const generateMockMetricsData = (date: Date): DailyMetrics => {
+  // Create consistent mock data to match the screenshot
+  const timestamps = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00'];
+  
+  // Decreasing P&L curve (starts at -4.76, ends around -12.0)
+  const netCumulativePL = [-4.76, -4.76, -6.0, -8.0, -10.0, -11.0, -11.5, -12.0];
+  
+  // Fixed values to match the screenshot
+  const profitFactor = 4.8;
+  const winPercentage = 33.3;
+  const winningTrades = 2;
+  const losingTrades = 4;
+  const averageWin = 138.94;
+  const averageLoss = 427.38;
+  
+  return {
+    date,
+    netCumulativePL,
+    timestamps,
+    profitFactor,
+    winPercentage,
+    averageWin,
+    averageLoss,
+    totalTrades: winningTrades + losingTrades,
+    winningTrades,
+    losingTrades,
+  };
+};
+
+// Original dynamic mock data generation - keeping for reference
+export const generateDynamicMockMetricsData = (date: Date): DailyMetrics => {
   const mockTrades = generateMockTradeData(date);
   const winningTrades = mockTrades.filter(trade => trade.status === 'Win').length;
   const losingTrades = mockTrades.filter(trade => trade.status === 'Loss').length;
@@ -147,7 +176,7 @@ export const generateMockMetricsData = (date: Date): DailyMetrics => {
   
   const losingTradeValues = mockTrades
     .filter(trade => trade.status === 'Loss')
-    .map(trade => trade.netPL);
+    .map(trade => Math.abs(trade.netPL)); // Ensure losses are positive values
   
   const averageWin = winningTradeValues.length ? 
     parseFloat((winningTradeValues.reduce((sum, val) => sum + val, 0) / winningTradeValues.length).toFixed(2)) : 
@@ -157,21 +186,30 @@ export const generateMockMetricsData = (date: Date): DailyMetrics => {
     parseFloat((losingTradeValues.reduce((sum, val) => sum + val, 0) / losingTradeValues.length).toFixed(2)) : 
     0;
   
-  // Calculate profit factor (absolute value of wins / losses)
+  // Calculate profit factor (gross profits / gross losses)
   const totalWins = winningTradeValues.reduce((sum, val) => sum + val, 0);
-  const totalLosses = Math.abs(losingTradeValues.reduce((sum, val) => sum + val, 0));
-  const profitFactor = totalLosses === 0 ? 
-    totalWins > 0 ? 100 : 0 : // If no losses but some wins, set to maximum
-    parseFloat((totalWins / totalLosses).toFixed(2));
+  const totalLosses = losingTradeValues.reduce((sum, val) => sum + val, 0);
+  
+  let profitFactor;
+  if (totalLosses === 0) {
+    profitFactor = totalWins > 0 ? 3 : 0; // Cap at 3 for better visualization
+  } else {
+    profitFactor = parseFloat((totalWins / totalLosses).toFixed(2));
+  }
+  
+  // Calculate win percentage properly
+  const winPercentage = (winningTrades + losingTrades) > 0 ? 
+    parseFloat(((winningTrades / (winningTrades + losingTrades)) * 100).toFixed(1)) :
+    0;
   
   return {
     date,
     netCumulativePL,
     timestamps,
     profitFactor,
-    winPercentage: parseFloat(((winningTrades / (winningTrades + losingTrades)) * 100).toFixed(1)),
+    winPercentage,
     averageWin,
-    averageLoss: Math.abs(averageLoss), // Use absolute value for easier comparison
+    averageLoss, 
     totalTrades: mockTrades.length,
     winningTrades,
     losingTrades,

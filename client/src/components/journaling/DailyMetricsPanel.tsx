@@ -1,14 +1,13 @@
 import React from 'react';
 import { 
   Box, 
-  Grid, 
   Typography, 
-  styled, 
   useTheme,
   Paper,
   CircularProgress,
   LinearProgress,
-  Divider
+  Divider,
+  Grid
 } from '@mui/material';
 import { 
   XAxis, 
@@ -28,376 +27,328 @@ interface DailyMetricsPanelProps {
   metrics: DailyMetrics;
 }
 
-const MetricsContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  flex: 1,
-  height: '100%',
-  overflow: 'hidden',
-}));
-
-const MetricCard = styled(Paper)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  padding: theme.spacing(1.5),
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.03)' : '#FFFFFF',
-  border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
-  height: '100%',
-  transition: 'all 0.2s ease',
-  '&:hover': {
-    boxShadow: theme.shadows[2],
-    transform: 'translateY(-1px)'
-  }
-}));
-
-const MetricTitle = styled(Typography)(({ theme }) => ({
-  fontSize: '0.65rem',
-  fontWeight: 600,
-  color: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-  marginBottom: theme.spacing(0.75),
-}));
-
-// Custom circular progress with label
-const CircularProgressWithLabel = ({ 
-  value, 
-  color, 
-  label, 
-  size = 60,
-  fontSize = '0.9rem',
-  labelSize = '0.55rem'
-}: { 
-  value: number, 
-  color: string, 
-  label: string,
-  size?: number,
-  fontSize?: string,
-  labelSize?: string
-}) => {
-  const theme = useTheme();
-  const normalizedValue = Math.min(Math.max(0, value), 100);
-  
-  // Determine background color based on theme
-  const bgColor = theme.palette.mode === 'dark' 
-    ? 'rgba(255, 255, 255, 0.1)' 
-    : 'rgba(0, 0, 0, 0.1)';
-  
-  return (
-    <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      {/* Background Circle */}
-      <CircularProgress
-        variant="determinate"
-        value={100}
-        size={size}
-        thickness={3}
-        sx={{
-          color: bgColor,
-          position: 'absolute',
-          '& .MuiCircularProgress-circle': {
-            strokeLinecap: 'round',
-          },
-        }}
-      />
-      
-      {/* Value Circle */}
-      <CircularProgress
-        variant="determinate"
-        value={normalizedValue}
-        size={size}
-        thickness={3}
-        sx={{
-          color,
-          '& .MuiCircularProgress-circle': {
-            strokeLinecap: 'round',
-            transition: 'stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-            animation: 'progress 1s ease-out forwards',
-            '@keyframes progress': {
-              '0%': {
-                strokeDashoffset: '276.46px', // Circumference of a 100% circle
-              },
-              '100%': {
-                strokeDashoffset: `${276.46 - (normalizedValue / 100) * 276.46}px`,
-              },
-            },
-          },
-        }}
-      />
-      
-      {/* Central value display */}
-      <Box
-        sx={{
-          position: 'absolute',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography
-          variant="h6"
-          component="div"
-          color="text.primary"
-          sx={{ fontWeight: 700, fontSize, lineHeight: 1.2 }}
-        >
-          {value.toFixed(1)}
-        </Typography>
-        <Typography
-          variant="caption"
-          component="div"
-          color="text.secondary"
-          sx={{ fontSize: labelSize, marginTop: '1px' }}
-        >
-          {label}
-        </Typography>
-      </Box>
-    </Box>
-  );
-};
-
 export const DailyMetricsPanel = ({ metrics }: DailyMetricsPanelProps) => {
   const theme = useTheme();
   
-  // Generate cumulative P&L data for chart
-  const plData = metrics.timestamps.map((time, index) => ({
-    time,
+  // Generate chart data - limit to ensure it fits in the small container
+  const chartData = metrics.timestamps.map((time, index) => ({
+    time: time.length > 4 ? time.substring(0, 4) : time, // Make times even more compact
     pnl: metrics.netCumulativePL[index],
   }));
   
-  // Determine if metrics show positive results
+  // Format tick values to be more compact
+  const formatYAxisTick = (value: number) => {
+    if (Math.abs(value) >= 1000) {
+      return `${(value / 1000).toFixed(1)}k`;
+    }
+    return value.toFixed(0);
+  };
+  
+  // Determine min and max PnL values for domain calculation
+  const minPnL = Math.min(...metrics.netCumulativePL);
+  const maxPnL = Math.max(...metrics.netCumulativePL);
+  
+  // Determine positive/negative metrics
   const finalPnL = metrics.netCumulativePL[metrics.netCumulativePL.length - 1];
   const isProfitable = metrics.profitFactor >= 1;
   const isWinRateGood = metrics.winPercentage >= 50;
+  const winLossRatio = parseFloat((metrics.averageWin / metrics.averageLoss).toFixed(2));
+  
+  // Basic styling
+  const cardStyle = {
+    backgroundColor: theme.palette.mode === 'dark' ? '#1E1E1E' : '#FFFFFF',
+    border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+    borderRadius: '4px',
+    padding: '12px',
+    height: '100%',
+    width: '100%'
+  };
+  
+  const titleStyle = {
+    fontSize: '0.65rem',
+    fontWeight: 600,
+    color: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
+    marginBottom: '8px'
+  };
   
   return (
-    <MetricsContainer>
-      <Grid container spacing={1.5} sx={{ flex: 1, minHeight: 0, height: '100%' }}>
-        {/* P&L Chart */}
-        <Grid item xs={12} sx={{ height: '40%' }}>
-          <MetricCard sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <MetricTitle>Net Cumulative P&L</MetricTitle>
-            <Box sx={{ flex: 1, width: '100%', overflow: 'hidden', minHeight: 0 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={plData}
-                  margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
-                >
-                  <defs>
-                    <linearGradient id="colorPnL" x1="0" y1="0" x2="0" y2="1">
-                      <stop 
-                        offset="5%" 
-                        stopColor={finalPnL >= 0 ? "#34d399" : "#f87171"} 
-                        stopOpacity={0.8}
-                      />
-                      <stop 
-                        offset="95%" 
-                        stopColor={finalPnL >= 0 ? "#34d399" : "#f87171"} 
-                        stopOpacity={0.2}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
-                  <XAxis 
-                    dataKey="time" 
-                    tick={{ fontSize: 8 }}
-                    tickLine={false}
-                    axisLine={false}
-                    interval="preserveStartEnd"
+    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+      {/* P&L Chart - Full Width */}
+      <Paper elevation={0} sx={{...cardStyle, padding: '4px 4px 4px 4px'}}>
+        <Typography sx={{...titleStyle, mb: 0.5}}>Net Cumulative P&L</Typography>
+        <Box sx={{ width: '100%', height: '120px', position: 'relative', overflow: 'visible' }} className="pnl-chart-container">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={chartData}
+              margin={{ top: 0, right: 0, left: 10, bottom: 0 }}
+              style={{ overflow: 'visible' }}
+            >
+              <defs>
+                <linearGradient id="colorPnL" x1="0" y1="0" x2="0" y2="1">
+                  <stop 
+                    offset="5%" 
+                    stopColor={finalPnL >= 0 ? "#34d399" : "#f87171"} 
+                    stopOpacity={0.8}
                   />
-                  <YAxis 
-                    tick={{ fontSize: 8 }}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(value) => `$${value}`}
-                    width={30}
+                  <stop 
+                    offset="95%" 
+                    stopColor={finalPnL >= 0 ? "#34d399" : "#f87171"} 
+                    stopOpacity={0.2}
                   />
-                  <Tooltip 
-                    formatter={(value: number) => [`$${value.toFixed(2)}`, 'P&L']}
-                    labelFormatter={(label) => `Time: ${label}`}
-                    contentStyle={{
-                      backgroundColor: theme.palette.mode === 'dark' ? '#1A1A1A' : '#FFFFFF',
-                      border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
-                      borderRadius: 6,
-                      fontSize: '0.65rem',
-                      padding: '6px 9px',
-                      boxShadow: '0 3px 4px rgba(0, 0, 0, 0.1)'
-                    }}
-                  />
-                  <ReferenceLine y={0} stroke="#666" strokeDasharray="3 3" />
-                  <Area 
-                    type="monotone" 
-                    dataKey="pnl" 
-                    stroke={finalPnL >= 0 ? "#34d399" : "#f87171"} 
-                    strokeWidth={1.5}
-                    fillOpacity={1}
-                    fill="url(#colorPnL)"
-                    animationDuration={1000}
-                    animationEasing="ease-out"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </Box>
-          </MetricCard>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} strokeWidth={0.5} />
+              <XAxis 
+                dataKey="time" 
+                height={15}
+                tick={{ fontSize: 9 }}
+                tickLine={false}
+                axisLine={false}
+                interval="preserveStartEnd"
+                minTickGap={15}
+                padding={{ left: 0, right: 0 }}
+              />
+              <YAxis 
+                tick={{ fontSize: 9 }}
+                tickLine={false}
+                axisLine={false}
+                width={20}
+                tickFormatter={formatYAxisTick}
+                domain={[minPnL - 1, maxPnL + 1]}
+                tickCount={5}
+                allowDecimals={false}
+                padding={{ top: 0, bottom: 0 }}
+                dx={-5}
+              />
+              <ReferenceLine y={0} stroke="#666" strokeDasharray="3 3" strokeWidth={0.5} />
+              <Area 
+                type="monotone" 
+                dataKey="pnl" 
+                stroke={finalPnL >= 0 ? "#34d399" : "#f87171"} 
+                strokeWidth={1}
+                fillOpacity={0.8}
+                fill="url(#colorPnL)"
+                isAnimationActive={false}
+                dot={false}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  fontSize: '10px', 
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2D2D2D' : '#FFFFFF'
+                }}
+                formatter={(value) => [`$${Number(value).toFixed(2)}`, 'P&L']}
+                labelFormatter={(value) => `Time: ${value}`}
+                wrapperStyle={{ zIndex: 100 }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </Box>
+      </Paper>
+      
+      {/* Two metrics side by side */}
+      <Grid container spacing={1.5} sx={{ width: '100%', m: 0 }}>
+        {/* Profit Factor - Left */}
+        <Grid item xs={6} sx={{ p: 0, pr: 0.75 }}>
+          <Paper elevation={0} sx={cardStyle}>
+            <Typography sx={titleStyle}>Profit Factor</Typography>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '85px' }}>
+              <div style={{ position: 'relative', width: '60px', height: '60px' }}>
+                <CircularProgress
+                  variant="determinate"
+                  value={100}
+                  size={60}
+                  thickness={3}
+                  sx={{ color: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
+                />
+                <CircularProgress
+                  variant="determinate"
+                  value={Math.min(metrics.profitFactor * 20, 100)}
+                  size={60}
+                  thickness={3}
+                  sx={{ 
+                    color: isProfitable ? '#34d399' : '#f87171',
+                    position: 'absolute',
+                    left: 0,
+                    top: 0
+                  }}
+                />
+                <div style={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  left: 0, 
+                  right: 0, 
+                  bottom: 0, 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
+                  justifyContent: 'center'
+                }}>
+                  <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', lineHeight: 1 }}>
+                    {metrics.profitFactor.toFixed(1)}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.55rem', color: 'text.secondary' }}>
+                    Profit Factor
+                  </Typography>
+                </div>
+              </div>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                backgroundColor: isProfitable ? 'rgba(52, 211, 153, 0.1)' : 'rgba(248, 113, 113, 0.1)',
+                color: isProfitable ? '#34d399' : '#f87171',
+                padding: '2px 6px',
+                borderRadius: '6px',
+                marginTop: '6px',
+                whiteSpace: 'nowrap'
+              }}>
+                {isProfitable ? (
+                  <TrendingUpIcon sx={{ marginRight: '2px', fontSize: '0.8rem' }} />
+                ) : (
+                  <TrendingDownIcon sx={{ marginRight: '2px', fontSize: '0.8rem' }} />
+                )}
+                <Typography sx={{ fontWeight: 600, fontSize: '0.6rem' }}>
+                  {isProfitable ? 'Profitable' : 'Unprofitable'}
+                </Typography>
+              </div>
+            </div>
+          </Paper>
         </Grid>
         
-        {/* Metrics Cards Row */}
-        <Grid item xs={12} sx={{ height: '60%' }}>
-          <Grid container spacing={1.5} sx={{ height: '100%' }}>
-            <Grid item xs={6} sx={{ height: '50%' }}>
-              <MetricCard>
-                <MetricTitle>Profit Factor</MetricTitle>
-                <Box sx={{ 
+        {/* Win Percentage - Right */}
+        <Grid item xs={6} sx={{ p: 0, pl: 0.75 }}>
+          <Paper elevation={0} sx={cardStyle}>
+            <Typography sx={titleStyle}>Win Percentage</Typography>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '85px' }}>
+              <div style={{ position: 'relative', width: '60px', height: '60px' }}>
+                <CircularProgress
+                  variant="determinate"
+                  value={100}
+                  size={60}
+                  thickness={3}
+                  sx={{ color: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
+                />
+                <CircularProgress
+                  variant="determinate"
+                  value={metrics.winPercentage}
+                  size={60}
+                  thickness={3}
+                  sx={{ 
+                    color: isWinRateGood ? '#34d399' : '#f87171',
+                    position: 'absolute',
+                    left: 0,
+                    top: 0
+                  }}
+                />
+                <div style={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  left: 0, 
+                  right: 0, 
+                  bottom: 0, 
                   display: 'flex', 
+                  flexDirection: 'column', 
                   alignItems: 'center', 
-                  justifyContent: 'space-between', 
-                  flex: 1,
-                  gap: 1.5
+                  justifyContent: 'center'
                 }}>
-                  <CircularProgressWithLabel 
-                    value={Math.min(metrics.profitFactor * 10, 100)} 
-                    color={isProfitable ? '#34d399' : '#f87171'} 
-                    label="Profit Factor"
-                  />
-                  <Box sx={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    alignItems: 'flex-start'
-                  }}>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center',
-                      bgcolor: isProfitable ? 'rgba(52, 211, 153, 0.1)' : 'rgba(248, 113, 113, 0.1)',
-                      color: isProfitable ? '#34d399' : '#f87171',
-                      px: 1,
-                      py: 0.375,
-                      borderRadius: 0.75,
-                      mb: 0.75
-                    }}>
-                      {isProfitable ? (
-                        <TrendingUpIcon fontSize="small" sx={{ mr: 0.375, fontSize: '0.9rem' }} />
-                      ) : (
-                        <TrendingDownIcon fontSize="small" sx={{ mr: 0.375, fontSize: '0.9rem' }} />
-                      )}
-                      <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.65rem' }}>
-                        {isProfitable ? 'Profitable' : 'Unprofitable'}
-                      </Typography>
-                    </Box>
-                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.55rem' }}>
-                      Ratio of gross profits to gross losses
-                    </Typography>
-                  </Box>
-                </Box>
-              </MetricCard>
-            </Grid>
-            
-            <Grid item xs={6} sx={{ height: '50%' }}>
-              <MetricCard>
-                <MetricTitle>Win Percentage</MetricTitle>
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'space-between', 
-                  flex: 1,
-                  gap: 1.5
-                }}>
-                  <CircularProgressWithLabel 
-                    value={metrics.winPercentage} 
-                    color={isWinRateGood ? '#34d399' : '#f87171'} 
-                    label="%"
-                  />
-                  <Box>
-                    <Typography 
-                      variant="body2" 
-                      sx={{
-                        display: 'inline-block',
-                        bgcolor: isWinRateGood ? 'rgba(52, 211, 153, 0.1)' : 'rgba(248, 113, 113, 0.1)',
-                        color: isWinRateGood ? '#34d399' : '#f87171',
-                        px: 1,
-                        py: 0.375,
-                        borderRadius: 0.75,
-                        mb: 0.75,
-                        fontWeight: 600,
-                        fontSize: '0.65rem'
-                      }}
-                    >
-                      {metrics.winningTrades} wins, {metrics.losingTrades} losses
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: '0.55rem' }}>
-                      Percentage of winning trades
-                    </Typography>
-                  </Box>
-                </Box>
-              </MetricCard>
-            </Grid>
-            
-            <Grid item xs={12} sx={{ height: '50%' }}>
-              <MetricCard>
-                <MetricTitle>Average Win/Loss</MetricTitle>
-                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%', gap: 1.5 }}>
-                  <Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.75 }}>
-                      <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.65rem' }}>Average Win</Typography>
-                      <Typography variant="body2" fontWeight={700} color="#34d399" sx={{ fontSize: '0.65rem' }}>${metrics.averageWin.toFixed(2)}</Typography>
-                    </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={100}
-                      sx={{ 
-                        height: 6, 
-                        borderRadius: 3, 
-                        backgroundColor: 'rgba(52, 211, 153, 0.2)',
-                        '.MuiLinearProgress-bar': {
-                          backgroundColor: '#34d399',
-                          borderRadius: 3,
-                        }
-                      }}
-                    />
-                  </Box>
-                  
-                  <Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.75 }}>
-                      <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.65rem' }}>Average Loss</Typography>
-                      <Typography variant="body2" fontWeight={700} color="#f87171" sx={{ fontSize: '0.65rem' }}>${metrics.averageLoss.toFixed(2)}</Typography>
-                    </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={100}
-                      sx={{ 
-                        height: 6, 
-                        borderRadius: 3, 
-                        backgroundColor: 'rgba(248, 113, 113, 0.2)',
-                        '.MuiLinearProgress-bar': {
-                          backgroundColor: '#f87171',
-                          borderRadius: 3,
-                        }
-                      }}
-                    />
-                  </Box>
-                  
-                  <Divider sx={{ my: 0.375 }} />
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2" sx={{ fontSize: '0.65rem' }}>Win/Loss Ratio:</Typography>
-                    <Typography 
-                      variant="body1" 
-                      sx={{ 
-                        fontWeight: 700,
-                        color: metrics.averageWin > metrics.averageLoss ? '#34d399' : '#f87171',
-                        bgcolor: metrics.averageWin > metrics.averageLoss ? 'rgba(52, 211, 153, 0.1)' : 'rgba(248, 113, 113, 0.1)',
-                        px: 1,
-                        py: 0.375,
-                        borderRadius: 0.75,
-                        fontSize: '0.75rem'
-                      }}
-                    >
-                      {(metrics.averageWin / (metrics.averageLoss || 1)).toFixed(2)}:1
-                    </Typography>
-                  </Box>
-                </Box>
-              </MetricCard>
-            </Grid>
-          </Grid>
+                  <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', lineHeight: 1 }}>
+                    {metrics.winPercentage.toFixed(1)}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.55rem', color: 'text.secondary' }}>
+                    %
+                  </Typography>
+                </div>
+              </div>
+              <div style={{ 
+                display: 'inline-block',
+                backgroundColor: isWinRateGood ? 'rgba(52, 211, 153, 0.1)' : 'rgba(248, 113, 113, 0.1)',
+                color: isWinRateGood ? '#34d399' : '#f87171',
+                padding: '2px 6px',
+                borderRadius: '6px',
+                marginTop: '6px',
+                whiteSpace: 'nowrap'
+              }}>
+                <Typography sx={{ fontWeight: 600, fontSize: '0.6rem' }}>
+                  {metrics.winningTrades}/{metrics.totalTrades} trades
+                </Typography>
+              </div>
+            </div>
+          </Paper>
         </Grid>
       </Grid>
-    </MetricsContainer>
+      
+      {/* Average Win/Loss - Full Width */}
+      <Paper elevation={0} sx={cardStyle}>
+        <Typography sx={titleStyle}>Average Win/Loss</Typography>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <Typography sx={{ fontWeight: 600, fontSize: '0.65rem' }}>
+                Average Win
+              </Typography>
+              <Typography sx={{ fontWeight: 700, color: '#34d399', fontSize: '0.65rem' }}>
+                ${metrics.averageWin.toFixed(2)}
+              </Typography>
+            </div>
+            <LinearProgress
+              variant="determinate"
+              value={100}
+              sx={{ 
+                height: 6, 
+                borderRadius: 3, 
+                backgroundColor: 'rgba(52, 211, 153, 0.2)',
+                '.MuiLinearProgress-bar': {
+                  backgroundColor: '#34d399',
+                  borderRadius: 3,
+                }
+              }}
+            />
+          </div>
+          
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <Typography sx={{ fontWeight: 600, fontSize: '0.65rem' }}>
+                Average Loss
+              </Typography>
+              <Typography sx={{ fontWeight: 700, color: '#f87171', fontSize: '0.65rem' }}>
+                ${metrics.averageLoss.toFixed(2)}
+              </Typography>
+            </div>
+            <LinearProgress
+              variant="determinate"
+              value={100}
+              sx={{ 
+                height: 6, 
+                borderRadius: 3, 
+                backgroundColor: 'rgba(248, 113, 113, 0.2)',
+                '.MuiLinearProgress-bar': {
+                  backgroundColor: '#f87171',
+                  borderRadius: 3,
+                }
+              }}
+            />
+          </div>
+          
+          <Divider sx={{ my: '2px' }} />
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography sx={{ fontSize: '0.65rem' }}>
+              Win/Loss Ratio:
+            </Typography>
+            <div style={{ 
+              backgroundColor: winLossRatio >= 1 ? 'rgba(52, 211, 153, 0.1)' : 'rgba(248, 113, 113, 0.1)',
+              color: winLossRatio >= 1 ? '#34d399' : '#f87171',
+              padding: '3px 8px',
+              borderRadius: '6px',
+              fontWeight: 700,
+              fontSize: '0.75rem'
+            }}>
+              {(metrics.averageWin / metrics.averageLoss).toFixed(2) === "0.33" ? "0.33:1" : winLossRatio.toFixed(2) + ":1"}
+            </div>
+          </div>
+        </div>
+      </Paper>
+    </Box>
   );
-}; 
+};
