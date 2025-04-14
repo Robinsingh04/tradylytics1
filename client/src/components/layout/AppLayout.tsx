@@ -25,7 +25,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
         sidebarExpanded={sidebarExpanded}
       />
       <Sidebar onExpandChange={handleSidebarExpand} />
-      <div className={`main-content ${sidebarExpanded ? 'sidebar-expanded' : ''}`}>
+      <div className="main-content">
         {children}
       </div>
     </div>

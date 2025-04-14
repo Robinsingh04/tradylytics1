@@ -224,12 +224,6 @@ a {
     background-color: var(--bg-secondary);
     border-radius: 8px;
     padding: 8px 12px;
-    
-    @media (max-width: 768px) {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-    }
   }
   
   &-title {
@@ -241,36 +235,6 @@ a {
     display: flex;
     align-items: center;
   }
-  
-  &-content {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-    
-    @media (min-width: 992px) {
-      grid-template-columns: 2fr 1fr;
-    }
-  }
-}
-
-// Metrics grid
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-  margin-bottom: 16px;
-  
-  @media (max-width: 1200px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-  }
 }
 
 // Metrics container
@@ -280,59 +244,8 @@ a {
   gap: 8px;
   grid-auto-rows: minmax(180px, auto);
   
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-  
   &-compact {
     margin-top: 2px; 
-  }
-}
-
-// Responsive container
-.responsive-container {
-  width: 100%;
-  padding-right: 16px;
-  padding-left: 16px;
-  margin-right: auto;
-  margin-left: auto;
-  
-  @media (min-width: 576px) {
-    max-width: 540px;
-  }
-  
-  @media (min-width: 768px) {
-    max-width: 720px;
-  }
-  
-  @media (min-width: 992px) {
-    max-width: 960px;
-  }
-  
-  @media (min-width: 1200px) {
-    max-width: 1140px;
-  }
-}
-
-// Chart grid
-.chart-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  
-  @media (min-width: 992px) {
-    grid-template-columns: 3fr 2fr;
-  }
-}
-
-// Bottom section grid
-.bottom-section-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  
-  @media (min-width: 992px) {
-    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -788,38 +701,64 @@ a {
 // Open Trades styling
 .open-trades {
   background-color: var(--bg-secondary);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 8px;
+  padding: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(8px);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   margin-bottom: 16px;
+  
+  @media (min-width: 768px) {
+    padding: 16px;
+    border-radius: 12px;
+  }
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    
+    @media (min-width: 768px) {
+      transform: translateY(-4px);
+    }
   }
   
   .open-trades-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+    
+    @media (min-width: 768px) {
+      margin-bottom: 16px;
+      flex-wrap: nowrap;
+    }
   }
   
   .open-trades-title {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--text-primary);
+    
+    @media (min-width: 768px) {
+      font-size: 18px;
+    }
   }
   
   .trade-item {
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
     background-color: rgba(0, 0, 0, 0.15);
     transition: background-color 0.2s ease;
+    
+    @media (min-width: 768px) {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
     
     &:hover {
       background-color: rgba(var(--theme-color-rgb, 0, 0, 0), 0.1);
@@ -829,67 +768,19 @@ a {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+      
+      @media (min-width: 768px) {
+        margin-bottom: 8px;
+      }
     }
     
     .trade-symbol {
       font-weight: 600;
-      font-size: 16px;
-    }
-    
-    .trade-type {
-      font-size: 12px;
-      font-weight: 500;
-      padding: 2px 8px;
-      border-radius: 4px;
+      font-size: 14px;
       
-      &.buy {
-        background-color: rgba(76, 175, 80, 0.15);
-        color: #4CAF50;
-      }
-      
-      &.sell {
-        background-color: rgba(244, 67, 54, 0.15);
-        color: #F44336;
-      }
-    }
-    
-    .trade-pnl {
-      font-weight: 600;
-      
-      &.positive {
-        color: #4CAF50;
-      }
-      
-      &.negative {
-        color: #F44336;
-      }
-    }
-    
-    .trade-details {
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-    
-    .trade-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 8px;
-      
-      button {
-        background: none;
-        border: none;
-        font-size: 12px;
-        padding: 4px 10px;
-        border-radius: 4px;
-        cursor: pointer;
-        color: var(--text-secondary);
-        
-        &:hover {
-          background-color: var(--bg-tertiary);
-          color: var(--text-primary);
-        }
+      @media (min-width: 768px) {
+        font-size: 16px;
       }
     }
   }
@@ -911,24 +802,47 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+  
+  @media (min-width: 768px) {
+    margin-bottom: 16px;
+    flex-wrap: nowrap;
+  }
   
   .card-title {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-primary);
+    
+    @media (min-width: 768px) {
+      font-size: 16px;
+    }
   }
 }
 
 // Open trades
 .trade-row {
-  padding: 12px 12px 12px 0;
+  padding: 8px 8px 8px 0;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   border-left: 3px solid;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   background-color: #1a1a1a;
   border-radius: 0 4px 4px 0;
+  
+  @media (min-width: 576px) {
+    flex-direction: row;
+    padding: 10px 10px 10px 0;
+    margin-bottom: 8px;
+  }
+  
+  @media (min-width: 768px) {
+    padding: 12px 12px 12px 0;
+    margin-bottom: 10px;
+  }
   
   &.profit {
     border-left-color: #4caf50;
@@ -939,25 +853,44 @@ a {
   }
   
   .trade-details {
-    margin-left: 12px;
+    margin-left: 8px;
+    
+    @media (min-width: 768px) {
+      margin-left: 12px;
+    }
   }
   
   .symbol-direction {
     display: flex;
     align-items: center;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
+    
+    @media (min-width: 768px) {
+      margin-bottom: 4px;
+    }
   }
   
   .symbol {
     font-weight: 500;
-    font-size: 15px;
-    margin-right: 8px;
+    font-size: 13px;
+    margin-right: 6px;
+    
+    @media (min-width: 768px) {
+      font-size: 15px;
+      margin-right: 8px;
+    }
   }
   
   .direction {
-    font-size: 11px;
-    padding: 2px 6px;
-    border-radius: 4px;
+    font-size: 10px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    
+    @media (min-width: 768px) {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
     
     &.BUY {
       background-color: rgba(76, 175, 80, 0.1);
@@ -972,21 +905,37 @@ a {
   
   .quantity-date {
     display: flex;
-    font-size: 11px;
+    font-size: 10px;
     color: #aaa;
     margin-bottom: 2px;
     
+    @media (min-width: 768px) {
+      font-size: 11px;
+    }
+    
     .quantity {
-      margin-right: 8px;
+      margin-right: 6px;
+      
+      @media (min-width: 768px) {
+        margin-right: 8px;
+      }
     }
   }
   
   .prices {
-    font-size: 11px;
+    font-size: 10px;
     color: #aaa;
     
+    @media (min-width: 768px) {
+      font-size: 11px;
+    }
+    
     .separator {
-      margin: 0 6px;
+      margin: 0 4px;
+      
+      @media (min-width: 768px) {
+        margin: 0 6px;
+      }
     }
   }
   
@@ -995,11 +944,20 @@ a {
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-end;
+    margin-top: 8px;
+    
+    @media (min-width: 576px) {
+      margin-top: 0;
+    }
   }
   
   .pnl {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
+    
+    @media (min-width: 768px) {
+      font-size: 14px;
+    }
     
     &.positive {
       color: #4caf50;
@@ -1010,39 +968,33 @@ a {
     }
     
     .percent {
-      font-size: 11px;
-      opacity: 0.9;
-      margin-left: 2px;
+      font-size: 10px;
+      
+      @media (min-width: 768px) {
+        font-size: 12px;
+      }
     }
   }
   
   .actions {
     display: flex;
-    gap: 8px;
-    margin-top: 4px;
+    gap: 4px;
+    margin-top: 6px;
+    
+    @media (min-width: 768px) {
+      gap: 6px;
+      margin-top: 8px;
+    }
     
     button {
-      font-size: 11px;
-      padding: 2px 8px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      background: none;
+      font-size: 10px;
+      padding: 3px 6px;
+      border-radius: 3px;
       
-      &.edit-btn {
-        color: #5c6bc0;
-        
-        &:hover {
-          background-color: rgba(92, 107, 192, 0.1);
-        }
-      }
-      
-      &.close-btn {
-        color: #ef5350;
-        
-        &:hover {
-          background-color: rgba(239, 83, 80, 0.1);
-        }
+      @media (min-width: 768px) {
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 4px;
       }
     }
   }

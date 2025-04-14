@@ -216,7 +216,12 @@ export default function Dashboard() {
         </div>
 
         {/* Charts */}
-        <div className="chart-grid">
+        <Box sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: { xs: '1fr', md: '60% 40%' },
+          gap: 2,
+          mb: 2
+        }}>
           <Box sx={{ 
             bgcolor: 'background.paper', 
             borderRadius: 1, 
@@ -256,33 +261,39 @@ export default function Dashboard() {
               </Box>
             )}
           </Box>
-        </div>
+        </Box>
 
         {/* Calendar and Open Trades */}
-        <div className="bottom-section-grid">
-          <div className="calendar-container">
-            {isLoadingCalendar ? (
-              <Box sx={{ p: 2 }}>
-                <Skeleton variant="rectangular" height={320} />
-              </Box>
-            ) : formattedCalendarData ? (
-              <CalendarView monthlyData={formattedCalendarData} />
-            ) : (
-              <Box sx={{ p: 2, textAlign: 'center' }}>
-                Failed to load calendar data
-              </Box>
-            )}
-          </div>
+        <div className="d-flex flex-column flex-lg-row gap-4">
+          {isLoadingCalendar ? (
+            <div className="card flex-1">
+              <div className="card-body p-4">
+                <div className="skeleton-calendar"></div>
+              </div>
+            </div>
+          ) : (
+            <CalendarView monthlyData={formattedCalendarData} />
+          )}
           
-          <div className="trades-container">
-            {isLoadingTrades ? (
-              <Box sx={{ p: 2 }}>
-                <Skeleton variant="rectangular" height={320} />
-              </Box>
-            ) : (
-              <OpenTrades trades={openTrades} />
-            )}
-          </div>
+          {isLoadingTrades ? (
+            <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
+              <div className="card-body p-4">
+                <div className="skeleton-trades"></div>
+              </div>
+            </div>
+          ) : openTrades ? (
+            <OpenTrades 
+              trades={openTrades} 
+              onEditTrade={handleEditTrade} 
+              onCloseTrade={handleCloseTrade} 
+            />
+          ) : (
+            <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
+              <div className="card-body p-4 text-center text-sm">
+                Failed to load open trades
+              </div>
+            </div>
+          )}
         </div>
       </MainContent>
     </DashboardContainer>

@@ -7,11 +7,12 @@
   height: 48px;
   position: fixed;
   top: 0;
-  left: 60px; // Align with collapsed sidebar
+  left: 60px; // Align with collapsed sidebar - stays the same now
   right: 0;
   z-index: 1100;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  transition: left 0.3s ease; // Smooth transition for left position
+  transition: background-color 0.3s ease, color 0.3s ease;
+  // Remove the left transition since we want navbar to stay in place
   
   &-start {
     display: flex;

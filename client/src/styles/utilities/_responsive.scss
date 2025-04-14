@@ -1,0 +1,108 @@
+// Responsive breakpoints
+$breakpoints: (
+  xs: 375px,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+);
+
+// Responsive mixin for media queries
+@mixin respond-to($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (min-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @warn "Unknown breakpoint: #{$breakpoint}. Available breakpoints are: #{map-keys($breakpoints)}";
+  }
+}
+
+// Responsive font size mixin
+@mixin responsive-font-size($min-size, $max-size, $min-breakpoint: xs, $max-breakpoint: xl) {
+  $min-width: map-get($breakpoints, $min-breakpoint);
+  $max-width: map-get($breakpoints, $max-breakpoint);
+  
+  font-size: $min-size;
+  
+  @media (min-width: $min-width) {
+    font-size: calc(#{$min-size} + #{strip-unit($max-size - $min-size)} * ((100vw - #{$min-width}) / #{strip-unit($max-width - $min-width)}));
+  }
+  
+  @media (min-width: $max-width) {
+    font-size: $max-size;
+  }
+}
+
+// Helper function to strip units
+@function strip-unit($value) {
+  @return $value / ($value * 0 + 1);
+}
+
+// Responsive spacing classes
+@each $breakpoint, $width in $breakpoints {
+  @include respond-to($breakpoint) {
+    // Padding utilities
+    .p-#{$breakpoint}-0 { padding: 0 !important; }
+    .p-#{$breakpoint}-1 { padding: 0.25rem !important; }
+    .p-#{$breakpoint}-2 { padding: 0.5rem !important; }
+    .p-#{$breakpoint}-3 { padding: 1rem !important; }
+    .p-#{$breakpoint}-4 { padding: 1.5rem !important; }
+    .p-#{$breakpoint}-5 { padding: 3rem !important; }
+    
+    // Margin utilities
+    .m-#{$breakpoint}-0 { margin: 0 !important; }
+    .m-#{$breakpoint}-1 { margin: 0.25rem !important; }
+    .m-#{$breakpoint}-2 { margin: 0.5rem !important; }
+    .m-#{$breakpoint}-3 { margin: 1rem !important; }
+    .m-#{$breakpoint}-4 { margin: 1.5rem !important; }
+    .m-#{$breakpoint}-5 { margin: 3rem !important; }
+    
+    // Flex utilities
+    .flex-#{$breakpoint}-row { flex-direction: row !important; }
+    .flex-#{$breakpoint}-column { flex-direction: column !important; }
+    .flex-#{$breakpoint}-wrap { flex-wrap: wrap !important; }
+    .flex-#{$breakpoint}-nowrap { flex-wrap: nowrap !important; }
+  }
+}
+
+// Responsive display classes
+@each $breakpoint, $width in $breakpoints {
+  @include respond-to($breakpoint) {
+    .d-#{$breakpoint}-none { display: none !important; }
+    .d-#{$breakpoint}-inline { display: inline !important; }
+    .d-#{$breakpoint}-block { display: block !important; }
+    .d-#{$breakpoint}-flex { display: flex !important; }
+    .d-#{$breakpoint}-grid { display: grid !important; }
+  }
+}
+
+// Container widths based on breakpoints
+.container {
+  width: 100%;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  margin-right: auto;
+  margin-left: auto;
+
+  @include respond-to(sm) {
+    max-width: 540px;
+  }
+
+  @include respond-to(md) {
+    max-width: 720px;
+  }
+
+  @include respond-to(lg) {
+    max-width: 960px;
+  }
+
+  @include respond-to(xl) {
+    max-width: 1140px;
+  }
+
+  @include respond-to(xxl) {
+    max-width: 1320px;
+  }
+} 

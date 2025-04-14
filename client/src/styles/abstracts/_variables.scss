@@ -1,6 +1,33 @@
 @use 'sass:color';
 @use 'sass:map';
 
+// Scale variables
+$scale-factor: 0.75;
+$scaled-spacing: (
+  0: 0,
+  1: 0.25rem * $scale-factor,  // 3px
+  2: 0.5rem * $scale-factor,   // 6px
+  3: 0.75rem * $scale-factor,  // 9px
+  4: 1rem * $scale-factor,     // 12px
+  5: 1.5rem * $scale-factor,   // 18px
+  6: 2rem * $scale-factor,     // 24px
+  7: 2.5rem * $scale-factor,   // 30px
+  8: 3rem * $scale-factor      // 36px
+);
+
+$scaled-font-sizes: (
+  'xs': 0.75rem * $scale-factor,   // 9px
+  'sm': 0.875rem * $scale-factor,  // 10.5px
+  'base': 1rem * $scale-factor,    // 12px
+  'md': 1.125rem * $scale-factor,  // 13.5px
+  'lg': 1.25rem * $scale-factor,   // 15px
+  'xl': 1.5rem * $scale-factor,    // 18px
+  '2xl': 1.75rem * $scale-factor,  // 21px
+  '3xl': 2rem * $scale-factor,     // 24px
+  '4xl': 2.25rem * $scale-factor,  // 27px
+  '5xl': 3rem * $scale-factor      // 36px
+);
+
 // Colors
 $colors: (
   'primary': (

@@ -147,12 +147,12 @@ export function CalendarView({
     <div className="calendar-wrapper">
       <div className="card-header">
         <div className="card-title">Monthly Performance</div>
-        <div className="month-navigation">
-          <button className="month-nav-button" onClick={prevMonth}>
+        <div className="month-navigation flex items-center">
+          <button className="month-nav-button text-lg sm:text-xl" onClick={prevMonth}>
             &lt;
           </button>
-          <span className="current-month">{format(viewDate, 'MMMM yyyy')}</span>
-          <button className="month-nav-button" onClick={nextMonth}>
+          <span className="current-month text-xs sm:text-sm px-1 sm:px-2">{format(viewDate, 'MMMM yyyy')}</span>
+          <button className="month-nav-button text-lg sm:text-xl" onClick={nextMonth}>
             &gt;
           </button>
         </div>

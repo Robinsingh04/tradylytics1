@@ -1,0 +1,142 @@
+// Scale utility for resizing UI elements
+// This provides a way to scale down the entire UI to 75% of its original size
+
+// Main scaling class that can be applied to the root element
+.scale-75 {
+  // Scale font sizes
+  --font-scale: 0.75;
+  --spacing-scale: 0.75;
+
+  // Define CSS variables for scaled font sizes
+  --font-size-xs: calc(0.75rem * var(--font-scale));
+  --font-size-sm: calc(0.875rem * var(--font-scale));
+  --font-size-base: calc(1rem * var(--font-scale));
+  --font-size-md: calc(1.125rem * var(--font-scale));
+  --font-size-lg: calc(1.25rem * var(--font-scale));
+  --font-size-xl: calc(1.5rem * var(--font-scale));
+  --font-size-2xl: calc(1.75rem * var(--font-scale));
+  --font-size-3xl: calc(2rem * var(--font-scale));
+  --font-size-4xl: calc(2.25rem * var(--font-scale));
+  --font-size-5xl: calc(3rem * var(--font-scale));
+  
+  // Define CSS variables for scaled spacing
+  --spacing-1: calc(0.25rem * var(--spacing-scale));
+  --spacing-2: calc(0.5rem * var(--spacing-scale));
+  --spacing-3: calc(0.75rem * var(--spacing-scale));
+  --spacing-4: calc(1rem * var(--spacing-scale));
+  --spacing-5: calc(1.5rem * var(--spacing-scale));
+  --spacing-6: calc(2rem * var(--spacing-scale));
+  --spacing-7: calc(2.5rem * var(--spacing-scale));
+  --spacing-8: calc(3rem * var(--spacing-scale));
+  
+  // Set standard font size to scale everything else
+  font-size: 0.75rem;
+  
+  // Scale specific elements
+  // Buttons
+  button:not(.no-scale) {
+    font-size: var(--font-size-base);
+    padding-top: var(--spacing-1);
+    padding-bottom: var(--spacing-1);
+    padding-left: var(--spacing-2);
+    padding-right: var(--spacing-2);
+  }
+  
+  // Metrics card adjustments
+  .metric-card {
+    padding: var(--spacing-3);
+    
+    &__value {
+      font-size: var(--font-size-2xl);
+    }
+    
+    &__chart {
+      min-height: 30px;
+    }
+  }
+  
+  // Chart card adjustments
+  .chart-card {
+    padding: var(--spacing-3);
+    
+    &-header {
+      padding: var(--spacing-1) var(--spacing-2);
+      margin-bottom: var(--spacing-1);
+    }
+    
+    &-title {
+      font-size: var(--font-size-md);
+    }
+    
+    &-content {
+      min-height: 180px;
+    }
+  }
+  
+  // Main layout 
+  .main-content {
+    padding: var(--spacing-3);
+    margin-left: calc(60px * var(--spacing-scale));
+    margin-top: calc(48px * var(--spacing-scale));
+  }
+  
+  // Dashboard content
+  .dashboard {
+    &__header {
+      margin-bottom: var(--spacing-3);
+      padding: var(--spacing-2) var(--spacing-3);
+    }
+    
+    &__content {
+      margin-bottom: var(--spacing-3);
+    }
+    
+    .metrics-grid {
+      gap: var(--spacing-2);
+    }
+    
+    .chart-container {
+      padding: var(--spacing-3);
+      margin-bottom: var(--spacing-2);
+      
+      &__header {
+        margin-bottom: var(--spacing-2);
+      }
+    }
+  }
+  
+  // Table adjustments
+  .MuiTableCell-root {
+    padding: var(--spacing-1) var(--spacing-2);
+    font-size: var(--font-size-sm);
+  }
+  
+  // Calendar adjustments
+  .calendar-day {
+    width: 27px;
+    height: 27px;
+    font-size: var(--font-size-xs);
+  }
+  
+  // Input fields
+  input, select, textarea {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-1) var(--spacing-2);
+  }
+  
+  // Reduced spacings for panels
+  .chart-panel, .calendar-panel, .metrics-panel {
+    padding: var(--spacing-2);
+  }
+  
+  // Scale grid gaps
+  .grid-container {
+    gap: 12px;
+  }
+}
+
+// Additional helper class for specific elements that should not scale
+.no-scale {
+  transform: none !important;
+  font-size: inherit !important;
+} 
