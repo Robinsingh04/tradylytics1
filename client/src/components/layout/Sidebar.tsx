@@ -1,24 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, Link } from 'wouter';
+import { Box, List, ListItem, ListItemIcon, ListItemText, Typography, Tooltip } from '@mui/material';
+import Icon from '@mui/material/Icon';
+import styles from '../../styles/components/Sidebar.module.scss';
 
 interface SidebarItemProps {
   icon: string;
   label: string;
   to: string;
   isActive?: boolean;
-  expanded: boolean;
+  collapsed: boolean;
 }
 
-const SidebarItem = ({ icon, label, to, isActive = false, expanded }: SidebarItemProps) => {
+const SidebarItem = ({ icon, label, to, isActive = false, collapsed }: SidebarItemProps) => {
   return (
     <Link href={to}>
-      <a className={`sidebar-item ${isActive ? 'active' : ''}`}>
-        <div className="icon">
-          <span className="material-icons">{icon}</span>
-        </div>
-        <span className={`label ${expanded ? 'expanded' : ''}`}>{label}</span>
-        {!expanded && <div className="sidebar-tooltip">{label}</div>}
-      </a>
+      <Box 
+        component="a" 
+        className={`${styles.sidebarItem} ${isActive ? styles.active : ''}`}
+        sx={{ textDecoration: 'none' }}
+      >
+        <Box className={styles.icon}>
+          <Icon>{icon}</Icon>
+        </Box>
+        <Typography
+          component="span"
+          className={`${styles.label} ${collapsed ? styles.hidden : ''}`}
+        >
+          {label}
+        </Typography>
+        {collapsed && (
+          <Tooltip 
+            title={label} 
+            placement="right"
+            arrow
+          >
+            <Box className={styles.tooltip}>{label}</Box>
+          </Tooltip>
+        )}
+      </Box>
     </Link>
   );
 };
@@ -29,7 +49,7 @@ interface SidebarProps {
 
 export const Sidebar = ({ onExpandChange }: SidebarProps) => {
   const [location] = useLocation();
-  const [expanded, setExpanded] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   
   const menuItems = [
     { id: 'dashboard', icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
@@ -42,25 +62,30 @@ export const Sidebar = ({ onExpandChange }: SidebarProps) => {
     { id: 'support', icon: 'support_agent', label: 'Support Center', path: '/support' },
   ];
 
-  // Notify parent when expanded state changes
+  // Notify parent when collapsed state changes
   useEffect(() => {
     if (onExpandChange) {
-      onExpandChange(expanded);
+      onExpandChange(!collapsed);
     }
-  }, [expanded, onExpandChange]);
+  }, [collapsed, onExpandChange]);
 
   return (
-    <div 
-      className={`sidebar ${expanded ? 'expanded' : ''}`}
-      onMouseEnter={() => setExpanded(true)}
-      onMouseLeave={() => setExpanded(false)}
+    <Box 
+      className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}
+      onMouseEnter={() => setCollapsed(false)}
+      onMouseLeave={() => setCollapsed(true)}
     >
-      <div className="sidebar-header">
-        <div className="logo-icon">TL</div>
-        <span className={`logo-text ${expanded ? 'expanded' : ''}`}>TradyLytics</span>
-      </div>
+      <Box className={styles.sidebarHeader}>
+        <Box className={styles.logoIcon}>TL</Box>
+        <Typography 
+          className={`${styles.logoText} ${collapsed ? styles.hidden : ''}`}
+          variant="h6"
+        >
+          TradyLytics
+        </Typography>
+      </Box>
       
-      <div className="sidebar-menu">
+      <List className={styles.sidebarMenu} component="nav">
         {menuItems.map((item) => (
           <SidebarItem 
             key={item.id}
@@ -68,10 +93,10 @@ export const Sidebar = ({ onExpandChange }: SidebarProps) => {
             label={item.label}
             to={item.path}
             isActive={location === item.path || (location === '/' && item.path === '/dashboard')}
-            expanded={expanded}
+            collapsed={collapsed}
           />
         ))}
-      </div>
-    </div>
+      </List>
+    </Box>
   );
 }; 

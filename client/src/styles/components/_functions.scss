@@ -1,0 +1,40 @@
+// This file replaces the abstracts/functions that was removed in the refactoring
+// It provides shared functions that are needed by the SCSS modules
+
+// Convert px to rem
+@function rem($pixels, $context: 16) {
+  @return ($pixels / $context) * 1rem;
+}
+
+// Get rgba color with opacity
+@function rgba-color($color, $opacity) {
+  @return rgba($color, $opacity);
+}
+
+// Lighten color by percentage
+@function lighten-color($color, $percentage) {
+  @return lighten($color, $percentage);
+}
+
+// Darken color by percentage
+@function darken-color($color, $percentage) {
+  @return darken($color, $percentage);
+}
+
+// Calculate z-index based on layer
+@function z-index($layer) {
+  $z-layers: (
+    "modal": 1000,
+    "dropdown": 900,
+    "header": 800,
+    "footer": 700,
+    "tooltip": 600
+  );
+
+  @if map-has-key($z-layers, $layer) {
+    @return map-get($z-layers, $layer);
+  }
+
+  @warn "Unknown z-index layer: #{$layer}";
+  @return 0;
+} 

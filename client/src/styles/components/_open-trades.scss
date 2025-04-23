@@ -1,0 +1,85 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/functions' as func;
+@use '../abstracts/mixins' as mix;
+
+.open-trades {
+  height: 100%;
+  
+  &__header {
+    margin-bottom: func.spacing(3);
+    font-size: func.font-size('lg');
+    font-weight: func.font-weight('medium');
+  }
+  
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: func.spacing(2);
+  }
+  
+  &__position {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: func.spacing(2) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  
+  &__symbol {
+    font-size: func.font-size('lg');
+    font-weight: func.font-weight('semibold');
+    margin-right: func.spacing(1);
+  }
+  
+  &__type {
+    font-size: func.font-size('xs');
+    font-weight: func.font-weight('medium');
+    padding: func.spacing(1) func.spacing(1);
+    border-radius: func.border-radius('sm');
+    text-transform: uppercase;
+    
+    &--buy {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: #4CAF50;
+    }
+    
+    &--sell {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: #F44336;
+    }
+  }
+  
+  &__details {
+    margin-top: func.spacing(1);
+    font-size: func.font-size('xs');
+    color: #9A9A9A;
+    
+    small {
+      display: block;
+      margin-bottom: 4px;
+    }
+  }
+  
+  &__prices {
+    font-size: func.font-size('xs');
+    color: #FFFFFF;
+  }
+  
+  &__pnl {
+    text-align: right;
+    font-size: func.font-size('md');
+    font-weight: func.font-weight('semibold');
+    
+    &--positive {
+      color: #4CAF50;
+    }
+    
+    &--negative {
+      color: #F44336;
+    }
+  }
+} 

@@ -1,0 +1,26 @@
+.appLayout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--mui-palette-background-default);
+  transition: background-color 0.3s ease;
+}
+
+.mainContent {
+  margin-left: 240px; // Match sidebar width
+  margin-top: 64px; // Match navbar height
+  padding: 24px;
+  flex: 1;
+  transition: margin-left 0.3s ease;
+  
+  &.sidebarCollapsed {
+    margin-left: 64px;
+  }
+}
+
+@media (max-width: 900px) {
+  .mainContent {
+    margin-left: 64px;
+    padding: 16px;
+  }
+} 

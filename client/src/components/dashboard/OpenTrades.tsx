@@ -104,39 +104,49 @@ export const OpenTrades: React.FC<OpenTradesProps> = ({ trades: propTrades }) =>
               return (
                 <div 
                   key={trade.id} 
-                  className={`trade-row ${isProfit ? 'profit' : 'loss'}`}
+                  className={`trade-row border rounded-lg p-2.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 ${
+                    isProfit 
+                      ? 'bg-green-900/10 border-green-800/30' 
+                      : 'bg-red-900/10 border-red-800/30'
+                  }`}
                 >
-                  <div className="trade-details">
-                    <div className="symbol-direction">
-                      <span className="symbol">{trade.symbol}</span>
-                      <span className={`direction ${trade.direction}`}>
+                  <div className="trade-details flex flex-col w-full sm:w-auto">
+                    <div className="symbol-direction flex items-center gap-1.5 mb-1">
+                      <span className="symbol font-medium">{trade.symbol}</span>
+                      <span className={`direction text-[10px] py-0.5 px-1.5 rounded-sm ${
+                        trade.direction === 'BUY' 
+                          ? 'bg-green-900/30 text-green-400' 
+                          : 'bg-red-900/30 text-red-400'
+                      }`}>
                         {trade.direction}
                       </span>
                     </div>
                     
-                    <div className="quantity-date">
+                    <div className="quantity-date flex items-center gap-2 text-[10px] text-neutral-400 mb-1">
                       <span className="quantity">{trade.quantity} shares</span>
                       <span className="date">{formatDate(trade.entryDate)}</span>
                     </div>
                     
-                    <div className="prices">
+                    <div className="prices flex items-center text-[10px] text-neutral-300">
                       <span className="price">Entry: {formatCurrency(trade.entryPrice)}</span>
-                      <span className="separator">|</span>
+                      <span className="separator mx-1">|</span>
                       <span className="price">Current: {formatCurrency(trade.currentPrice)}</span>
                     </div>
                   </div>
                   
-                  <div className="trade-pnl-actions">
-                    <div className={`pnl ${isProfit ? 'positive' : 'negative'}`}>
+                  <div className="trade-pnl-actions flex flex-col sm:items-end w-full sm:w-auto">
+                    <div className={`pnl text-xs font-medium mb-1.5 ${
+                      isProfit ? 'text-green-400' : 'text-red-400'
+                    }`}>
                       {isProfit ? '+' : '-'}{formatCurrency(Math.abs(trade.pnl))}
-                      <span className="percent ml-1">
+                      <span className="percent ml-1 text-[10px]">
                         ({isProfit ? '+' : '-'}{Math.abs(trade.pnlPercent).toFixed(2)}%)
                       </span>
                     </div>
                     
-                    <div className="actions">
-                      <button className="edit-btn bg-blue-900/20 text-blue-400 hover:bg-blue-900/30">Edit</button>
-                      <button className="close-btn bg-red-900/20 text-red-400 hover:bg-red-900/30">Close</button>
+                    <div className="actions flex gap-1.5">
+                      <button className="edit-btn text-[10px] py-1 px-2 rounded bg-blue-900/20 text-blue-400 hover:bg-blue-900/30">Edit</button>
+                      <button className="close-btn text-[10px] py-1 px-2 rounded bg-red-900/20 text-red-400 hover:bg-red-900/30">Close</button>
                     </div>
                   </div>
                 </div>

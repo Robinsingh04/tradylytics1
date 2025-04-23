@@ -17,135 +17,94 @@
 
 // Metric Card Component
 .metric-card {
-  @extend %card-base;
-  background-color: var(--bg-secondary);
-  padding: func.spacing(4);
+  background-color: #101014; // Dark background
+  padding: func.spacing(1) func.spacing(2);
   height: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border);
-  backdrop-filter: blur(8px);
+  border-radius: 0;
+  box-shadow: none;
+  position: relative;
   
   // Card header
   &__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: func.spacing(2);
-  }
-  
-  // Card title
-  &__title {
-    color: var(--text-secondary);
-    font-size: func.font-size('sm');
-    font-weight: func.font-weight('medium');
-    margin: 0;
+    margin-bottom: func.spacing(1);
   }
   
   // Card value
   &__value {
     font-size: func.font-size('3xl');
     font-weight: func.font-weight('bold');
-    margin: 0 0 func.spacing(1) 0;
-    color: var(--text-primary);
-    display: flex;
-    align-items: baseline;
-    
-    &-prefix, &-suffix {
-      font-size: func.font-size('lg');
-      margin: 0 func.spacing(1);
-      color: var(--text-secondary);
-    }
-  }
-  
-  // Change indicator
-  &__change {
-    display: flex;
-    align-items: center;
-    font-size: func.font-size('sm');
-    font-weight: func.font-weight('medium');
-    margin-bottom: func.spacing(2);
-    
-    &-icon {
-      margin-right: func.spacing(1);
-    }
-    
-    &--positive {
-      color: func.color('success');
-    }
-    
-    &--negative {
-      color: func.color('error');
-    }
+    margin-top: func.spacing(1);
+    margin-bottom: func.spacing(1);
+    line-height: 1;
+    position: relative;
+    z-index: 1;
   }
   
   // Chart container
-  &__chart, &-chart {
-    flex-grow: 1;
-    margin-top: auto;
-    min-height: 40px;
+  &__chart {
     position: relative;
-    overflow: visible !important; /* Ensure tooltips are not cut off */
-    z-index: 10;
+    height: 60px;
+    margin-top: auto;
+    z-index: 0;
   }
   
-  // Color variants using a loop
-  $card-colors: (
-    'success': func.color('success'),
-    'error': func.color('error'),
-    'primary': func.color('primary'),
-    'secondary': func.color('secondary'),
-    'info': func.color('info'),
-    'warning': func.color('warning')
-  );
+  // Card title
+  &__title {
+    font-size: func.font-size('sm');
+    font-weight: func.font-weight('regular');
+    color: #9A9A9A;
+    margin: 0;
+  }
   
-  @each $name, $color in $card-colors {
-    &--#{$name} {
-      border-left: 4px solid $color;
-      
-      .metric-card__header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: $color;
-        opacity: 0.2;
-      }
-      
-      .metric-card__value {
-        color: $color;
-      }
+  // Badge for percentage change
+  &__badge {
+    padding: func.spacing(1) func.spacing(1);
+    border-radius: func.border-radius('sm');
+    font-size: func.font-size('xs');
+    font-weight: func.font-weight('medium');
+    
+    &--positive {
+      color: #4CAF50;
+    }
+    
+    &--negative {
+      color: #F44336;
     }
   }
   
-  // Responsive adjustments
-  @include mix.respond-below('md') {
-    padding: func.spacing(3);
-    
-    &__value {
-      font-size: func.font-size('2xl');
+  // Color variants for different metrics
+  &--profit-loss {
+    .metric-card__value {
+      color: #4CAF50; // Green for profit/loss
     }
   }
   
-  @include mix.respond-below('sm') {
-    padding: func.spacing(2);
-    
-    &__header {
-      margin-bottom: func.spacing(1);
+  &--win-rate {
+    .metric-card__value {
+      color: #2196F3; // Blue for win rate
     }
-    
-    &__title {
-      font-size: func.font-size('xs');
+  }
+  
+  &--risk-reward {
+    .metric-card__value {
+      color: #3F51B5; // Indigo for risk/reward
     }
-    
-    &__value {
-      font-size: func.font-size('xl');
+  }
+  
+  &--drawdown {
+    .metric-card__value {
+      color: #F44336; // Red for drawdown
     }
-    
-    &__chart {
-      min-height: 30px;
+  }
+  
+  &--consistency {
+    .metric-card__value {
+      color: #9C27B0; // Purple for consistency
     }
   }
   
@@ -158,15 +117,40 @@
   
   &--loading {
     .metric-card__value,
-    .metric-card__change,
+    .metric-card__badge,
     .metric-card__chart {
       animation: pulse 1.5s infinite;
       background: linear-gradient(90deg, 
-                                var(--bg-tertiary) 0%, 
-                                var(--bg-secondary) 50%, 
-                                var(--bg-tertiary) 100%);
+                                 rgba(30, 30, 30, 0.4) 0%, 
+                                 rgba(50, 50, 50, 0.4) 50%, 
+                                 rgba(30, 30, 30, 0.4) 100%);
       background-size: 200% 100%;
       animation: pulse 2s infinite linear;
+    }
+  }
+  
+  // Responsive adjustments
+  @include mix.respond-below('md') {
+    padding: func.spacing(2);
+    
+    &__value {
+      font-size: func.font-size('2xl');
+    }
+  }
+  
+  @include mix.respond-below('sm') {
+    padding: func.spacing(2);
+    
+    &__title {
+      font-size: func.font-size('xs');
+    }
+    
+    &__value {
+      font-size: func.font-size('xl');
+    }
+    
+    &__chart {
+      height: 40px;
     }
   }
   

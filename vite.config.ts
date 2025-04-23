@@ -1,19 +1,12 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import themePlugin from "@replit/vite-plugin-shadcn-theme-json";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 export default defineConfig({
   plugins: [
-    react({
-      jsxRuntime: 'automatic',
-      babel: {
-        plugins: ['styled-jsx/babel']
-      }
-    }),
+    react(),
     runtimeErrorOverlay(),
-    themePlugin(),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
       ? [
@@ -34,5 +27,12 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: ``,
+      },
+    },
   },
 });

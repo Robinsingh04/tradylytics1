@@ -1,0 +1,162 @@
+.popover {
+  position: relative;
+  display: inline-block;
+
+  &__trigger {
+    cursor: pointer;
+  }
+
+  &__content {
+    position: absolute;
+    z-index: 50;
+    width: 100%;
+    max-width: 20rem;
+    background-color: var(--background);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease-in-out;
+    transform: translateY(4px);
+
+    // Variants
+    &--default {
+      background-color: var(--background);
+      color: var(--foreground);
+      border-color: var(--border);
+    }
+
+    &--primary {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      border-color: var(--primary);
+    }
+
+    &--secondary {
+      background-color: var(--secondary);
+      color: var(--secondary-foreground);
+      border-color: var(--secondary);
+    }
+
+    &--success {
+      background-color: var(--success);
+      color: var(--success-foreground);
+      border-color: var(--success);
+    }
+
+    &--warning {
+      background-color: var(--warning);
+      color: var(--warning-foreground);
+      border-color: var(--warning);
+    }
+
+    &--error {
+      background-color: var(--error);
+      color: var(--error-foreground);
+      border-color: var(--error);
+    }
+
+    // Sizes
+    &--sm {
+      max-width: 16rem;
+      padding: 0.75rem;
+    }
+
+    &--lg {
+      max-width: 24rem;
+      padding: 1.25rem;
+    }
+
+    // Positions
+    &--top {
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+    }
+
+    &--right {
+      left: 100%;
+      top: 50%;
+      transform: translateX(4px) translateY(-50%);
+    }
+
+    &--bottom {
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+    }
+
+    &--left {
+      right: 100%;
+      top: 50%;
+      transform: translateX(-4px) translateY(-50%);
+    }
+  }
+
+  // Arrow
+  &__arrow {
+    position: absolute;
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: inherit;
+    border: inherit;
+    transform: rotate(45deg);
+
+    // Positions
+    &--top {
+      bottom: -0.25rem;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      border-right: none;
+      border-bottom: none;
+    }
+
+    &--right {
+      left: -0.25rem;
+      top: 50%;
+      transform: translateY(-50%) rotate(45deg);
+      border-left: none;
+      border-bottom: none;
+    }
+
+    &--bottom {
+      top: -0.25rem;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      border-left: none;
+      border-top: none;
+    }
+
+    &--left {
+      right: -0.25rem;
+      top: 50%;
+      transform: translateY(-50%) rotate(45deg);
+      border-right: none;
+      border-top: none;
+    }
+  }
+
+  // States
+  &--visible {
+    .popover__content {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+  }
+
+  // Animations
+  &--fade {
+    .popover__content {
+      transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+    }
+  }
+
+  &--scale {
+    .popover__content {
+      transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+    }
+  }
+} 

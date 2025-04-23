@@ -1,4 +1,6 @@
 import React from 'react';
+import { Button, ButtonGroup } from '@mui/material';
+import styles from '../../styles/components/TimeRangeToggle.module.scss';
 
 export type TimeRange = 'day' | 'week' | 'month' | 'year';
 
@@ -7,10 +9,10 @@ interface TimeRangeToggleProps {
   onChange: (range: TimeRange) => void;
 }
 
-export const TimeRangeToggle: React.FC<TimeRangeToggleProps> = ({ 
+export const TimeRangeToggle = ({ 
   activeRange, 
   onChange 
-}) => {
+}: TimeRangeToggleProps) => {
   const ranges: TimeRange[] = ['day', 'week', 'month', 'year'];
   
   // Map of time ranges to their abbreviated labels
@@ -22,16 +24,24 @@ export const TimeRangeToggle: React.FC<TimeRangeToggleProps> = ({
   };
   
   return (
-    <div className="time-range-toggle">
+    <ButtonGroup
+      variant="outlined"
+      size="small"
+      aria-label="time range toggle"
+      className={styles.timeRangeToggle}
+    >
       {ranges.map((range) => (
-        <button
+        <Button
           key={range}
-          className={`time-range-toggle-button ${activeRange === range ? 'active' : ''}`}
           onClick={() => onChange(range)}
+          color={activeRange === range ? 'primary' : 'inherit'}
+          variant={activeRange === range ? 'contained' : 'outlined'}
+          className={activeRange === range ? styles.active : ''}
+          sx={{ minWidth: 36, borderRadius: 1 }}
         >
-          <span>{rangeLabels[range]}</span>
-        </button>
+          {rangeLabels[range]}
+        </Button>
       ))}
-    </div>
+    </ButtonGroup>
   );
 }; 

@@ -17,10 +17,10 @@ import { OpenTrades } from '@/components/dashboard/OpenTrades';
 import { Navbar } from '@/components/dashboard/Navbar';
 import { TimeframeSelector, Timeframe } from '@/components/dashboard/TimeframeSelector';
 import { SyncHoverProvider } from '@/hooks/use-sync-hover';
+import { DataPoint } from '@/components/dashboard/LineChart';
 import '@/styles/main.scss';
 import { format, parseISO } from 'date-fns';
 import { Metrics, Trade, DailyPerformance } from '@shared/schema';
-import { DataPoint } from '@/types/chart';
 
 // Theme-aware styled components using SASS classes instead of custom styling
 const DashboardContainer = styled(Box)(() => ({
@@ -33,12 +33,16 @@ const MainContent = styled(Container)(() => ({
   flexGrow: 1,
   paddingTop: '64px', // 48px navbar + 16px padding
   paddingBottom: '16px',
-  maxWidth: '1280px',
+  maxWidth: '100%',
+  width: '100%',
 }));
 
 export default function Dashboard() {
   const theme = useTheme();
   const [timeframe, setTimeframe] = useState<Timeframe>('month');
+  // Also need separate timeframes for each chart section
+  const [leftChartTimeframe, setLeftChartTimeframe] = useState<Timeframe>('day');
+  const [rightChartTimeframe, setRightChartTimeframe] = useState<Timeframe>('day');
   
   // Fetch metrics data
   const { data: metricsData, isLoading: isLoadingMetrics } = useQuery<Metrics>({
@@ -83,10 +87,15 @@ export default function Dashboard() {
   
   // Transform chart data format to match DataPoint interface
   const generateChartData = (values: number[]): DataPoint[] => {
-    return values.map((value, index) => ({
-      x: index,
-      y: value
-    }));
+    const now = new Date();
+    return values.map((val, index) => {
+      // Create a placeholder timestamp (e.g., decreasing by 1 hour for each point)
+      const timestamp = new Date(now.getTime() - index * 60 * 60 * 1000).toISOString();
+      return {
+        value: val,
+        timestamp: timestamp,
+      };
+    });
   };
 
   // Synthetic chart data for different timeframes
@@ -137,163 +146,200 @@ export default function Dashboard() {
       <Navbar />
 
       <MainContent>
-        {/* Timeframe Selector */}
-        <div className="d-flex justify-content-end mb-3">
-          <TimeframeSelector 
-            value={timeframe} 
-            onChange={setTimeframe} 
-          />
-        </div>
-        
-        {/* Metric Cards */}
-        <div className="metrics-grid mb-4">
-          {isLoadingMetrics ? (
-            // Loading skeleton
-            Array(5).fill(0).map((_, i) => (
-              <Paper 
-                key={i}
-                className="metric-card metric-card--loading"
-              >
-                <div className="metric-card__header">
-                  <div className="metric-card__title">Loading...</div>
-                </div>
-                <div className="metric-card__value">0</div>
-                <div className="metric-card__change"></div>
-                <div className="metric-card__chart"></div>
-              </Paper>
-            ))
-          ) : metricsData ? (
-            <SyncHoverProvider>
-              <MetricCard
-                title="Total Profit/Loss"
-                value={parseFloat(metricsData.totalPnl.toString())}
-                change={parseFloat(metricsData.pnlChange?.toString() || '0')}
-                isPositive={parseFloat(metricsData.totalPnl.toString()) > 0}
-                isMonetary={true}
-                chartData={pnlChartData[timeframe]}
-                color="#00c853"
-              />
-              <MetricCard
-                title="Win Rate"
-                value={`${parseFloat(metricsData.winRate.toString()).toFixed(1)}`}
-                change={parseFloat(metricsData.winRateChange?.toString() || '0')}
-                isPositive={parseFloat(metricsData.winRateChange?.toString() || '0') > 0}
-                chartData={winRateChartData[timeframe]}
-                suffix="%"
-                color="#00bcd4"
-              />
-              <MetricCard
-                title="Risk to Reward"
-                value={metricsData.totalTrades > 100 ? 161.5 : metricsData.totalTrades}
-                change={metricsData.tradesChange || 2.5}
-                isPositive={(metricsData.tradesChange || 0) > 0}
-                chartData={tradesChartData[timeframe]}
-                color="#3d5afe"
-              />
-              <MetricCard
-                title="Max Drawdown"
-                value={parseFloat(metricsData.avgLoss.toString())}
-                change={parseFloat(metricsData.avgLossChange?.toString() || '0')}
-                isPositive={false}
-                isMonetary={true}
-                chartData={avgLossChartData[timeframe]}
-                color="#ff5252"
-              />
-              <MetricCard
-                title="Consistency Score"
-                value={95.2}
-                change={0}
-                isPositive={true}
-                chartData={avgWinChartData[timeframe]}
-                color="#aa00ff"
-              />
-            </SyncHoverProvider>
-          ) : (
-            <div className="text-center py-4 text-sm">
-              Failed to load metrics data
-            </div>
-          )}
-        </div>
-
-        {/* Charts */}
-        <Box sx={{ 
-          display: 'grid', 
-          gridTemplateColumns: { xs: '1fr', md: '60% 40%' },
-          gap: 2,
-          mb: 2
-        }}>
-          <Box sx={{ 
-            bgcolor: 'background.paper', 
-            borderRadius: 1, 
-            overflow: 'hidden',
-            boxShadow: 1,
-            height: '100%'
-          }}>
-            {isLoadingEquity ? (
-              <Box sx={{ p: 2 }}>
-                <Skeleton variant="rectangular" height={240} />
-              </Box>
-            ) : formattedEquityData ? (
-              <EquityCurveChart data={formattedEquityData} />
-            ) : (
-              <Box sx={{ p: 2, textAlign: 'center' }}>
-                Failed to load equity data
-              </Box>
-            )}
-          </Box>
+        <div className="dashboard__main">
+          {/* Page title */}
+          <h1 className="dashboard__page-title">Performance Metrics</h1>
           
-          <Box sx={{ 
-            bgcolor: 'background.paper', 
-            borderRadius: 1, 
-            overflow: 'hidden',
-            boxShadow: 1,
-            height: '100%'
-          }}>
-            {isLoadingDrawdown ? (
-              <Box sx={{ p: 2 }}>
-                <Skeleton variant="rectangular" height={240} />
-              </Box>
-            ) : formattedDrawdownData ? (
-              <DrawdownChart data={formattedDrawdownData} />
-            ) : (
-              <Box sx={{ p: 2, textAlign: 'center' }}>
-                Failed to load drawdown data
-              </Box>
-            )}
-          </Box>
-        </Box>
-
-        {/* Calendar and Open Trades */}
-        <div className="d-flex flex-column flex-lg-row gap-4">
-          {isLoadingCalendar ? (
-            <div className="card flex-1">
-              <div className="card-body p-4">
-                <div className="skeleton-calendar"></div>
-              </div>
-            </div>
-          ) : (
-            <CalendarView monthlyData={formattedCalendarData} />
-          )}
-          
-          {isLoadingTrades ? (
-            <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
-              <div className="card-body p-4">
-                <div className="skeleton-trades"></div>
-              </div>
-            </div>
-          ) : openTrades ? (
-            <OpenTrades 
-              trades={openTrades} 
-              onEditTrade={handleEditTrade} 
-              onCloseTrade={handleCloseTrade} 
+          {/* Timeframe Selector - Top row */}
+          <div className="dashboard__timeframe">
+            <TimeframeSelector 
+              value={timeframe} 
+              onChange={setTimeframe} 
             />
-          ) : (
-            <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
-              <div className="card-body p-4 text-center text-sm">
-                Failed to load open trades
+          </div>
+          
+          {/* Metric Cards - 5 cards in a row */}
+          <div className="dashboard__metrics">
+            {isLoadingMetrics ? (
+              // Loading skeleton for 5 cards
+              Array(5).fill(0).map((_, i) => (
+                <Paper 
+                  key={i}
+                  className="metric-card metric-card--loading"
+                >
+                  <div className="metric-card__header">
+                    <div className="metric-card__title">Loading...</div>
+                  </div>
+                  <div className="metric-card__value">0</div>
+                  <div className="metric-card__change"></div>
+                  <div className="metric-card__chart"></div>
+                </Paper>
+              ))
+            ) : metricsData ? (
+              <SyncHoverProvider>
+                {/* First Card - Total Profit/Loss */}
+                <MetricCard
+                  title="Total Profit/Loss"
+                  value="6744.64"
+                  change={-9.38}
+                  isPositive={false}
+                  isMonetary={true}
+                  chartData={pnlChartData[timeframe]}
+                  metricType="profit-loss"
+                />
+                
+                {/* Second Card - Win Rate */}
+                <MetricCard
+                  title="Win Rate"
+                  value="84.0"
+                  change={-4.24}
+                  isPositive={false}
+                  suffix="%"
+                  chartData={winRateChartData[timeframe]}
+                  metricType="win-rate"
+                />
+                
+                {/* Third Card - Risk to Reward */}
+                <MetricCard
+                  title="Risk to Reward"
+                  value="142.3"
+                  change={-5.12}
+                  isPositive={false}
+                  chartData={tradesChartData[timeframe]}
+                  metricType="risk-reward"
+                />
+                
+                {/* Fourth Card - Max Drawdown */}
+                <MetricCard
+                  title="Max Drawdown"
+                  value="346.15"
+                  change={-6.15}
+                  isPositive={false}
+                  isMonetary={true}
+                  chartData={avgWinChartData[timeframe]}
+                  metricType="drawdown"
+                />
+                
+                {/* Fifth Card - Consistency Score */}
+                <MetricCard
+                  title="Consistency Score"
+                  value="92.1"
+                  change={2.25}
+                  isPositive={false}
+                  chartData={avgLossChartData[timeframe]}
+                  metricType="consistency"
+                />
+              </SyncHoverProvider>
+            ) : (
+              <div className="dashboard__error">
+                Failed to load metrics data
+              </div>
+            )}
+          </div>
+
+          {/* Two chart sections side by side */}
+          <div className="dashboard__charts-grid">
+            {/* Left Chart Section */}
+            <div className="dashboard__chart-section">
+              <div className="dashboard__chart-header">
+                <h3 className="dashboard__chart-title">Trades by Day</h3>
+                <div className="dashboard__chart-value">
+                  <span>12.5K</span>
+                  <span className="dashboard__chart-change dashboard__chart-change--positive">+2.5%</span>
+                </div>
+                <div className="dashboard__chart-subtitle">Trade volume for the last 7 days</div>
+                
+                {/* Timeframe selector for left chart */}
+                <div className="dashboard__chart-timeframe">
+                  <TimeframeSelector 
+                    value={leftChartTimeframe} 
+                    onChange={setLeftChartTimeframe} 
+                  />
+                </div>
+              </div>
+              
+              <div className="dashboard__chart">
+                {isLoadingEquity ? (
+                  <div className="dashboard__chart-skeleton">
+                    <Skeleton variant="rectangular" height={240} />
+                  </div>
+                ) : formattedEquityData ? (
+                  <EquityCurveChart data={formattedEquityData} />
+                ) : (
+                  <div className="dashboard__chart-error">
+                    Failed to load equity data
+                  </div>
+                )}
               </div>
             </div>
-          )}
+            
+            {/* Right Chart Section */}
+            <div className="dashboard__chart-section">
+              <div className="dashboard__chart-header">
+                <h3 className="dashboard__chart-title">Trades by Day</h3>
+                <div className="dashboard__chart-value">
+                  <span>12.5K</span>
+                  <span className="dashboard__chart-change dashboard__chart-change--positive">+2.5%</span>
+                </div>
+                <div className="dashboard__chart-subtitle">Trade volume for the last 7 days</div>
+                
+                {/* Timeframe selector for right chart */}
+                <div className="dashboard__chart-timeframe">
+                  <TimeframeSelector 
+                    value={rightChartTimeframe} 
+                    onChange={setRightChartTimeframe} 
+                  />
+                </div>
+              </div>
+              
+              <div className="dashboard__chart">
+                {isLoadingDrawdown ? (
+                  <div className="dashboard__chart-skeleton">
+                    <Skeleton variant="rectangular" height={240} />
+                  </div>
+                ) : formattedDrawdownData ? (
+                  <DrawdownChart data={formattedDrawdownData} />
+                ) : (
+                  <div className="dashboard__chart-error">
+                    Failed to load drawdown data
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          {/* Additional sections (Calendar and Open Trades) can remain as is */}
+          <div className="dashboard__grid">
+            <div className="dashboard__calendar">
+              {isLoadingCalendar ? (
+                <div className="dashboard__calendar-skeleton">
+                  <Skeleton variant="rectangular" height={400} />
+                </div>
+              ) : formattedCalendarData.length > 0 ? (
+                <CalendarView monthlyData={formattedCalendarData} />
+              ) : (
+                <div className="dashboard__calendar-error">
+                  Failed to load calendar data
+                </div>
+              )}
+            </div>
+            
+            <div className="dashboard__trades">
+              {isLoadingTrades ? (
+                <div className="dashboard__trades-skeleton">
+                  <Skeleton variant="rectangular" height={400} />
+                </div>
+              ) : openTrades ? (
+                <OpenTrades 
+                  trades={openTrades} 
+                />
+              ) : (
+                <div className="dashboard__trades-error">
+                  Failed to load open trades
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </MainContent>
     </DashboardContainer>

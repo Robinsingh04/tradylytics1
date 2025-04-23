@@ -1,0 +1,207 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 24px;
+  background-color: var(--mui-palette-background-paper);
+  border-bottom: 1px solid var(--mui-palette-divider);
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 240px; // Match sidebar width
+  z-index: 1100;
+  transition: left 0.3s ease;
+  box-shadow: var(--mui-shadows-1);
+  
+  &.sidebarCollapsed {
+    left: 64px;
+  }
+}
+
+.navbarStart, .navbarCenter, .navbarEnd {
+  display: flex;
+  align-items: center;
+}
+
+.navbarStart {
+  flex: 0 0 auto;
+}
+
+.navbarCenter {
+  flex: 1;
+  justify-content: center;
+}
+
+.navbarEnd {
+  flex: 0 0 auto;
+  gap: 16px;
+}
+
+.navbarLogo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--mui-palette-text-primary);
+  
+  .greeting {
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+.searchContainer {
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  
+  .searchWrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: var(--mui-palette-action-hover);
+    border-radius: 8px;
+    padding: 4px 12px;
+    transition: background-color 0.2s ease;
+    
+    &:focus-within {
+      background-color: var(--mui-palette-action-selected);
+    }
+    
+    .searchIcon {
+      color: var(--mui-palette-text-secondary);
+      margin-right: 8px;
+      font-size: 20px;
+    }
+    
+    .searchInput {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--mui-palette-text-primary);
+      font-size: 14px;
+      padding: 8px 0;
+      
+      &::placeholder {
+        color: var(--mui-palette-text-secondary);
+      }
+    }
+  }
+}
+
+.dropdownContainer {
+  position: relative;
+  
+  .marketDropdown {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: var(--mui-palette-text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: var(--mui-palette-action-hover);
+    }
+    
+    .dropdownIcon {
+      margin-left: 4px;
+      font-size: 20px;
+    }
+  }
+  
+  .dropdownMenu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 180px;
+    background-color: var(--mui-palette-background-paper);
+    border-radius: 8px;
+    box-shadow: var(--mui-shadows-3);
+    z-index: 1100;
+    margin-top: 4px;
+    overflow: hidden;
+    
+    .dropdownItem {
+      display: block;
+      padding: 10px 16px;
+      color: var(--mui-palette-text-primary);
+      text-decoration: none;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+      
+      &:hover {
+        background-color: var(--mui-palette-action-hover);
+      }
+    }
+  }
+}
+
+.notificationContainer {
+  position: relative;
+  
+  .notificationIcon {
+    font-size: 24px;
+    color: var(--mui-palette-text-primary);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: var(--mui-palette-action-hover);
+    }
+  }
+  
+  .notificationBadge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--mui-palette-error-main);
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.userContainer {
+  position: relative;
+  
+  .userAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--mui-palette-primary-main);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    left: 64px;
+    padding: 0 16px;
+  }
+  
+  .navbarCenter {
+    .searchContainer {
+      max-width: 300px;
+    }
+  }
+} 

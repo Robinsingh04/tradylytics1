@@ -15,6 +15,7 @@ interface LineChartProps {
   syncId?: string;
   valuePrefix?: string;
   valueSuffix?: string;
+  areaFill?: boolean;
 }
 
 export const LineChart: React.FC<LineChartProps> = ({
@@ -26,7 +27,8 @@ export const LineChart: React.FC<LineChartProps> = ({
   hoveredIndex,
   syncId,
   valuePrefix = '',
-  valueSuffix = ''
+  valueSuffix = '',
+  areaFill = false
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -103,23 +105,25 @@ export const LineChart: React.FC<LineChartProps> = ({
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // If no data, don't draw
-    if (!data.length) return;
+    if (!data || data.length === 0) {
+       ctx.clearRect(0, 0, canvas.width, canvas.height);
+       return; // Exit if no data
+    }
     
-    // Calculate min and max values for scaling
+    // Calculate min/max and scales
     const values = data.map(point => point.value);
-    const minValue = Math.min(...values) * 0.98; // Reduce padding
-    const maxValue = Math.max(...values) * 1.02; // Reduce padding
-    const valueRange = maxValue - minValue;
+    const minValue = Math.min(...values);
+    const maxValue = Math.max(...values);
+    // Add small buffer if min/max are the same to avoid valueRange being 0
+    const valueRange = (maxValue - minValue === 0) ? 1 : maxValue - minValue; 
     
-    // Reduce padding
     const padding = { top: 4, right: 4, bottom: 4, left: 4 };
     const chartWidth = canvas.width / (window.devicePixelRatio || 1) - padding.left - padding.right;
     const chartHeight = canvas.height / (window.devicePixelRatio || 1) - padding.top - padding.bottom;
     
-    // Scale factor
-    const scaleX = chartWidth / (data.length - 1);
-    const scaleY = valueRange === 0 ? 0 : chartHeight / valueRange;
+    // Handle cases with 0 or 1 data point for scaleX
+    const scaleX = data.length > 1 ? chartWidth / (data.length - 1) : 0;
+    const scaleY = chartHeight / valueRange;
     
     // Create gradient for area fill
     const gradient = ctx.createLinearGradient(0, padding.top, 0, canvas.height / (window.devicePixelRatio || 1) - padding.bottom);
@@ -128,10 +132,8 @@ export const LineChart: React.FC<LineChartProps> = ({
     
     // Start drawing the line
     ctx.beginPath();
-    // Enable anti-aliasing
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    // Line style
     ctx.lineWidth = 2.5;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
@@ -139,9 +141,10 @@ export const LineChart: React.FC<LineChartProps> = ({
     
     // Create the line path
     data.forEach((point, index) => {
+      // Ensure point.value is a valid number
+      const pointValue = typeof point.value === 'number' && !isNaN(point.value) ? point.value : minValue; 
       const x = padding.left + (index * scaleX);
-      // Invert y to draw from bottom to top
-      const y = chartHeight + padding.top - ((point.value - minValue) * scaleY);
+      const y = chartHeight + padding.top - ((pointValue - minValue) * scaleY);
       
       if (index === 0) {
         ctx.moveTo(x, y);
@@ -150,209 +153,189 @@ export const LineChart: React.FC<LineChartProps> = ({
       }
     });
     
-    // Draw the line with shadow for depth
+    // Draw the line
     ctx.shadowColor = `${color}40`;
     ctx.shadowBlur = 6;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 3;
     ctx.stroke();
     
-    // Reset shadow for fill
+    // Reset shadow
     ctx.shadowColor = 'transparent';
     ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
     
-    // Draw the area under the line
-    ctx.lineTo(padding.left + ((data.length - 1) * scaleX), chartHeight + padding.top);
-    ctx.lineTo(padding.left, chartHeight + padding.top);
-    ctx.closePath();
-    ctx.fillStyle = gradient;
-    ctx.fill();
+    // Draw the area under the line if areaFill is true
+    if (areaFill) {
+      ctx.lineTo(padding.left + ((data.length - 1) * scaleX), chartHeight + padding.top);
+      ctx.lineTo(padding.left, chartHeight + padding.top);
+      ctx.closePath();
+      ctx.fillStyle = gradient;
+      ctx.fill();
+    }
     
-    // Draw hover point if it exists
+    // Draw hover point effects
     if (hoveredIndex !== null && hoveredIndex !== undefined && hoveredIndex >= 0 && hoveredIndex < data.length) {
       const point = data[hoveredIndex];
+      // Ensure point.value is valid before calculations
+      const pointValue = typeof point.value === 'number' && !isNaN(point.value) ? point.value : minValue;
+      
+      // Recalculate x/y for hover point, guarding against NaN/Infinity
       const x = padding.left + (hoveredIndex * scaleX);
-      const y = chartHeight + padding.top - ((point.value - minValue) * scaleY);
+      const y = chartHeight + padding.top - ((pointValue - minValue) * scaleY);
       
-      // Draw vertical line
-      ctx.beginPath();
-      ctx.strokeStyle = `${color}60`; // Semi-transparent line
-      ctx.setLineDash([2, 2]); // Dashed line
-      ctx.lineWidth = 1;
-      ctx.moveTo(x, padding.top);
-      ctx.lineTo(x, chartHeight + padding.top);
-      ctx.stroke();
-      ctx.setLineDash([]); // Reset dash
-      
-      // Draw point with halo effect
-      // Outer glow
-      ctx.beginPath();
-      const gradient2 = ctx.createRadialGradient(x, y, 0, x, y, 12);
-      gradient2.addColorStop(0, `${color}50`);
-      gradient2.addColorStop(1, `${color}00`);
-      ctx.fillStyle = gradient2;
-      ctx.arc(x, y, 12, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Inner point
-      ctx.beginPath();
-      ctx.fillStyle = color;
-      ctx.arc(x, y, 4, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // White border
-      ctx.strokeStyle = 'white';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      
-      // Store active point for tooltip
-      if (showTooltip) {
-        setActivePoint({
-          x,
-          y,
-          value: point.value,
-          timestamp: point.timestamp
-        });
+      if (isFinite(x) && isFinite(y)) { // Check if calculated coordinates are valid
+        // Draw vertical line
+        ctx.beginPath();
+        ctx.strokeStyle = `${color}80`; // Semi-transparent line
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]); // Dashed line
+        ctx.moveTo(x, padding.top);
+        ctx.lineTo(x, chartHeight + padding.top);
+        ctx.stroke();
+        ctx.setLineDash([]); // Reset to solid line
+        
+        // Draw point
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.fillStyle = '#FFFFFF';
+        ctx.arc(x, y, 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Set active point state
+        if (showTooltip) {
+           // Also check point.timestamp is a valid string
+           const ts = typeof point.timestamp === 'string' ? point.timestamp : new Date().toISOString();
+          setActivePoint({
+            x,
+            y,
+            value: pointValue,
+            timestamp: ts 
+          });
+        }
+      } else {
+         // If coordinates invalid, don't set active point
+         setActivePoint(null);
       }
     } else {
       setActivePoint(null);
     }
-  }, [data, color, hoveredIndex, showTooltip]);
+  }, [data, color, areaFill, hoveredIndex, showTooltip]);
 
   // Handle mouse move over the chart
   const handleMouseMove = useCallback((e: PointerEvent) => {
-    if (!containerRef.current || !data.length) return;
+    if (!containerRef.current || !data.length || !onHover) return;
     
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     
-    // Calculate which data point is closest to the mouse position
-    const padding = { left: 5, right: 5 };
+    const padding = { left: 5, right: 5 }; 
     const chartWidth = rect.width - padding.left - padding.right;
-    const scaleX = chartWidth / (data.length - 1);
+    if (data.length <= 1) return;
+    const scaleX = chartWidth / (data.length - 1); 
+    if (scaleX === 0) return;
     
     const index = Math.round((x - padding.left) / scaleX);
     
     if (index >= 0 && index < data.length) {
-      onHover && onHover(index);
+      onHover(index);
     }
   }, [data, onHover]);
 
   // Handle mouse leave
   const handleMouseLeave = useCallback(() => {
-    onHover && onHover(null);
+    if (onHover) {
+      onHover(null);
+    }
   }, [onHover]);
 
-  // Effect to set up event listeners
+  // Effect to set up event listeners and draw
   useEffect(() => {
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener('pointermove', handleMouseMove as any);
-      container.addEventListener('pointerleave', handleMouseLeave as any);
-      
-      return () => {
-        container.removeEventListener('pointermove', handleMouseMove as any);
-        container.removeEventListener('pointerleave', handleMouseLeave as any);
-      };
-    }
-  }, [handleMouseMove, handleMouseLeave]);
-
-  // Effect to redraw the chart when data or hover state changes
-  useEffect(() => {
-    // Set canvas size to match container size for sharp rendering
     const canvas = canvasRef.current;
     const container = containerRef.current;
-    
-    if (canvas && container) {
-      // Account for device pixel ratio to fix blurriness on high DPI displays
-      const dpr = window.devicePixelRatio || 1;
-      const rect = container.getBoundingClientRect();
-      
-      // Set display size (css pixels)
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${height}px`;
-      
-      // Set actual size in memory (scaled for device pixel ratio)
-      canvas.width = rect.width * dpr;
-      canvas.height = height * dpr;
-      
-      // Scale the context based on device pixel ratio
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.scale(dpr, dpr);
-      }
-      
-      drawChart();
-    }
+    if (!canvas || !container) return;
 
-    // Add resize observer to handle container size changes
-    const resizeObserver = new ResizeObserver(() => {
-      if (canvas && container) {
-        const dpr = window.devicePixelRatio || 1;
-        const rect = container.getBoundingClientRect();
-        
-        canvas.style.width = `${rect.width}px`;
-        canvas.style.height = `${height}px`;
-        
-        canvas.width = rect.width * dpr;
-        canvas.height = height * dpr;
-        
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.scale(dpr, dpr);
+    // Resize observer for responsiveness
+    const resizeObserver = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        if (entry.target === container) {
+          const { width, height } = entry.contentRect;
+          const dpr = window.devicePixelRatio || 1;
+          
+          // Set canvas size with DPR consideration for crisp rendering
+          canvas.width = width * dpr;
+          canvas.height = height * dpr;
+          
+          // Set canvas display size
+          canvas.style.width = `${width}px`;
+          canvas.style.height = `${height}px`;
+          
+          drawChart();
         }
-        
-        drawChart();
       }
     });
-
-    if (container) {
-      resizeObserver.observe(container);
-    }
-
+    
+    resizeObserver.observe(container);
+    
+    // Add event listeners for interactivity
+    container.addEventListener('pointermove', handleMouseMove);
+    container.addEventListener('pointerleave', handleMouseLeave);
+    
+    // Initial draw
+    drawChart();
+    
+    // Cleanup
     return () => {
-      if (container) {
-        resizeObserver.unobserve(container);
-      }
+      resizeObserver.disconnect();
+      container.removeEventListener('pointermove', handleMouseMove);
+      container.removeEventListener('pointerleave', handleMouseLeave);
     };
-  }, [data, color, height, hoveredIndex, drawChart]);
+  }, [drawChart, handleMouseMove, handleMouseLeave]);
+
+  // Redraw when hoveredIndex changes
+  useEffect(() => {
+    drawChart();
+  }, [hoveredIndex, drawChart]);
 
   return (
     <div 
-      className="line-chart" 
       ref={containerRef} 
       style={{ 
-        height: '100%',
-        position: 'relative',
-        zIndex: 5,
-        width: '100%',
+        width: '100%', 
+        height: `${height}px`, 
+        position: 'relative', 
         overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'flex-start'
+        cursor: 'crosshair'
       }}
     >
-      <canvas 
-        ref={canvasRef} 
-        className="line-chart-canvas"
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'block'
-        }}
-      ></canvas>
+      <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
       
-      {activePoint && showTooltip && (
+      {showTooltip && activePoint && (
         <div 
-          className={`line-chart-tooltip ${getTooltipPosition(activePoint.x, activePoint.y).position}`}
-          style={{
-            left: getTooltipPosition(activePoint.x, activePoint.y).left,
-            top: getTooltipPosition(activePoint.x, activePoint.y).top
+          className="chart-tooltip" 
+          style={{ 
+            position: 'absolute',
+            backgroundColor: 'rgba(20, 20, 20, 0.9)',
+            color: '#fff',
+            padding: '8px 12px',
+            borderRadius: '4px',
+            fontSize: '12px',
+            pointerEvents: 'none',
+            zIndex: 10,
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            ...getTooltipPosition(activePoint.x, activePoint.y)
           }}
         >
-          <div className="line-chart-tooltip-value">{formatValue(activePoint.value)}</div>
-          <div className="line-chart-tooltip-time">{formatDate(activePoint.timestamp)}</div>
+          <div style={{ fontWeight: 'bold', marginBottom: '4px', color: color }}>
+            {formatValue(activePoint.value)}
+          </div>
+          <div style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+            {formatDate(activePoint.timestamp)}
+          </div>
         </div>
       )}
     </div>

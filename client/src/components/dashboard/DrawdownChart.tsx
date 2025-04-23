@@ -3,9 +3,10 @@ import { LineChart, DataPoint } from './LineChart';
 import { useSyncHover } from '../../hooks/useSyncHover';
 
 interface DrawdownChartProps {
-  timeRanges?: string[];
-  data?: any[];
+  timeRange?: string;
+  data?: DataPoint[];
   style?: React.CSSProperties;
+  syncId?: string;
 }
 
 // Generate mock data for the drawdown chart
@@ -36,19 +37,19 @@ const generateDrawdownData = (days: number): DataPoint[] => {
 };
 
 export const DrawdownChart: React.FC<DrawdownChartProps> = ({ 
-  timeRanges = ['1W', '1M', '3M', 'YTD', '1Y', 'All'],
+  timeRange = '1M',
   data,
-  style
+  style,
+  syncId = 'dashboard'
 }) => {
-  const [activeRange, setActiveRange] = useState('1M');
   const [chartData, setChartData] = useState<DataPoint[]>([]);
-  const { hoveredIndex, setHoveredIndex } = useSyncHover('drawdown-chart');
+  const { hoveredIndex, setHoveredIndex } = useSyncHover(syncId);
   
   useEffect(() => {
     // Generate data based on selected time range
     let days = 30; // Default to 1 month
     
-    switch (activeRange) {
+    switch (timeRange) {
       case '1W':
         days = 7;
         break;
@@ -72,41 +73,25 @@ export const DrawdownChart: React.FC<DrawdownChartProps> = ({
     }
     
     setChartData(data || generateDrawdownData(days));
-  }, [activeRange, data]);
+  }, [timeRange, data]);
   
   const handleHover = (index: number | null) => {
     setHoveredIndex(index);
   };
   
   return (
-    <div className="chart-card" style={{ width: '100%', height: '100%' }}>
-      <div className="chart-card-header">
-        <h3 className="chart-card-title">Drawdown</h3>
-        <div className="time-range-toggle">
-          {timeRanges.map(range => (
-            <button
-              key={range}
-              className={`time-range-toggle-button ${activeRange === range ? 'active' : ''}`}
-              onClick={() => setActiveRange(range)}
-            >
-              {range}
-            </button>
-          ))}
-        </div>
-      </div>
-      
-      <div className="chart-card-content">
-        <LineChart 
-          data={chartData}
-          color="#F44336"
-          height={240}
-          showTooltip={true}
-          onHover={handleHover}
-          hoveredIndex={hoveredIndex}
-          syncId="drawdown-chart"
-          valueSuffix="%"
-        />
-      </div>
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      <LineChart 
+        data={chartData}
+        color="#F44336"
+        height={240}
+        showTooltip={true}
+        onHover={handleHover}
+        hoveredIndex={hoveredIndex}
+        syncId={syncId}
+        valueSuffix="%"
+        areaFill={true}
+      />
     </div>
   );
 };

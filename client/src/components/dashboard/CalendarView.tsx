@@ -144,85 +144,75 @@ export function CalendarView({
   };
   
   return (
-    <div className="calendar-wrapper">
-      <div className="card-header">
-        <div className="card-title">Monthly Performance</div>
-        <div className="month-navigation flex items-center">
-          <button className="month-nav-button text-lg sm:text-xl" onClick={prevMonth}>
-            &lt;
-          </button>
-          <span className="current-month text-xs sm:text-sm px-1 sm:px-2">{format(viewDate, 'MMMM yyyy')}</span>
-          <button className="month-nav-button text-lg sm:text-xl" onClick={nextMonth}>
-            &gt;
-          </button>
-        </div>
-      </div>
-      
-      <div className="calendar-grid">
-        {/* Day headers */}
-        {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
-          <div key={index} className="day-header">
-            {day}
-          </div>
-        ))}
-        
-        {/* Calendar days */}
-        {calendarDays.map((day, index) => {
-          const dayNumber = format(day.date, 'd');
-          const isWeekendDay = isWeekend(day.date);
-          const isToday = isSameDay(day.date, new Date());
-          
-          let dayClass = "calendar-day";
-          if (!day.isCurrentMonth) {
-            dayClass += " faded";
-          }
-          
-          // Add positive/negative class based on PnL
-          if (day.pnl !== null) {
-            dayClass += day.pnl > 0 ? " positive" : " negative";
-          }
-          
-          // Add weekend class
-          if (isWeekendDay) {
-            dayClass += " weekend";
-          }
-          
-          // Add today class
-          if (isToday) {
-            dayClass += " today";
-          }
-          
-          // Add cursor pointer for clickable days
-          if (day.isCurrentMonth) {
-            dayClass += " cursor-pointer";
-          }
-          
-          return (
-            <div 
-              key={index} 
-              className={dayClass}
-              onClick={() => handleDayClick(day)}
+    <Card className="h-full bg-neutral-800 border-neutral-700">
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-sm sm:text-base font-medium">Monthly Performance</h2>
+          <div className="flex items-center space-x-1">
+            <button 
+              className="text-neutral-400 hover:text-white w-6 h-6 flex items-center justify-center rounded-full hover:bg-neutral-700"
+              onClick={prevMonth}
             >
-              <div className="day-number">{dayNumber}</div>
-              
-              {day.isCurrentMonth && isWeekendDay && (
-                <div className="day-label">wknd</div>
-              )}
-              
-              {day.isCurrentMonth && day.pnl !== null && (
-                <>
-                  <div className={`day-pnl ${day.pnl > 0 ? 'positive' : 'negative'}`}>
-                    {formatCurrency(day.pnl)}
-                  </div>
-                  {day.tradesCount && (
-                    <div className="day-trades">{day.tradesCount}t</div>
-                  )}
-                </>
-              )}
+              &lt;
+            </button>
+            <span className="text-xs px-1">{format(viewDate, 'MMMM yyyy')}</span>
+            <button 
+              className="text-neutral-400 hover:text-white w-6 h-6 flex items-center justify-center rounded-full hover:bg-neutral-700"
+              onClick={nextMonth}
+            >
+              &gt;
+            </button>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-7 gap-1 mt-2">
+          {/* Day headers */}
+          {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
+            <div key={index} className="text-center text-xs text-neutral-500 font-medium py-1">
+              {day}
             </div>
-          );
-        })}
-      </div>
+          ))}
+          
+          {/* Calendar days */}
+          {calendarDays.map((day, index) => {
+            const dayNumber = format(day.date, 'd');
+            const isWeekendDay = isWeekend(day.date);
+            const isToday = isSameDay(day.date, new Date());
+            
+            return (
+              <div 
+                key={index} 
+                className={`
+                  aspect-square rounded-full flex flex-col items-center justify-center text-xs
+                  ${!day.isCurrentMonth ? 'opacity-40' : ''}
+                  ${day.isCurrentMonth ? 'cursor-pointer hover:bg-neutral-700' : ''}
+                  ${isToday ? 'ring-1 ring-blue-500' : ''}
+                  ${isWeekendDay ? 'text-neutral-400' : ''}
+                  ${day.pnl !== null && day.isCurrentMonth 
+                    ? day.pnl > 0 
+                      ? 'bg-green-900/20 text-green-400' 
+                      : 'bg-red-900/20 text-red-400'
+                    : ''}
+                `}
+                onClick={() => handleDayClick(day)}
+              >
+                <div className="font-medium">{dayNumber}</div>
+                
+                {day.isCurrentMonth && day.pnl !== null && (
+                  <>
+                    <div className={`text-[9px] font-medium ${day.pnl > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {formatCurrency(day.pnl)}
+                    </div>
+                    {day.tradesCount && (
+                      <div className="text-[8px] text-neutral-500">{day.tradesCount}t</div>
+                    )}
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
 
       {/* Day Details Popup */}
       {selectedDay && (
@@ -233,6 +223,6 @@ export function CalendarView({
           data={generateDayDetails(selectedDay)}
         />
       )}
-    </div>
+    </Card>
   );
 }

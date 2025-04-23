@@ -1,0 +1,75 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/functions' as func;
+@use '../abstracts/mixins' as mix;
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  
+  &__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+  }
+  
+  &__content {
+    position: relative;
+    background-color: #101014;
+    border-radius: func.border-radius('md');
+    padding: func.spacing(4);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    z-index: 51;
+  }
+  
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: func.spacing(3);
+    
+    h2 {
+      font-size: func.font-size('xl');
+      font-weight: func.font-weight('semibold');
+      color: #FFFFFF;
+    }
+  }
+  
+  &__close {
+    background: none;
+    border: none;
+    color: #9A9A9A;
+    cursor: pointer;
+    padding: func.spacing(1);
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: #FFFFFF;
+    }
+  }
+  
+  &__body {
+    color: #FFFFFF;
+  }
+  
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: func.spacing(2);
+    margin-top: func.spacing(4);
+  }
+} 

@@ -1,0 +1,47 @@
+.card {
+  background-color: var(--card-bg);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  transition: background-color 0.2s, border-color 0.2s;
+
+  &:hover {
+    background-color: var(--card-hover);
+    border-color: var(--border-hover);
+  }
+
+  &:active {
+    background-color: var(--card-active);
+  }
+
+  &__header {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--text-primary);
+  }
+
+  &__description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  &__content {
+    padding: 1.5rem;
+    padding-top: 0;
+  }
+
+  &__footer {
+    padding: 1.5rem;
+    padding-top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+} 

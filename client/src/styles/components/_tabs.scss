@@ -1,0 +1,181 @@
+.tabs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  &__list {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+  }
+
+  &__trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      color: var(--foreground);
+    }
+
+    &--active {
+      color: var(--primary);
+    }
+
+    &--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__indicator {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    background-color: var(--primary);
+    transition: all 0.2s ease-in-out;
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  // Variants
+  &--default {
+    .tabs__trigger {
+      &--active {
+        color: var(--primary);
+      }
+    }
+  }
+
+  &--primary {
+    .tabs__trigger {
+      &--active {
+        color: var(--primary);
+      }
+    }
+
+    .tabs__indicator {
+      background-color: var(--primary);
+    }
+  }
+
+  &--secondary {
+    .tabs__trigger {
+      &--active {
+        color: var(--secondary);
+      }
+    }
+
+    .tabs__indicator {
+      background-color: var(--secondary);
+    }
+  }
+
+  &--success {
+    .tabs__trigger {
+      &--active {
+        color: var(--success);
+      }
+    }
+
+    .tabs__indicator {
+      background-color: var(--success);
+    }
+  }
+
+  &--warning {
+    .tabs__trigger {
+      &--active {
+        color: var(--warning);
+      }
+    }
+
+    .tabs__indicator {
+      background-color: var(--warning);
+    }
+  }
+
+  &--error {
+    .tabs__trigger {
+      &--active {
+        color: var(--error);
+      }
+    }
+
+    .tabs__indicator {
+      background-color: var(--error);
+    }
+  }
+
+  // Sizes
+  &--sm {
+    .tabs__trigger {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.75rem;
+    }
+  }
+
+  &--lg {
+    .tabs__trigger {
+      padding: 0.625rem 1.25rem;
+      font-size: 1rem;
+    }
+  }
+
+  // Layouts
+  &--vertical {
+    flex-direction: row;
+
+    .tabs__list {
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+      border-bottom: none;
+      margin-bottom: 0;
+      margin-right: 1rem;
+    }
+
+    .tabs__trigger {
+      border-bottom: none;
+      border-right: 2px solid transparent;
+    }
+
+    .tabs__indicator {
+      bottom: 0;
+      left: auto;
+      right: -1px;
+      width: 2px;
+      height: auto;
+    }
+  }
+
+  &--pills {
+    .tabs__list {
+      border: none;
+      gap: 0.5rem;
+    }
+
+    .tabs__trigger {
+      border-radius: 0.375rem;
+      border: 1px solid var(--border);
+
+      &--active {
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+        border-color: var(--primary);
+      }
+    }
+
+    .tabs__indicator {
+      display: none;
+    }
+  }
+} 
