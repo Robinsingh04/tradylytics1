@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Grid, 
   Paper, 
@@ -12,7 +12,8 @@ import { CalendarSelector } from '../components/journaling/CalendarSelector';
 import { TradeDetailsTable } from '../components/journaling/TradeDetailsTable';
 import { DailyMetricsPanel } from '../components/journaling/DailyMetricsPanel';
 import { Trade, DailyMetrics } from '../types/journaling';
-import { generateMockTradeData, generateMockMetricsData } from '../utils/mockData';
+import { generateMockTradeData } from '../utils/mockData';
+import { calculateDailyMetrics } from '../utils/tradeMetrics';
 import '../styles/components/journaling.scss';
 
 const PageContainer = styled(Box)(({ theme }) => ({
@@ -62,14 +63,17 @@ export const JournalingCalendar = () => {
   const theme = useTheme();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [trades, setTrades] = useState<Trade[]>(generateMockTradeData(selectedDate));
-  const [metrics, setMetrics] = useState<DailyMetrics>(generateMockMetricsData(selectedDate));
+  
+  // Calculate metrics dynamically from trade data
+  const metrics = useMemo<DailyMetrics>(() => {
+    return calculateDailyMetrics(trades, selectedDate);
+  }, [trades, selectedDate]);
 
   // Handle date change from calendar
   const handleDateChange = (date: Date) => {
     setSelectedDate(date);
     // Fetch data for the selected date (using mock data for now)
     setTrades(generateMockTradeData(date));
-    setMetrics(generateMockMetricsData(date));
   };
 
   return (
