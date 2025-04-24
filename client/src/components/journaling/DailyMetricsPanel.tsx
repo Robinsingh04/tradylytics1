@@ -49,10 +49,24 @@ export const DailyMetricsPanel = ({ metrics }: DailyMetricsPanelProps) => {
   const maxPnL = Math.max(...metrics.netCumulativePL);
   
   // Determine positive/negative metrics
-  const finalPnL = metrics.netCumulativePL[metrics.netCumulativePL.length - 1];
+  const finalPnL = metrics.netCumulativePL[metrics.netCumulativePL.length - 1] || 0;
   const isProfitable = metrics.profitFactor >= 1;
   const isWinRateGood = metrics.winPercentage >= 50;
-  const winLossRatio = parseFloat((metrics.averageWin / metrics.averageLoss).toFixed(2));
+  
+  // Calculate win/loss ratio safely
+  const calculateWinLossRatio = () => {
+    if (metrics.averageLoss === 0 || isNaN(metrics.averageLoss)) {
+      return metrics.averageWin > 0 ? 3 : 0; // Cap at 3 for better visualization
+    }
+    return parseFloat((metrics.averageWin / metrics.averageLoss).toFixed(2));
+  };
+  
+  const winLossRatio = calculateWinLossRatio();
+  const isWinLossRatioGood = winLossRatio >= 1;
+  
+  // Colors for positive/negative values
+  const positiveColor = '#34d399'; // Green
+  const negativeColor = '#f87171'; // Red
   
   // Basic styling
   const cardStyle = {
@@ -87,12 +101,12 @@ export const DailyMetricsPanel = ({ metrics }: DailyMetricsPanelProps) => {
                 <linearGradient id="colorPnL" x1="0" y1="0" x2="0" y2="1">
                   <stop 
                     offset="5%" 
-                    stopColor={finalPnL >= 0 ? "#34d399" : "#f87171"} 
+                    stopColor={finalPnL >= 0 ? positiveColor : negativeColor} 
                     stopOpacity={0.8}
                   />
                   <stop 
                     offset="95%" 
-                    stopColor={finalPnL >= 0 ? "#34d399" : "#f87171"} 
+                    stopColor={finalPnL >= 0 ? positiveColor : negativeColor} 
                     stopOpacity={0.2}
                   />
                 </linearGradient>
@@ -124,7 +138,7 @@ export const DailyMetricsPanel = ({ metrics }: DailyMetricsPanelProps) => {
               <Area 
                 type="monotone" 
                 dataKey="pnl" 
-                stroke={finalPnL >= 0 ? "#34d399" : "#f87171"} 
+                stroke={finalPnL >= 0 ? positiveColor : negativeColor} 
                 strokeWidth={1}
                 fillOpacity={0.8}
                 fill="url(#colorPnL)"
@@ -168,7 +182,7 @@ export const DailyMetricsPanel = ({ metrics }: DailyMetricsPanelProps) => {
                   size={60}
                   thickness={3}
                   sx={{ 
-                    color: isProfitable ? '#34d399' : '#f87171',
+                    color: isProfitable ? positiveColor : negativeColor,
                     position: 'absolute',
                     left: 0,
                     top: 0
@@ -197,7 +211,7 @@ export const DailyMetricsPanel = ({ metrics }: DailyMetricsPanelProps) => {
                 display: 'flex', 
                 alignItems: 'center',
                 backgroundColor: isProfitable ? 'rgba(52, 211, 153, 0.1)' : 'rgba(248, 113, 113, 0.1)',
-                color: isProfitable ? '#34d399' : '#f87171',
+                color: isProfitable ? positiveColor : negativeColor,
                 padding: '2px 6px',
                 borderRadius: '6px',
                 marginTop: '6px',
@@ -235,7 +249,7 @@ export const DailyMetricsPanel = ({ metrics }: DailyMetricsPanelProps) => {
                   size={60}
                   thickness={3}
                   sx={{ 
-                    color: isWinRateGood ? '#34d399' : '#f87171',
+                    color: isWinRateGood ? positiveColor : negativeColor,
                     position: 'absolute',
                     left: 0,
                     top: 0
@@ -263,7 +277,7 @@ export const DailyMetricsPanel = ({ metrics }: DailyMetricsPanelProps) => {
               <div style={{ 
                 display: 'inline-block',
                 backgroundColor: isWinRateGood ? 'rgba(52, 211, 153, 0.1)' : 'rgba(248, 113, 113, 0.1)',
-                color: isWinRateGood ? '#34d399' : '#f87171',
+                color: isWinRateGood ? positiveColor : negativeColor,
                 padding: '2px 6px',
                 borderRadius: '6px',
                 marginTop: '6px',
@@ -287,7 +301,7 @@ export const DailyMetricsPanel = ({ metrics }: DailyMetricsPanelProps) => {
               <Typography sx={{ fontWeight: 600, fontSize: '0.65rem' }}>
                 Average Win
               </Typography>
-              <Typography sx={{ fontWeight: 700, color: '#34d399', fontSize: '0.65rem' }}>
+              <Typography sx={{ fontWeight: 700, color: positiveColor, fontSize: '0.65rem' }}>
                 ${metrics.averageWin.toFixed(2)}
               </Typography>
             </div>
@@ -299,7 +313,7 @@ export const DailyMetricsPanel = ({ metrics }: DailyMetricsPanelProps) => {
                 borderRadius: 3, 
                 backgroundColor: 'rgba(52, 211, 153, 0.2)',
                 '.MuiLinearProgress-bar': {
-                  backgroundColor: '#34d399',
+                  backgroundColor: positiveColor,
                   borderRadius: 3,
                 }
               }}
@@ -311,7 +325,7 @@ export const DailyMetricsPanel = ({ metrics }: DailyMetricsPanelProps) => {
               <Typography sx={{ fontWeight: 600, fontSize: '0.65rem' }}>
                 Average Loss
               </Typography>
-              <Typography sx={{ fontWeight: 700, color: '#f87171', fontSize: '0.65rem' }}>
+              <Typography sx={{ fontWeight: 700, color: negativeColor, fontSize: '0.65rem' }}>
                 ${metrics.averageLoss.toFixed(2)}
               </Typography>
             </div>
@@ -323,7 +337,7 @@ export const DailyMetricsPanel = ({ metrics }: DailyMetricsPanelProps) => {
                 borderRadius: 3, 
                 backgroundColor: 'rgba(248, 113, 113, 0.2)',
                 '.MuiLinearProgress-bar': {
-                  backgroundColor: '#f87171',
+                  backgroundColor: negativeColor,
                   borderRadius: 3,
                 }
               }}
@@ -337,14 +351,14 @@ export const DailyMetricsPanel = ({ metrics }: DailyMetricsPanelProps) => {
               Win/Loss Ratio:
             </Typography>
             <div style={{ 
-              backgroundColor: winLossRatio >= 1 ? 'rgba(52, 211, 153, 0.1)' : 'rgba(248, 113, 113, 0.1)',
-              color: winLossRatio >= 1 ? '#34d399' : '#f87171',
+              backgroundColor: isWinLossRatioGood ? 'rgba(52, 211, 153, 0.1)' : 'rgba(248, 113, 113, 0.1)',
+              color: isWinLossRatioGood ? positiveColor : negativeColor,
               padding: '3px 8px',
               borderRadius: '6px',
               fontWeight: 700,
               fontSize: '0.75rem'
             }}>
-              {(metrics.averageWin / metrics.averageLoss).toFixed(2) === "0.33" ? "0.33:1" : winLossRatio.toFixed(2) + ":1"}
+              {winLossRatio.toFixed(2) + ":1"}
             </div>
           </div>
         </div>

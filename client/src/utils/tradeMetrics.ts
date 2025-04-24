@@ -21,15 +21,24 @@ export const calculateDailyMetrics = (trades: Trade[], date: Date): DailyMetrics
   const netCumulativePL: number[] = [];
   let runningPL = 0;
   
+  // Create a reference date with 00:00:00 time for the selected date
+  const refDate = new Date(date);
+  refDate.setHours(0, 0, 0, 0);
+  
   // Create data points for each hour of the trading day (9 AM to 4 PM)
   for (let hour = 9; hour <= 16; hour++) {
-    const timePoint = new Date(date);
+    // Create a time point for this hour
+    const timePoint = new Date(refDate);
     timePoint.setHours(hour, 0, 0, 0);
     timestamps.push(format(timePoint, 'HH:mm'));
     
-    // Only add P&L for trades that completed by this time
+    // Create a comparison time point for filtering
+    const hourEndTime = new Date(timePoint);
+    hourEndTime.setHours(hour, 59, 59, 999);
+    
+    // Only add P&L for trades that completed by this time (more robust time comparison)
     const tradesCompletedByThisTime = sortedTrades.filter(
-      trade => trade.closeDate.getHours() <= hour
+      trade => trade.closeDate <= hourEndTime
     );
     
     runningPL = tradesCompletedByThisTime.reduce(
@@ -61,7 +70,7 @@ export const calculateDailyMetrics = (trades: Trade[], date: Date): DailyMetrics
   const totalLosses = losingTradeValues.reduce((sum, val) => sum + val, 0);
   
   let profitFactor;
-  if (totalLosses === 0) {
+  if (totalLosses === 0 || isNaN(totalLosses) || totalLosses <= 0) {
     profitFactor = totalWins > 0 ? 3 : 0; // Cap at 3 for better visualization
   } else {
     profitFactor = parseFloat((totalWins / totalLosses).toFixed(2));
