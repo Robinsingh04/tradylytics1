@@ -2,338 +2,209 @@
 @use '../abstracts/functions' as func;
 @use '../abstracts/mixins' as mix;
 
-// Dashboard component styles
-.dashboard {
+// Dashboard component styles (Applied via dashboard__main in DashboardScreen.tsx)
+.dashboard__main {
   width: 100%;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  
-  // Header styles
-  &__header {
-    @include mix.flex(row, space-between, center);
-    margin-bottom: func.spacing(3);
-    background-color: var(--bg-secondary);
-    border-radius: func.border-radius('lg');
-    padding: func.spacing(2) func.spacing(3);
-    box-shadow: func.shadow('sm');
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: func.spacing(2);
+  display: flex;
+  flex-direction: column;
+  gap: func.spacing(3);
+  background-color: #0A0A0F; // Dark background color
+  color: #FFFFFF;
+}
+
+// Header section within dashboard__main
+.dashboard__header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: func.spacing(2);
+}
+
+// Page title
+.dashboard__page-title {
+  font-size: func.font-size('xl');
+  font-weight: func.font-weight('bold');
+  color: #FFFFFF;
+  margin: 0;
+}
+
+// Metrics grid layout (Targeting .dashboard__metrics)
+.dashboard__metrics {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: func.spacing(2);
+  width: 100%;
+
+  @include mix.respond-below('xl') {
+    grid-template-columns: repeat(3, 1fr);
   }
-  
-  &__title {
-    font-size: func.font-size('lg');
-    font-weight: func.font-weight('semibold');
-    color: var(--text-primary);
-    margin: 0;
+
+  @include mix.respond-below('md') {
+    grid-template-columns: repeat(2, 1fr);
   }
-  
-  // Dashboard content area
-  &__content {
-    margin-bottom: func.spacing(4);
-  }
-  
-  // Metrics grid layout
-  .metrics-grid {
-    display: grid;
+
+  @include mix.respond-below('sm') {
     grid-template-columns: 1fr;
-    gap: func.spacing(3);
+  }
+}
+
+// Chart grid (Targeting .dashboard__charts-grid)
+.dashboard__charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: func.spacing(3);
+  width: 100%;
+
+  @include mix.respond-below('lg') {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Individual Chart section styling (Targeting .dashboard__chart-section)
+.dashboard__chart-section {
+  background-color: #101014;
+  border-radius: func.border-radius('md');
+  padding: func.spacing(3);
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  
+  h3 {
+    color: #FFFFFF;
+    margin-top: 0;
+    margin-bottom: func.spacing(2);
+    font-size: func.font-size('lg');
+    font-weight: func.font-weight('medium');
+  }
+}
+
+// Time range toggle styling
+.time-range-toggle {
+  display: flex;
+  gap: func.spacing(1);
+  
+  &-button {
+    background: none;
+    border: none;
+    color: #9A9A9A;
+    cursor: pointer;
+    padding: func.spacing(1) func.spacing(1);
+    font-size: func.font-size('xs');
+    border-radius: func.border-radius('sm');
     
-    @include mix.respond-to('sm') {
-      grid-template-columns: repeat(2, 1fr);
+    &.active {
+      background-color: #2D2D3A;
+      color: #FFFFFF;
     }
     
-    @include mix.respond-to('md') {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    
-    @include mix.respond-to('lg') {
-      grid-template-columns: repeat(5, 1fr);
+    &:hover:not(.active) {
+      background-color: rgba(45, 45, 58, 0.5);
     }
   }
+}
+
+// Chart card header
+.chart-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: func.spacing(2);
+}
+
+.chart-card-title {
+  margin: 0;
+  color: #FFFFFF;
+  font-size: func.font-size('lg');
+  font-weight: func.font-weight('medium');
+}
+
+// Bottom grid (Targeting .dashboard__grid)
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: func.spacing(3);
+  width: 100%;
+
+  @include mix.respond-below('lg') {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Calendar section (Targeting .dashboard__calendar)
+.dashboard__calendar {
+  background-color: #101014;
+  border-radius: func.border-radius('md');
+  padding: func.spacing(3);
+  min-height: 300px;
   
-  // Chart containers
-  .chart-container {
-    background-color: var(--bg-secondary);
-    border-radius: func.border-radius('lg');
-    padding: func.spacing(4);
-    box-shadow: func.shadow('sm');
-    margin-bottom: func.spacing(3);
-    border: 1px solid var(--border);
-    transition: box-shadow 0.2s ease;
-    
-    &:hover {
-      box-shadow: func.shadow('md');
-    }
-    
-    &__header {
-      @include mix.flex(row, space-between, center);
-      margin-bottom: func.spacing(3);
-    }
-    
-    &__title {
-      font-size: func.font-size('md');
-      font-weight: func.font-weight('medium');
-      margin: 0;
-    }
+  h3 {
+    color: #FFFFFF;
+    margin-top: 0;
+    margin-bottom: func.spacing(2);
+    font-size: func.font-size('lg');
+    font-weight: func.font-weight('medium');
+  }
+}
+
+// Trades section (Targeting .dashboard__trades)
+.dashboard__trades {
+  background-color: #101014;
+  border-radius: func.border-radius('md');
+  padding: func.spacing(3);
+  min-height: 300px;
+  
+  h3 {
+    color: #FFFFFF;
+    margin-top: 0;
+    margin-bottom: func.spacing(2);
+    font-size: func.font-size('lg');
+    font-weight: func.font-weight('medium');
   }
   
-  // Ensure chart widths are strictly enforced
-  .d-flex.flex-md-row > .chart-container {
-    &:first-child {
-      width: 60% !important;
-      min-width: 60% !important;
-      flex: 0 0 60% !important;
-    }
+  .open-position {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: func.spacing(1) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     
     &:last-child {
-      width: 40% !important;
-      min-width: 40% !important;
-      flex: 0 0 40% !important;
-    }
-  }
-  
-  // Skeleton loading states
-  .skeleton {
-    &-chart {
-      height: 200px;
-      background: linear-gradient(90deg, 
-                              var(--bg-tertiary) 0%, 
-                              var(--bg-secondary) 50%, 
-                              var(--bg-tertiary) 100%);
-      background-size: 200% 100%;
-      animation: pulse 2s infinite linear;
-      border-radius: func.border-radius('md');
+      border-bottom: none;
     }
     
-    &-calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: func.spacing(1);
-      
-      &::before {
-        content: '';
-        display: block;
-        height: 30px;
-        margin-bottom: func.spacing(2);
-        background: linear-gradient(90deg, 
-                                var(--bg-tertiary) 0%, 
-                                var(--bg-secondary) 50%, 
-                                var(--bg-tertiary) 100%);
-        background-size: 200% 100%;
-        animation: pulse 2s infinite linear;
-        grid-column: 1 / -1;
-        border-radius: func.border-radius('sm');
-      }
-      
-      @for $i from 1 through 35 {
-        &:nth-child(#{$i})::after {
-          content: '';
-          display: block;
-          height: 40px;
-          background: linear-gradient(90deg, 
-                                  var(--bg-tertiary) 0%, 
-                                  var(--bg-secondary) 50%, 
-                                  var(--bg-tertiary) 100%);
-          background-size: 200% 100%;
-          animation: pulse 2s infinite linear;
-          animation-delay: #{$i * 0.05}s;
-          border-radius: func.border-radius('sm');
-        }
-      }
-    }
-    
-    &-trades {
-      @include mix.flex(column, flex-start, stretch, nowrap);
-      gap: func.spacing(2);
-      
-      &::before {
-        content: '';
-        display: block;
-        height: 24px;
-        width: 30%;
-        margin-bottom: func.spacing(1);
-        background: linear-gradient(90deg, 
-                                var(--bg-tertiary) 0%, 
-                                var(--bg-secondary) 50%, 
-                                var(--bg-tertiary) 100%);
-        background-size: 200% 100%;
-        animation: pulse 2s infinite linear;
-        border-radius: func.border-radius('sm');
-      }
-      
-      @for $i from 1 through 3 {
-        &:nth-child(#{$i})::after {
-          content: '';
-          display: block;
-          height: 70px;
-          background: linear-gradient(90deg, 
-                                  var(--bg-tertiary) 0%, 
-                                  var(--bg-secondary) 50%, 
-                                  var(--bg-tertiary) 100%);
-          background-size: 200% 100%;
-          animation: pulse 2s infinite linear;
-          animation-delay: #{$i * 0.1}s;
-          border-radius: func.border-radius('sm');
-          margin-bottom: func.spacing(2);
-        }
-      }
-    }
-  }
-  
-  // Animation for loading skeletons
-  @keyframes pulse {
-    0% { background-position: 0% 0; }
-    100% { background-position: -200% 0; }
-  }
-  
-  // Text utility classes
-  .text {
-    &-sm {
-      font-size: func.font-size('sm');
-    }
-    
-    &-center {
-      text-align: center;
-    }
-  }
-  
-  // Padding utilities
-  .p-4 {
-    padding: func.spacing(4);
-  }
-  
-  .py-4 {
-    padding-top: func.spacing(4);
-    padding-bottom: func.spacing(4);
-  }
-
-  // Margin utilities
-  .mb-3 {
-    margin-bottom: func.spacing(3);
-  }
-  
-  .mb-4 {
-    margin-bottom: func.spacing(4);
-  }
-  
-  // Flex utility
-  .flex-1 {
-    flex: 1;
-  }
-  
-  // Gap utility
-  .gap-4 {
-    gap: func.spacing(4);
-  }
-
-  // Chart-related styles
-  .chart-card {
-    background-color: var(--bg-secondary);
-    border-radius: func.border-radius('lg');
-    padding: func.spacing(2);
-    box-shadow: func.shadow('sm');
-    border: 1px solid var(--border);
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    
-    &-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: func.spacing(1) func.spacing(2);
-      margin-bottom: func.spacing(1);
-    }
-    
-    &-title {
-      font-size: func.font-size('md');
+    &__symbol {
       font-weight: func.font-weight('semibold');
-      margin: 0;
     }
     
-    &-content {
-      flex: 1;
-      position: relative;
-      min-height: 240px;
-      height: 100%;
+    &__type {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: #F44336;
+      padding: func.spacing(1) func.spacing(1);
+      border-radius: func.border-radius('sm');
+      font-size: func.font-size('xs');
+      font-weight: func.font-weight('regular');
+      text-transform: uppercase;
     }
-  }
-  
-  .time-range-toggle {
-    display: flex;
-    gap: 4px;
-    align-items: center;
     
-    &-button {
-      background: none;
-      border: none;
-      padding: 4px 8px;
-      font-size: 12px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      color: var(--text-secondary);
+    &__change {
+      font-weight: func.font-weight('medium');
       
-      &:hover {
-        background-color: var(--bg-tertiary);
-        color: var(--text-primary);
+      &--positive {
+        color: #4CAF50;
       }
       
-      &.active {
-        background-color: var(--theme-color);
-        color: white;
+      &--negative {
+        color: #F44336;
       }
     }
   }
-  
-  // Chart tooltip styles
-  .line-chart {
-    &-tooltip {
-      background-color: var(--bg-secondary);
-      border-radius: 6px;
-      padding: 8px 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      border: 1px solid var(--border);
-      pointer-events: none;
-      font-size: 12px;
-      z-index: 9999;
-      min-width: 100px;
-      
-      // Fix for tooltip being cut off at screen edges
-      position: absolute;
-      transform: translate(-50%, 0);
-      
-      // Position a triangle arrow to point to the data point
-      &::before {
-        content: '';
-        position: absolute;
-        width: 0;
-        height: 0;
-        border-left: 6px solid transparent;
-        border-right: 6px solid transparent;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-      
-      // Different arrow positions for above/below tooltips
-      &.above::before {
-        border-top: 6px solid var(--bg-secondary);
-        bottom: -6px;
-      }
-      
-      &.below::before {
-        border-bottom: 6px solid var(--bg-secondary);
-        top: -6px;
-      }
-      
-      &-value {
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 4px;
-      }
-      
-      &-time {
-        color: var(--text-secondary);
-        font-size: 11px;
-      }
-    }
-  }
+}
+
+// Keep necessary styles like pulse animation if used by loading states
+@keyframes pulse {
+  0% { background-position: 0% 0; }
+  100% { background-position: -200% 0; }
 }

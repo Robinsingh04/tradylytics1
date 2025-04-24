@@ -1,51 +1,6 @@
-// Import variables and functions
 @use 'variables' as vars;
-@use 'functions' as func;
-@use 'sass:map';
-@use 'sass:meta';
-@use 'sass:list';
 
-// Responsive breakpoints
-@mixin respond-to($breakpoint) {
-  @if map.has-key(vars.$breakpoints, $breakpoint) {
-    $breakpoint-value: map.get(vars.$breakpoints, $breakpoint);
-    
-    @media (min-width: $breakpoint-value) {
-      @content;
-    }
-  } @else {
-    @error "Invalid breakpoint: #{$breakpoint}";
-  }
-}
-
-// Max-width breakpoints
-@mixin respond-below($breakpoint) {
-  @if map.has-key(vars.$breakpoints, $breakpoint) {
-    $breakpoint-value: map.get(vars.$breakpoints, $breakpoint);
-    
-    @media (max-width: ($breakpoint-value - 1px)) {
-      @content;
-    }
-  } @else {
-    @error "Invalid breakpoint: #{$breakpoint}";
-  }
-}
-
-// Between breakpoints
-@mixin respond-between($lower, $upper) {
-  @if map.has-key(vars.$breakpoints, $lower) and map.has-key(vars.$breakpoints, $upper) {
-    $lower-value: map.get(vars.$breakpoints, $lower);
-    $upper-value: map.get(vars.$breakpoints, $upper);
-    
-    @media (min-width: $lower-value) and (max-width: ($upper-value - 1px)) {
-      @content;
-    }
-  } @else {
-    @error "Invalid breakpoints: #{$lower} or #{$upper}";
-  }
-}
-
-// Flexbox shortcuts
+// Flexbox mixins
 @mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
   display: flex;
   flex-direction: $direction;
@@ -54,239 +9,68 @@
   flex-wrap: $wrap;
 }
 
-// Grid shortcuts
-@mixin grid($columns: 1fr, $rows: auto, $gap: 0) {
-  display: grid;
-  grid-template-columns: $columns;
-  grid-template-rows: $rows;
-  gap: $gap;
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-// Typography styles
-@mixin typography($size, $weight: 'regular', $line-height: 1.5, $color: null) {
-  font-size: func.font-size($size);
-  
-  @if $weight != 'regular' {
-    font-weight: func.font-weight($weight);
+@mixin flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// Responsive mixins
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == xs {
+    @media (max-width: vars.$breakpoint-sm - 1) { @content; }
+  } @else if $breakpoint == sm {
+    @media (min-width: vars.$breakpoint-sm) { @content; }
+  } @else if $breakpoint == md {
+    @media (min-width: vars.$breakpoint-md) { @content; }
+  } @else if $breakpoint == lg {
+    @media (min-width: vars.$breakpoint-lg) { @content; }
+  } @else if $breakpoint == xl {
+    @media (min-width: vars.$breakpoint-xl) { @content; }
   }
-  
+}
+
+// Typography mixins
+@mixin typography($size, $weight: normal, $line-height: normal) {
+  font-size: $size;
+  font-weight: $weight;
   line-height: $line-height;
-  
-  @if $color {
-    color: func.color($color);
-  }
+}
+
+// Transition mixins
+@mixin transition($property: all, $duration: vars.$transition-medium, $timing: ease) {
+  transition: $property $duration $timing;
+}
+
+// Box shadow mixins
+@mixin shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+@mixin shadow-md {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+@mixin shadow-lg {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15), 0 6px 6px rgba(0, 0, 0, 0.10);
 }
 
 // Truncate text with ellipsis
-@mixin truncate($lines: 1) {
-  @if $lines == 1 {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  } @else {
-    display: -webkit-box;
-    -webkit-line-clamp: $lines;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-}
-
-// Position shortcuts
-@mixin position($position, $top: null, $right: null, $bottom: null, $left: null) {
-  position: $position;
-  
-  @if $top { top: $top; }
-  @if $right { right: $right; }
-  @if $bottom { bottom: $bottom; }
-  @if $left { left: $left; }
-}
-
-// Absolute position - centered
-@mixin absolute-center {
-  @include position(absolute, 50%, null, null, 50%);
-  transform: translate(-50%, -50%);
-}
-
-// Fixed position - centered
-@mixin fixed-center {
-  @include position(fixed, 50%, null, null, 50%);
-  transform: translate(-50%, -50%);
-}
-
-// Box shadow
-@mixin shadow($key) {
-  box-shadow: func.shadow($key);
-}
-
-// Border radius
-@mixin border-radius($key) {
-  border-radius: func.border-radius($key);
-}
-
-// Transitions
-@mixin transition($properties...) {
-  $result: ();
-  
-  @each $property in $properties {
-    $temp: $property func.transition('normal') ease;
-    $result: list.append($result, $temp, comma);
-  }
-  
-  transition: $result;
-}
-
-// Interactive hover state
-@mixin hover {
-  @media (hover: hover) {
-    &:hover {
-      @content;
-    }
-  }
-}
-
-// Focus state
-@mixin focus {
-  &:focus-visible {
-    outline: 2px solid func.color('primary');
-    outline-offset: 2px;
-    @content;
-  }
-}
-
-// Theme-based styling
-@mixin themed($theme: 'light') {
-  .#{$theme} & {
-    @content;
-  }
-}
-
-// Generate color variants
-@mixin generate-color-variants($property, $prefix: '') {
-  @each $name, $value in vars.$colors {
-    @if meta.type-of($value) == 'map' and map.has-key($value, 'base') {
-      &.#{$prefix}#{$name} {
-        #{$property}: map.get($value, 'base');
-      }
-    } @else if meta.type-of($value) != 'map' {
-      &.#{$prefix}#{$name} {
-        #{$property}: $value;
-      }
-    }
-  }
-}
-
-// Hide visually but maintain accessibility
-@mixin visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
+@mixin truncate {
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  text-overflow: ellipsis;
   white-space: nowrap;
-  border: 0;
 }
 
-// Generate utility classes
-@mixin generate-utility($property, $map, $prefix: '') {
-  @each $key, $value in $map {
-    .#{$prefix}#{$key} {
-      #{$property}: $value;
-    }
-  }
-}
-
-// Placeholder text styling
-@mixin placeholder {
-  &::-webkit-input-placeholder {
-    @content;
-  }
-  &::-moz-placeholder {
-    @content;
-  }
-  &:-ms-input-placeholder {
-    @content;
-  }
-  &::-ms-input-placeholder {
-    @content;
-  }
-  &::placeholder {
-    @content;
-  }
-}
-
-// Card style
-@mixin card($padding: func.spacing(4), $radius: 'lg', $shadow: 'md') {
-  padding: $padding;
-  background-color: var(--bg-secondary);
-  @include border-radius($radius);
-  @include shadow($shadow);
-}
-
-// Button style
-@mixin button($variant: 'primary', $size: 'md') {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  
-  @if $size == 'sm' {
-    padding: func.spacing(1) func.spacing(2);
-    font-size: func.font-size('xs');
-  } @else if $size == 'md' {
-    padding: func.spacing(2) func.spacing(4);
-    font-size: func.font-size('sm');
-  } @else if $size == 'lg' {
-    padding: func.spacing(3) func.spacing(6);
-    font-size: func.font-size('base');
-  }
-  
-  font-weight: func.font-weight('medium');
-  @include border-radius('md');
-  @include transition(background-color, color, border-color, box-shadow);
-  cursor: pointer;
-  
-  @if $variant == 'primary' {
-    background-color: func.color('primary');
-    color: white;
-    
-    @include hover {
-      background-color: func.color('primary', 'dark');
-    }
-  } @else if $variant == 'secondary' {
-    background-color: transparent;
-    color: func.color('primary');
-    border: 1px solid func.color('primary');
-    
-    @include hover {
-      background-color: func.rgba-color('primary', 0.1);
-    }
-  } @else if $variant == 'ghost' {
-    background-color: transparent;
-    color: func.color('primary');
-    
-    @include hover {
-      background-color: func.rgba-color('primary', 0.1);
-    }
-  }
-}
-
-// Input styling
-@mixin input-style($variant: 'default') {
-  width: 100%;
-  padding: func.spacing(2) func.spacing(3);
-  @include border-radius('md');
-  @include transition(border-color, box-shadow);
-  
-  @if $variant == 'default' {
-    border: 1px solid rgba(var(--theme-color-rgb, 0, 0, 0), 0.1);
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    
-    &:focus {
-      outline: none;
-      border-color: var(--theme-color);
-      box-shadow: 0 0 0 2px rgba(var(--theme-color-rgb, 0, 0, 0), 0.1);
-    }
-  }
+// Create a circle with specified size
+@mixin circle($size) {
+  width: $size;
+  height: $size;
+  border-radius: 50%;
 } 

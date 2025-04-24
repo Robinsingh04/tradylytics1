@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
+import { Box } from '@mui/material';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
-import { useTheme } from '../../hooks/useTheme';
+import styles from '../../styles/components/AppLayout.module.scss';
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
-  const { isDarkTheme, toggleTheme, themeColor, setThemeColor } = useTheme();
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
 
   const handleSidebarExpand = (expanded: boolean) => {
@@ -16,18 +16,15 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
   };
 
   return (
-    <div className={`app-layout ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-      <Navbar 
-        toggleTheme={toggleTheme} 
-        isDarkTheme={isDarkTheme} 
-        themeColor={themeColor}
-        setThemeColor={setThemeColor}
-        sidebarExpanded={sidebarExpanded}
-      />
+    <Box className={styles.appLayout}>
+      <Navbar sidebarExpanded={sidebarExpanded} />
       <Sidebar onExpandChange={handleSidebarExpand} />
-      <div className="main-content">
+      <Box 
+        className={`${styles.mainContent} ${!sidebarExpanded ? styles.sidebarCollapsed : ''}`}
+        component="main"
+      >
         {children}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }; 

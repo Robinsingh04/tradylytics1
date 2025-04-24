@@ -9,40 +9,33 @@ interface TimeframeSelectorProps {
 }
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#0a0a0a' : '#f5f5f5',
+  backgroundColor: 'transparent',
   borderRadius: 5,
-  border: `1px solid ${theme.palette.mode === 'dark' ? '#333' : '#e0e0e0'}`,
+  border: 'none',
   padding: 0,
   '& .MuiToggleButtonGroup-grouped': {
-    margin: 0,
+    margin: 2,
     border: 0,
-    borderRadius: 0,
-    color: theme.palette.mode === 'dark' ? '#888' : '#888',
-    minWidth: 50,
+    borderRadius: 50,
+    color: '#666',
+    minWidth: 30,
+    height: 30,
+    width: 30,
+    padding: 0,
     '&.Mui-selected': {
-      color: theme.palette.mode === 'dark' ? '#fff' : '#222',
-      backgroundColor: theme.palette.mode === 'dark' ? '#222' : '#e0e0e0',
+      color: '#fff',
+      backgroundColor: '#333',
     },
     '&:hover': {
-      backgroundColor: theme.palette.mode === 'dark' ? '#222' : '#e0e0e0',
-    },
-    '&:first-of-type': {
-      borderTopLeftRadius: 4,
-      borderBottomLeftRadius: 4,
-    },
-    '&:last-of-type': {
-      borderTopRightRadius: 4,
-      borderBottomRightRadius: 4,
+      backgroundColor: '#222',
     },
   },
 }));
 
 const StyledToggleButton = styled(ToggleButton)({
   textTransform: 'none',
-  padding: '4px 12px',
   fontSize: '0.75rem',
   fontWeight: 500,
-  height: 28,
 });
 
 export function TimeframeSelector({ value, onChange }: TimeframeSelectorProps) {
@@ -56,7 +49,7 @@ export function TimeframeSelector({ value, onChange }: TimeframeSelectorProps) {
   };
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
       <StyledToggleButtonGroup
         value={value}
         exclusive
@@ -64,10 +57,10 @@ export function TimeframeSelector({ value, onChange }: TimeframeSelectorProps) {
         aria-label="timeframe"
         size="small"
       >
-        <StyledToggleButton value="day">Day</StyledToggleButton>
-        <StyledToggleButton value="week">Week</StyledToggleButton>
-        <StyledToggleButton value="month">Month</StyledToggleButton>
-        <StyledToggleButton value="year">Year</StyledToggleButton>
+        <StyledToggleButton value="day">D</StyledToggleButton>
+        <StyledToggleButton value="week">W</StyledToggleButton>
+        <StyledToggleButton value="month">M</StyledToggleButton>
+        <StyledToggleButton value="year">Y</StyledToggleButton>
       </StyledToggleButtonGroup>
     </Box>
   );

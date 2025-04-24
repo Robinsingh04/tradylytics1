@@ -1,8 +1,9 @@
 import React from 'react';
-import { IconButton, useTheme } from '@mui/material';
+import { IconButton } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useColorMode } from '../../hooks/use-color-mode';
+import { useTheme } from '../../theme/ThemeProvider';
 
 interface ThemeToggleProps {
   className?: string;
@@ -10,7 +11,7 @@ interface ThemeToggleProps {
 
 export function ThemeToggle({ className }: ThemeToggleProps) {
   const { toggleColorMode } = useColorMode();
-  const theme = useTheme();
+  const { themeMode } = useTheme();
   
   return (
     <IconButton 
@@ -20,7 +21,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
       color="inherit"
       aria-label="toggle theme"
     >
-      {theme.palette.mode === 'dark' ? (
+      {themeMode === 'dark' ? (
         <Brightness7Icon fontSize="small" />
       ) : (
         <Brightness4Icon fontSize="small" />

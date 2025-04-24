@@ -1,0 +1,138 @@
+.dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease-in-out;
+
+  &--visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &__content {
+    position: relative;
+    width: 100%;
+    max-width: 32rem;
+    background-color: var(--background);
+    color: var(--foreground);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: scale(0.95);
+    transition: transform 0.2s ease-in-out;
+
+    // Variants
+    &--default {
+      background-color: var(--background);
+      color: var(--foreground);
+    }
+
+    &--primary {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+
+    &--secondary {
+      background-color: var(--secondary);
+      color: var(--secondary-foreground);
+    }
+
+    &--success {
+      background-color: var(--success);
+      color: var(--success-foreground);
+    }
+
+    &--warning {
+      background-color: var(--warning);
+      color: var(--warning-foreground);
+    }
+
+    &--error {
+      background-color: var(--error);
+      color: var(--error-foreground);
+    }
+
+    // Sizes
+    &--sm {
+      max-width: 24rem;
+    }
+
+    &--lg {
+      max-width: 40rem;
+    }
+
+    &--full {
+      max-width: 100%;
+      height: 100%;
+      border-radius: 0;
+    }
+  }
+
+  &__header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0;
+  }
+
+  &__description {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin: 0.25rem 0 0;
+  }
+
+  &__body {
+    padding: 1rem;
+  }
+
+  &__footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  &__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.25rem;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+
+    &:hover {
+      color: var(--foreground);
+    }
+  }
+
+  // States
+  &--visible {
+    .dialog__content {
+      transform: scale(1);
+    }
+  }
+
+  // Animations
+  &--fade {
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  }
+
+  &--scale {
+    .dialog__content {
+      transition: transform 0.2s ease-in-out;
+    }
+  }
+} 

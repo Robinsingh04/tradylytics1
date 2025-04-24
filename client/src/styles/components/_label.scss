@@ -1,0 +1,67 @@
+.label {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--foreground);
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+
+  // Variants
+  &--secondary {
+    color: var(--secondary-foreground);
+  }
+
+  &--success {
+    color: var(--success);
+  }
+
+  &--warning {
+    color: var(--warning);
+  }
+
+  &--error {
+    color: var(--error);
+  }
+
+  // Sizes
+  &--sm {
+    font-size: 0.75rem;
+    margin-bottom: 0.375rem;
+  }
+
+  &--lg {
+    font-size: 1rem;
+    margin-bottom: 0.625rem;
+  }
+
+  // States
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  // Required indicator
+  &--required::after {
+    content: '*';
+    color: var(--error);
+    margin-left: 0.25rem;
+  }
+
+  // Helper text
+  &__helper {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    margin-top: 0.25rem;
+  }
+
+  // Error message
+  &__error {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--error);
+    margin-top: 0.25rem;
+  }
+} 

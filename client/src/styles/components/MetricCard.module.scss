@@ -1,0 +1,76 @@
+.metricCard {
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  
+  &.profitLoss {
+    .metricValue {
+      color: var(--mui-palette-success-main);
+    }
+  }
+  
+  &.winRate {
+    .metricValue {
+      color: var(--mui-palette-info-main);
+    }
+  }
+  
+  &.riskReward {
+    .metricValue {
+      color: var(--mui-palette-primary-main);
+    }
+  }
+  
+  &.drawdown {
+    .metricValue {
+      color: var(--mui-palette-error-main);
+    }
+  }
+  
+  &.consistency {
+    .metricValue {
+      color: var(--mui-palette-secondary-main);
+    }
+  }
+}
+
+.metricHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.metricTitle {
+  font-size: 14px;
+  color: var(--mui-palette-text-secondary);
+}
+
+.metricValue {
+  font-size: 2rem;
+  font-weight: bold;
+  line-height: 1.1;
+  margin-bottom: 3px;
+}
+
+.metricBadge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  
+  &.positive {
+    background-color: var(--mui-palette-success-light);
+    color: var(--mui-palette-success-main);
+  }
+  
+  &.negative {
+    background-color: var(--mui-palette-error-light);
+    color: var(--mui-palette-error-main);
+  }
+}
+
+.chartContainer {
+  margin-top: 6px;
+  min-height: 40px;
+} 

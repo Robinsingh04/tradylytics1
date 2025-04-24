@@ -1,48 +1,104 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, Link } from 'wouter';
+import { 
+  Box, 
+  Typography, 
+  InputBase, 
+  Badge, 
+  Button, 
+  IconButton, 
+  Avatar, 
+  Menu, 
+  MenuItem, 
+  Divider, 
+  ListItemIcon, 
+  Switch,
+  Tooltip,
+  Paper,
+  Popper
+} from '@mui/material';
+import Icon from '@mui/material/Icon';
+import styles from '../../styles/components/Navbar.module.scss';
+import { useTheme } from '../../theme/ThemeProvider';
 
 interface NavbarProps {
-  toggleTheme: () => void;
-  isDarkTheme: boolean;
-  themeColor: string;
-  setThemeColor: (color: string) => void;
   sidebarExpanded?: boolean;
 }
 
-export const Navbar = ({ 
-  toggleTheme, 
-  isDarkTheme, 
-  themeColor,
-  setThemeColor,
-  sidebarExpanded = false 
-}: NavbarProps) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+export const Navbar = ({ sidebarExpanded = false }: NavbarProps) => {
+  const { themeMode, themeColor, toggleTheme, setThemeColor } = useTheme();
+  const [marketAnchorEl, setMarketAnchorEl] = useState<null | HTMLElement>(null);
+  const [notificationsAnchorEl, setNotificationsAnchorEl] = useState<null | HTMLElement>(null);
+  const [userAnchorEl, setUserAnchorEl] = useState<null | HTMLElement>(null);
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<null | HTMLElement>(null);
+  const colorPickerRef = useRef<HTMLDivElement>(null);
+  const colorPickerHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  const handleMouseEnter = (menuType: 'dropdown' | 'user' | 'notifications') => {
-    if (menuType === 'dropdown') {
-      setIsDropdownOpen(true);
-    } else if (menuType === 'user') {
-      setIsUserMenuOpen(true);
-    } else if (menuType === 'notifications') {
-      setIsNotificationsOpen(true);
+  const isDarkTheme = themeMode === 'dark';
+  
+  useEffect(() => {
+    if (!Boolean(userAnchorEl)) {
+      setShowColorPicker(false);
     }
+  }, [userAnchorEl]);
+  
+  const handleMarketClick = (event: React.MouseEvent<HTMLElement>) => {
+    setMarketAnchorEl(marketAnchorEl ? null : event.currentTarget);
   };
   
-  const handleMouseLeave = (menuType: 'dropdown' | 'user' | 'notifications') => {
-    if (menuType === 'dropdown') {
-      setIsDropdownOpen(false);
-    } else if (menuType === 'user') {
-      setIsUserMenuOpen(false);
-    } else if (menuType === 'notifications') {
-      setIsNotificationsOpen(false);
+  const handleNotificationsClick = (event: React.MouseEvent<HTMLElement>) => {
+    setNotificationsAnchorEl(notificationsAnchorEl ? null : event.currentTarget);
+  };
+  
+  const handleUserClick = (event: React.MouseEvent<HTMLElement>) => {
+    setUserAnchorEl(userAnchorEl ? null : event.currentTarget);
+  };
+  
+  const handleCloseMarketMenu = () => {
+    setMarketAnchorEl(null);
+  };
+  
+  const handleCloseNotificationsMenu = () => {
+    setNotificationsAnchorEl(null);
+  };
+  
+  const handleCloseUserMenu = () => {
+    setUserAnchorEl(null);
+  };
+
+  const toggleColorPicker = (event: React.MouseEvent<HTMLElement>) => {
+    setColorPickerAnchorEl(event.currentTarget);
+    setShowColorPicker(!showColorPicker);
+  };
+
+  const handleMenuItemMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
+    if (!showColorPicker) {
+      setColorPickerAnchorEl(event.currentTarget);
+      setShowColorPicker(true);
+    }
+    
+    if (colorPickerHoverTimeoutRef.current) {
+      clearTimeout(colorPickerHoverTimeoutRef.current);
+      colorPickerHoverTimeoutRef.current = null;
     }
   };
 
-  const toggleColorPicker = () => {
-    setShowColorPicker(!showColorPicker);
+  const handleColorChange = (color: string) => {
+    setThemeColor(color);
+  };
+
+  const handleColorPickerMouseEnter = () => {
+    if (colorPickerHoverTimeoutRef.current) {
+      clearTimeout(colorPickerHoverTimeoutRef.current);
+      colorPickerHoverTimeoutRef.current = null;
+    }
+  };
+
+  const handleColorPickerMouseLeave = () => {
+    colorPickerHoverTimeoutRef.current = setTimeout(() => {
+      setShowColorPicker(false);
+    }, 300);
   };
 
   const predefinedColors = [
@@ -60,11 +116,6 @@ export const Navbar = ({
     '#9c27b0', // Purple
     '#673ab7'  // Deep Purple
   ];
-
-  const handleColorChange = (color: string) => {
-    setThemeColor(color);
-    setShowColorPicker(false);
-  };
 
   // Sample notification data
   const notifications = [
@@ -92,165 +143,252 @@ export const Navbar = ({
   ];
 
   return (
-    <nav className="navbar">
-      <div className="navbar-start">
+    <Box 
+      className={`${styles.navbar} ${!sidebarExpanded ? styles.sidebarCollapsed : ''}`}
+      component="nav"
+    >
+      <Box className={styles.navbarStart}>
         <Link href="/">
-          <a className="navbar-logo">
-            <span className="greeting">
+          <Box 
+            component="a" 
+            className={styles.navbarLogo}
+          >
+            <Typography 
+              component="span" 
+              className={styles.greeting}
+            >
               Hi, User
-            </span>
-          </a>
+            </Typography>
+          </Box>
         </Link>
-      </div>
+      </Box>
       
-      <div className="navbar-center">
-        <div className="search-container">
-          <div className="search-wrapper">
-            <span className="material-icons search-icon">search</span>
-            <input 
-              type="text" 
+      <Box className={styles.navbarCenter}>
+        <Box className={styles.searchContainer}>
+          <Box className={styles.searchWrapper}>
+            <Icon className={styles.searchIcon}>search</Icon>
+            <InputBase 
               placeholder="Search..." 
-              className="search-input" 
+              className={styles.searchInput}
+              fullWidth
             />
-          </div>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Box>
       
-      <div className="navbar-end">
-        <div 
-          className="dropdown-container"
-          onMouseEnter={() => handleMouseEnter('dropdown')}
-          onMouseLeave={() => handleMouseLeave('dropdown')}
-        >
-          <button className="market-dropdown">
+      <Box className={styles.navbarEnd}>
+        <Box className={styles.dropdownContainer}>
+          <Button 
+            className={styles.marketDropdown}
+            onClick={handleMarketClick}
+            endIcon={<Icon>arrow_drop_down</Icon>}
+          >
             Market
-            <span className="material-icons dropdown-icon">arrow_drop_down</span>
-          </button>
+          </Button>
           
-          {isDropdownOpen && (
-            <div className="dropdown-menu">
-              <a href="#" className="dropdown-item">Stocks</a>
-              <a href="#" className="dropdown-item">Forex</a>
-              <a href="#" className="dropdown-item">Crypto</a>
-              <a href="#" className="dropdown-item">Commodities</a>
-            </div>
-          )}
-        </div>
+          <Menu
+            anchorEl={marketAnchorEl}
+            open={Boolean(marketAnchorEl)}
+            onClose={handleCloseMarketMenu}
+            elevation={3}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            <MenuItem onClick={handleCloseMarketMenu}>Stocks</MenuItem>
+            <MenuItem onClick={handleCloseMarketMenu}>Forex</MenuItem>
+            <MenuItem onClick={handleCloseMarketMenu}>Crypto</MenuItem>
+            <MenuItem onClick={handleCloseMarketMenu}>Commodities</MenuItem>
+          </Menu>
+        </Box>
 
-        <div 
-          className="notification-container"
-          onMouseEnter={() => handleMouseEnter('notifications')}
-          onMouseLeave={() => handleMouseLeave('notifications')}
-        >
-          <span className="material-icons notification-icon">notifications</span>
-          <span className="notification-badge">3</span>
+        <Box className={styles.notificationContainer}>
+          <IconButton 
+            onClick={handleNotificationsClick}
+            size="large"
+          >
+            <Badge badgeContent={3} color="error">
+              <Icon>notifications</Icon>
+            </Badge>
+          </IconButton>
           
-          {isNotificationsOpen && (
-            <div className="notification-menu">
-              <div className="notification-header">
-                <h3>Notifications</h3>
-                <button className="mark-all-read">Mark all as read</button>
-              </div>
-              <div className="notification-list">
+          <Menu
+            anchorEl={notificationsAnchorEl}
+            open={Boolean(notificationsAnchorEl)}
+            onClose={handleCloseNotificationsMenu}
+            elevation={3}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            PaperProps={{
+              sx: { width: 320, maxHeight: 400 }
+            }}
+          >
+            <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="h6">Notifications</Typography>
+              <Button size="small">Mark all as read</Button>
+            </Box>
+            <Divider />
                 {notifications.map(notification => (
-                  <div key={notification.id} className={`notification-item ${notification.read ? 'read' : 'unread'}`}>
-                    <div className="notification-content">
-                      <div className="notification-title">{notification.title}</div>
-                      <div className="notification-message">{notification.message}</div>
-                      <div className="notification-time">{notification.time}</div>
-                    </div>
-                    {!notification.read && <div className="unread-indicator"></div>}
-                  </div>
-                ))}
-              </div>
-              <div className="notification-footer">
-                <a href="#" className="view-all">View all notifications</a>
-              </div>
-            </div>
-          )}
-        </div>
+              <MenuItem 
+                key={notification.id} 
+                onClick={handleCloseNotificationsMenu}
+                sx={{ 
+                  py: 1.5, 
+                  borderLeft: notification.read ? 'none' : '3px solid', 
+                  borderLeftColor: 'primary.main' 
+                }}
+              >
+                <Box sx={{ display: 'flex', flexDirection: 'column', ml: notification.read ? 0 : 1 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: notification.read ? 400 : 600 }}>
+                    {notification.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {notification.message}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                    {notification.time}
+                  </Typography>
+                </Box>
+              </MenuItem>
+            ))}
+            <Divider />
+            <Box sx={{ textAlign: 'center', p: 1 }}>
+              <Button size="small" fullWidth>View all notifications</Button>
+            </Box>
+          </Menu>
+        </Box>
         
-        <div 
-          className="user-container"
-          onMouseEnter={() => handleMouseEnter('user')}
-          onMouseLeave={() => handleMouseLeave('user')}
-        >
-          <div className="user-avatar">
-            <span>U</span>
-          </div>
+        <Box className={styles.userContainer}>
+          <IconButton 
+            onClick={handleUserClick}
+            size="small"
+          >
+            <Avatar sx={{ bgcolor: 'primary.main' }}>U</Avatar>
+          </IconButton>
           
-          {isUserMenuOpen && (
-            <div className="user-menu">
-              <div className="user-menu-header">
-                <div className="user-info">
-                  <span className="user-name">User</span>
-                  <span className="user-email">user@example.com</span>
-                </div>
-              </div>
-              <div className="user-menu-items">
-                <a href="#" className="user-menu-item">
-                  <span className="material-icons">account_circle</span>
+          <Menu
+            anchorEl={userAnchorEl}
+            open={Boolean(userAnchorEl)}
+            onClose={handleCloseUserMenu}
+            elevation={3}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            PaperProps={{
+              sx: { width: 220 }
+            }}
+          >
+            <Box sx={{ px: 2, py: 1.5 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>User</Typography>
+              <Typography variant="body2" color="text.secondary">user@example.com</Typography>
+            </Box>
+            <Divider />
+            <MenuItem onClick={handleCloseUserMenu}>
+              <ListItemIcon>
+                <Icon fontSize="small">account_circle</Icon>
+              </ListItemIcon>
                   Profile
-                </a>
-                <a href="#" className="user-menu-item">
-                  <span className="material-icons">settings</span>
+            </MenuItem>
+            <MenuItem onClick={handleCloseUserMenu}>
+              <ListItemIcon>
+                <Icon fontSize="small">settings</Icon>
+              </ListItemIcon>
                   Settings
-                </a>
-                <div className="theme-toggle-container">
-                  <span className="theme-label">Theme:</span>
-                  <label className="switch">
-                    <input 
-                      type="checkbox" 
+            </MenuItem>
+            <MenuItem>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between',
+                width: '100%'
+              }}>
+                <Typography>Theme</Typography>
+                <Switch 
                       checked={isDarkTheme}
                       onChange={toggleTheme}
-                    />
-                    <span className="slider round"></span>
-                  </label>
-                  <span className="theme-value">{isDarkTheme ? 'Dark' : 'Light'}</span>
-                </div>
-                
-                {/* Theme Color Selector */}
-                <div className="theme-color-container">
-                  <span className="theme-label">Theme Color:</span>
-                  <div 
-                    className="selected-color"
-                    style={{ backgroundColor: themeColor }}
+                  size="small"
+                />
+              </Box>
+            </MenuItem>
+            <MenuItem 
                     onClick={toggleColorPicker}
-                  ></div>
-                  
-                  {showColorPicker && (
-                    <div className="color-picker-menu">
-                      <div className="color-options">
+              onMouseEnter={handleMenuItemMouseEnter}
+            >
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between',
+                width: '100%'
+              }}>
+                <Typography>Theme Color</Typography>
+                <Box 
+                  sx={{ 
+                    width: 24, 
+                    height: 24, 
+                    borderRadius: '50%', 
+                    bgcolor: themeColor, 
+                    ml: 1,
+                    border: '2px solid',
+                    borderColor: 'divider'
+                  }} 
+                />
+              </Box>
+            </MenuItem>
+            <Divider />
+            <MenuItem onClick={handleCloseUserMenu}>
+              <ListItemIcon>
+                <Icon fontSize="small">logout</Icon>
+              </ListItemIcon>
+              Logout
+            </MenuItem>
+          </Menu>
+          
+          <Popper
+            open={showColorPicker}
+            anchorEl={colorPickerAnchorEl}
+            placement="bottom-end"
+            sx={{ zIndex: 1300 }}
+          >
+            <Paper 
+              elevation={3} 
+              sx={{ p: 2, mt: 1 }}
+              ref={colorPickerRef}
+              onMouseEnter={handleColorPickerMouseEnter}
+              onMouseLeave={handleColorPickerMouseLeave}
+            >
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>Select Color</Typography>
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(4, 1fr)', 
+                gap: 1 
+              }}>
                         {predefinedColors.map((color, index) => (
-                          <div 
+                  <Box 
                             key={index}
-                            className="color-option"
-                            style={{ backgroundColor: color }}
+                    sx={{
+                      width: 30,
+                      height: 30,
+                      bgcolor: color,
+                      borderRadius: '50%',
+                      cursor: 'pointer',
+                      border: themeColor === color ? '2px solid' : 'none',
+                      borderColor: 'divider'
+                    }}
                             onClick={() => handleColorChange(color)}
-                          ></div>
+                  />
                         ))}
-                      </div>
-                      <div className="custom-color">
+              </Box>
+              <Box sx={{ mt: 1.5, display: 'flex', alignItems: 'center' }}>
                         <input 
                           type="color" 
                           value={themeColor}
                           onChange={(e) => handleColorChange(e.target.value)}
-                        />
-                        <span>Custom</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                <a href="#" className="user-menu-item">
-                  <span className="material-icons">logout</span>
-                  Logout
-                </a>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </nav>
+                  style={{ width: 30, height: 30, padding: 0, marginRight: 8 }}
+                />
+                <Typography variant="caption">Custom</Typography>
+              </Box>
+            </Paper>
+          </Popper>
+        </Box>
+      </Box>
+    </Box>
   );
 }; 

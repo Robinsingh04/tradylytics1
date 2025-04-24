@@ -1,0 +1,85 @@
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  border-top-color: var(--primary);
+  animation: spinner-spin 0.8s linear infinite;
+
+  // Variants
+  &--default {
+    border-top-color: var(--primary);
+  }
+
+  &--primary {
+    border-top-color: var(--primary);
+  }
+
+  &--secondary {
+    border-top-color: var(--secondary);
+  }
+
+  &--success {
+    border-top-color: var(--success);
+  }
+
+  &--warning {
+    border-top-color: var(--warning);
+  }
+
+  &--error {
+    border-top-color: var(--error);
+  }
+
+  // Sizes
+  &--sm {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-width: 1.5px;
+  }
+
+  &--lg {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-width: 3px;
+  }
+
+  // Styles
+  &--dashed {
+    border-style: dashed;
+  }
+
+  &--dotted {
+    border-style: dotted;
+  }
+
+  // Speeds
+  &--slow {
+    animation-duration: 1.2s;
+  }
+
+  &--fast {
+    animation-duration: 0.6s;
+  }
+
+  // Labels
+  &__label {
+    margin-left: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
+
+  // Container
+  &__container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@keyframes spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+} 
